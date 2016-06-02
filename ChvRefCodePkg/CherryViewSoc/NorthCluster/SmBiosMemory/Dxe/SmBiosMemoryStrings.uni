@@ -1,0 +1,42 @@
+// /** @file
+//  String definitions for Smbios Memory SubClass data.
+//
+//  Copyright (c) 1999 - 2015, Intel Corporation. All rights reserved.<BR>
+//
+//  This program and the accompanying materials
+//  are licensed and made available under the terms and conditions of the BSD License
+//  which accompanies this distribution.  The full text of the license may be found at
+//  http://opensource.org/licenses/bsd-license.php.
+//
+//  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+//
+// **/
+
+/=#
+
+#langdef   en-US "English"
+
+//
+// Begin English Language Strings
+//
+#string STR_MEMORY_SUBCLASS_UNKNOWN          #language en-US  "Unknown"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_0 #language en-US  "DIMM0"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_1 #language en-US  "DIMM1"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_2 #language en-US  "DIMM2"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_3 #language en-US  "DIMM3"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_4 #language en-US  "DIMM4"
+#string STR_MEMORY_SUBCLASS_DEVICE_LOCATOR_5 #language en-US  "DIMM5"
+#string STR_MEMORY_SUBCLASS_BANK_LOCATOR_0   #language en-US  "BANK 0"
+#string STR_MEMORY_SUBCLASS_BANK_LOCATOR_1   #language en-US  "BANK 1"
+#string STR_MEMORY_SUBCLASS_BANK_LOCATOR_2   #language en-US  "BANK 2"
+#string STR_MEMORY_SUBCLASS_BANK_LOCATOR_3   #language en-US  "BANK 3"
+#string STR_MEMORY_SUBCLASS_MANUFACTURER     #language en-US  "Manufacturer: "
+#string STR_MEMORY_SUBCLASS_SERIAL_NUMBER    #language en-US  "Serial Number: "
+#string STR_MEMORY_SUBCLASS_ASSET_TAG        #language en-US  "Asset Tag: "
+#string STR_MEMORY_SUBCLASS_PART_NUMBER      #language en-US  "PartNumber: "
+//
+// End English Language Strings
+//
+
+
