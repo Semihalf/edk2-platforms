@@ -94,3 +94,4 @@ DisableLogicalDevice (
   );
 
 #endif
+

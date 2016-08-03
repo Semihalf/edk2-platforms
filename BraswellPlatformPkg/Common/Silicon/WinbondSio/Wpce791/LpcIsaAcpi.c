@@ -47,8 +47,8 @@ static EFI_ISA_ACPI_RESOURCE  mLpcWpce791ComDeviceResources[] = {
 //
 EFI_ISA_ACPI_RESOURCE_LIST mLpcWpce791DeviceList[] = {
   {{EISA_PNP_ID(0x303), 0}, mLpcWpce791Ps2KeyboardDeviceResources }, // PS/2 Keyboard Controller
-  {{EISA_PNP_ID(0xF03), 0}, mLpcWpce791Ps2MouseDeviceResources      }, // PS/2 Mouse Controller
-  {{EISA_PNP_ID(0x501), 0}, mLpcWpce791ComDeviceResources          }, // COM
+  {{EISA_PNP_ID(0xF03), 0}, mLpcWpce791Ps2MouseDeviceResources    }, // PS/2 Mouse Controller
+  {{EISA_PNP_ID(0x501), 0}, mLpcWpce791ComDeviceResources        }, // COM
   {{0,                  0}, NULL                                  }  // End
 };
 
@@ -339,7 +339,7 @@ EnableInternalUartDevice (
   VOID
   )
 {
-    //
+  //
   // Program and enable PMC Base.
   //
   IoWrite32 (PCI_IDX, PCI_LPC_REG(R_PCH_LPC_PMC_BASE));

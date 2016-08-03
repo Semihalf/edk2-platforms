@@ -116,3 +116,4 @@ EnableInternalUartDevice (
   );
 
 #endif
+
