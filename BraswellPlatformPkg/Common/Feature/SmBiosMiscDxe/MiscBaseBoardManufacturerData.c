@@ -50,3 +50,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MISC_BASE_BOARD_MANUFACTURER_DATA, MiscBaseBoardManuf
     1,                      // SubInstance
   },
 };
+

@@ -20,13 +20,13 @@ EFI_HII_HANDLE  HiiHandle;
 //
 // Braswell Platform Flash Layout
 //
-//Start (hex)    End (hex)    Length (hex)    Area Name
-//-----------    ---------    ------------    ---------
-//00000000    007FFFFF    00800000    Flash Image
+//Start (hex)  End (hex)  Length (hex)  Area Name
+//-----------  ---------  ------------  ---------
+//00000000  007FFFFF  00800000  Flash Image
 //
-//00000000    00000FFF    00001000    Descriptor Region
-//00001000    004FFFFF    004FF000    TXE Region
-//00500000    007FFFFF    00300000    BIOS Region
+//00000000  00000FFF  00001000  Descriptor Region
+//00001000  004FFFFF  004FF000  TXE Region
+//00500000  007FFFFF  00300000  BIOS Region
 //
 FV_REGION_INFO *mRegionInfo;
 

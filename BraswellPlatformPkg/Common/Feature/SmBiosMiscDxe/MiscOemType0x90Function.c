@@ -186,7 +186,7 @@ GetDriverName(
 
   if (EFI_ERROR(Status))
   {
-      StrCpy (GOPVer, L"NA");
+    StrCpy (GOPVer, L"NA");
     return;
   }
 
@@ -210,11 +210,11 @@ GetGOPDriverName(
   EFI_HANDLE                Child = 0;
 
   Status = gBS->LocateHandleBuffer(
-                ByProtocol,
-                &gEfiDriverBindingProtocolGuid,
-                NULL,
-                &HandleCount,
-                &Handles
+            ByProtocol,
+            &gEfiDriverBindingProtocolGuid,
+            NULL,
+            &HandleCount,
+            &Handles
                       );
 
   for (Index = 0; Index < HandleCount ; Index++)
@@ -434,3 +434,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscOemType0x90)
 
   return EFI_SUCCESS;
 }
+

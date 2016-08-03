@@ -47,3 +47,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE13, NumberOfInstallableLanguages) = {
   },
   SMBIOS_MISC_STRING_1,                                 // CurrentLanguage
 };
+

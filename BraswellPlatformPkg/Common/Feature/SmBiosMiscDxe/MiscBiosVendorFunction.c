@@ -243,3 +243,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscBiosVendor)
 
   return Status;
 }
+

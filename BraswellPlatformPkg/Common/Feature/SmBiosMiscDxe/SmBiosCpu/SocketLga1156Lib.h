@@ -190,3 +190,4 @@
 #define EFI_MSR_GV_THERM                    0x19D
 
 #endif
+

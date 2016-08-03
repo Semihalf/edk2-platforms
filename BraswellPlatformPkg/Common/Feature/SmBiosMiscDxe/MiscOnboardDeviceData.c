@@ -55,3 +55,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE10, MiscOnBoardDeviceSound) = {
     SMBIOS_MISC_STRING_1                          ///< DescriptionString
   }
 };
+

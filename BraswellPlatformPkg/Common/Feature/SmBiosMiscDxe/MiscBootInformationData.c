@@ -35,3 +35,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE32, MiscBootInfoStatus) = {
   },
   BootInformationStatusNoError                ///< BootStatus
 };
+

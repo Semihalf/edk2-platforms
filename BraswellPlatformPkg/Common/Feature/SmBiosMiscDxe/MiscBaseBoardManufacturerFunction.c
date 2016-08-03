@@ -311,3 +311,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscBaseBoardManufacturer)
 
   return Status;
 }
+

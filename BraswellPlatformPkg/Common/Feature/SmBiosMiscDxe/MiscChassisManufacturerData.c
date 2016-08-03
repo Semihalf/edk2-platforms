@@ -48,3 +48,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MISC_CHASSIS_MANUFACTURER_DATA, MiscChassisManufactur
     0                             // ChassisElementMaximum
   },
 };
+

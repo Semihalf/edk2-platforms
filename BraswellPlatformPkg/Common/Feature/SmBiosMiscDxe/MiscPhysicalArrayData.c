@@ -27,3 +27,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MEMORY_ARRAY_LOCATION_DATA, MiscPhysicalMemoryArray) 
     0,                                                      // Maximum Memory Capacity
     0x01                                                    // Number of Devices
 };
+

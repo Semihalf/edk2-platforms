@@ -20,7 +20,7 @@
 // Static (possibly build generated) Oem data.
 //
 MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE90, MiscOemType0x90) = {
-    {                                             // Hdr
+  {                                             // Hdr
     EFI_SMBIOS_TYPE_FIRMWARE_VERSION_INFO,      ///< Hdr.Type
     sizeof(SMBIOS_TABLE_TYPE90),                ///< Hdr.Length
     0                                           ///< Hdr.Handle
@@ -30,3 +30,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE90, MiscOemType0x90) = {
   SMBIOS_MISC_STRING_3,                         // GOPVersion
   SMBIOS_MISC_STRING_4                          // CpuStepping
 };
+

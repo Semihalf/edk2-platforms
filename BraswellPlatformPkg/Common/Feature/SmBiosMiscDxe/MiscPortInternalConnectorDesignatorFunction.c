@@ -259,3 +259,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscPortInternalConnectorDesignator)
   FreePool(StrBufferStart);
   return Status;
 }
+

@@ -89,3 +89,4 @@ MISC_SMBIOS_TABLE_FUNCTION(NumberOfInstallableLanguages)
   FreePool(StrBufferStart);
   return Status;
 }
+

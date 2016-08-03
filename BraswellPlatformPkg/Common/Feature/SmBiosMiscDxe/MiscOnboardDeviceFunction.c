@@ -204,3 +204,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscOnBoardDevice)
   FreePool(StrBufferStart);
   return Status;
 }
+

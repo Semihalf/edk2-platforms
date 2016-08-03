@@ -22,3 +22,4 @@
 MISC_SMBIOS_TABLE_DATA(EFI_CACHE_VARIABLE_RECORD, MiscProcessorCache) = {
 0
 };
+

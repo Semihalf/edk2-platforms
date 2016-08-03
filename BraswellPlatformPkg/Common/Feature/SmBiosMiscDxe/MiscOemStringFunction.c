@@ -82,3 +82,4 @@ MISC_SMBIOS_TABLE_FUNCTION(OemString)
 
   return Status;
 }
+

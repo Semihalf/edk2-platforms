@@ -197,8 +197,8 @@ SmbiosStrInit (
   OUT CHAR16        **Destination,
   IN  CHAR16  CONST *Source,
   OUT CHAR16        **StrBuffer,
-  OUT UINTN            *Count,
-  OUT UINTN            *SizeOfStrings
+  OUT UINTN          *Count,
+  OUT UINTN          *SizeOfStrings
   );
 /**
   Update SMBIOS strings.
@@ -214,3 +214,4 @@ SmbiosStringsUpdate (
   UINTN             NumOfStrings
   );
 #endif
+

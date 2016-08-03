@@ -152,3 +152,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE9, MiscSystemSlotPcie3) = {
 //
 // PCIESC:RestrictedEnd
 //
+

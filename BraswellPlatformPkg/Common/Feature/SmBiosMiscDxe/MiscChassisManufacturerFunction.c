@@ -209,3 +209,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscChassisManufacturer)
 
   return Status;
 }
+

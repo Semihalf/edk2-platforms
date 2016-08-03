@@ -108,8 +108,8 @@ SmbiosStrInit (
   OUT CHAR16        **Destination,
   IN  CHAR16  CONST *Source,
   OUT CHAR16        **StrBuffer,
-  OUT UINTN            *Count,
-  OUT UINTN            *SizeOfStrings
+  OUT UINTN          *Count,
+  OUT UINTN          *SizeOfStrings
   )
 {
   UINTN    StrSize;
@@ -156,8 +156,8 @@ SmbiosStringsUpdate (
   IdxStr = 0;
 
   for (IdxStr = 0; IdxStr < NumOfStrings; IdxStr++) {
-    UnicodeStrToAsciiStr (StringArray[IdxStr], StartAddr + LenStr + IdxStr);
-    LenStr += StrLen(StringArray[IdxStr]);
+  UnicodeStrToAsciiStr (StringArray[IdxStr], StartAddr + LenStr + IdxStr);
+  LenStr += StrLen(StringArray[IdxStr]);
   }
 }
 

@@ -93,3 +93,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MISC_BIOS_VENDOR_DATA, MiscBiosVendor)
   0xFF,   // BiosEmbeddedFirmwareMajorRelease;
   0xFF,   // BiosEmbeddedFirmwareMinorRelease;
 };
+

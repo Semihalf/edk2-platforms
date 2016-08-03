@@ -34,3 +34,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MISC_RESET_CAPABILITIES, MiscResetCapabilities)
   0xFFFF, // ResetTimerInterval
   0xFFFF  // ResetTimeout
 };
+

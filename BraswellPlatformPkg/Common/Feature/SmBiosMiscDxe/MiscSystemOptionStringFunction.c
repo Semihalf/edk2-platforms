@@ -84,3 +84,4 @@ MISC_SMBIOS_TABLE_FUNCTION(SystemOptionString)
 
   return Status;
 }
+

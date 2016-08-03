@@ -36,3 +36,4 @@ MISC_SMBIOS_TABLE_DATA(EFI_MEMORY_ARRAY_LINK_DATA, MiscMemoryDevice) = {
     0                                                // Memory State
 
 };
+

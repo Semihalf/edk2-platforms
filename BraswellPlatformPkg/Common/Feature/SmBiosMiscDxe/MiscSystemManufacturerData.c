@@ -27,10 +27,11 @@ MISC_SMBIOS_TABLE_DATA(EFI_MISC_SYSTEM_MANUFACTURER_DATA, MiscSystemManufacturer
   STRING_TOKEN(STR_MISC_SYSTEM_VERSION),       // SystemVersion
   STRING_TOKEN(STR_MISC_SYSTEM_SERIAL_NUMBER), // SystemSerialNumber
   {                                            // SystemUuid
-      //
-    // TODO Hard code here for WHCT test.
-    0xa5000288, 0x6462, 0x4524, 0x98, 0x6a, 0x9b, 0x77, 0x37, 0xe3, 0x15, 0xcf
     //
+  // TODO Hard code here for WHCT test.
+  0xa5000288, 0x6462, 0x4524, 0x98, 0x6a, 0x9b, 0x77, 0x37, 0xe3, 0x15, 0xcf
+  //
   },
   EfiSystemWakeupTypePowerSwitch  // SystemWakeupType
 };
+

@@ -67,3 +67,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscBootInfoStatus)
 
   return Status;
 }
+

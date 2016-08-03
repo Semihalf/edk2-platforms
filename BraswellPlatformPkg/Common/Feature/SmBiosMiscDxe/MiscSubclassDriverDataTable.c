@@ -122,3 +122,4 @@ EFI_MISC_SMBIOS_DATA_TABLE  mMiscSubclassDataTable[] = {
 //
 UINTN mMiscSubclassDataTableEntries =
         (sizeof mMiscSubclassDataTable) / sizeof(EFI_MISC_SMBIOS_DATA_TABLE);
+

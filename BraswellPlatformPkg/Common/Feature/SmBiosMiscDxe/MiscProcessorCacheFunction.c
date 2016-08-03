@@ -41,3 +41,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscProcessorCache)
 
   return EFI_SUCCESS;
 }
+

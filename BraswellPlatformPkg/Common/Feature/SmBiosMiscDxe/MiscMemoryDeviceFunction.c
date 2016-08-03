@@ -306,3 +306,4 @@ MISC_SMBIOS_TABLE_FUNCTION( MiscMemoryDevice )
 
     return Status;
 }
+

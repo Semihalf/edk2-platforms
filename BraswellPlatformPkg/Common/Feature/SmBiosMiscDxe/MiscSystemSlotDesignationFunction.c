@@ -106,3 +106,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemSlotDesignator)
   FreePool(StrBufferStart);
   return Status;
 }
+

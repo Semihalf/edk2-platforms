@@ -566,3 +566,4 @@ MISC_SMBIOS_TABLE_DATA(SMBIOS_TABLE_TYPE8, MiscPortFANPWR) = {
   PortConnectorTypeNone,                          ///< ExternalConnectorType
   PortTypeOther                                   ///< PortType
 };
+

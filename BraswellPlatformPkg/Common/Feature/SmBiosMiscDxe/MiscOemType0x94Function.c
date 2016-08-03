@@ -1034,3 +1034,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscOemType0x94)
 
   return Status;
 }
+

@@ -40,7 +40,6 @@
 #include "SocketLga1156Lib.h"
 #include <Library/SynchronizationLib.h>
 #include <Library/TimerLib.h>
-#include "MiscSubclassDriver.h"
 
 #define PLATFORM_DESKTOP           0
 #define PLATFORM_MOBILE            1
@@ -999,10 +998,10 @@ AddSmbiosCacheTypeTable (
     //
     SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
     Status = Smbios->Add ( Smbios,
-                           NULL,
-                           &SmbiosHandle,
-                           (EFI_SMBIOS_TABLE_HEADER*) SmbiosRecord
-                          );
+                         NULL,
+               &SmbiosHandle,
+               (EFI_SMBIOS_TABLE_HEADER*) SmbiosRecord
+              );
 
     //
     // Record L1/L2/L3 Cache Smbios Handle, Type 4 SMBIOS Record needs it.
@@ -1220,15 +1219,7 @@ AddSmbiosProcessorTypeTable (
   // Get CPU Version string.
   //
   GetProcessorVersion (ProcessorNumber, &Version);
-  if (Version.StringValid) {
-    Token = HiiSetString (mHiiHandle, 0, Version.BrandString, NULL);
-    if (Token == 0) {
-      Token = Version.StringRef;
-    }
-  } else {
-      Token = Version.StringRef;
-  }
-  CpuVerStr = HiiGetPackageString (&gEfiCallerIdGuid, Token, NULL);
+  CpuVerStr = Version.BrandString;
   ASSERT (CpuVerStr != NULL);
   CpuVerStrLen = StrLen (CpuVerStr);
   ASSERT (CpuVerStrLen <= SMBIOS_STRING_MAX_LENGTH);
@@ -1359,10 +1350,10 @@ AddSmbiosProcessorTypeTable (
   //
   SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
   Status = Smbios->Add ( Smbios,
-                         NULL,
-                         &SmbiosHandle,
-                         (EFI_SMBIOS_TABLE_HEADER*) SmbiosRecord
-                        );
+                       NULL,
+             &SmbiosHandle,
+             (EFI_SMBIOS_TABLE_HEADER*) SmbiosRecord
+            );
   FreePool (SmbiosRecord);
   FreePool (CpuSocketStr);
   FreePool (CpuManuStr);
@@ -1392,7 +1383,7 @@ GetSmbiosCpuInformation ( EFI_SMBIOS_PROTOCOL  *Smbios
 
 --*/
 {
-  EFI_STATUS              Status = EFI_SUCCESS;
+  EFI_STATUS        Status = EFI_SUCCESS;
   EFI_MP_SERVICES_PROTOCOL      *MpService;
   UINTN                         MaximumNumberOfCPUs;
   UINTN                         NumberOfEnabledCPUs;
@@ -1489,3 +1480,4 @@ GetSmbiosCpuInformation ( EFI_SMBIOS_PROTOCOL  *Smbios
 
   return Status;
 }
+

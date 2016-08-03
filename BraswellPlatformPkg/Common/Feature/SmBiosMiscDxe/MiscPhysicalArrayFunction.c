@@ -91,3 +91,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscPhysicalMemoryArray)
 
     return Status;
 }
+

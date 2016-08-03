@@ -92,100 +92,100 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
   //
   switch (SocStepping()) {
     case SocA0:
-      StrCpy (ProductName, L"CHERRYVIEW A0 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A0 PLATFORM");
       break;
     case SocA1:
-      StrCpy (ProductName, L"CHERRYVIEW A1 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A1 PLATFORM");
       break;
     case SocA2:
-      StrCpy (ProductName, L"CHERRYVIEW A2 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A2 PLATFORM");
       break;
     case SocA3:
-      StrCpy (ProductName, L"CHERRYVIEW A3 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A3 PLATFORM");
       break;
     case SocA4:
-      StrCpy (ProductName, L"CHERRYVIEW A4 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A4 PLATFORM");
       break;
     case SocA5:
-      StrCpy (ProductName, L"CHERRYVIEW A5 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A5 PLATFORM");
       break;
     case SocA6:
-      StrCpy (ProductName, L"CHERRYVIEW A6 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A6 PLATFORM");
       break;
     case SocA7:
-      StrCpy (ProductName, L"CHERRYVIEW A7 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW A7 PLATFORM");
       break;
     case SocB0:
-      StrCpy (ProductName, L"CHERRYVIEW B0 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B0 PLATFORM");
       break;
     case SocB1:
-      StrCpy (ProductName, L"CHERRYVIEW B1 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B1 PLATFORM");
       break;
     case SocB2:
-      StrCpy (ProductName, L"CHERRYVIEW B2 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B2 PLATFORM");
       break;
     case SocB3:
-      StrCpy (ProductName, L"CHERRYVIEW B3 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B3 PLATFORM");
       break;
     case SocB4:
-      StrCpy (ProductName, L"CHERRYVIEW B4 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B4 PLATFORM");
       break;
     case SocB5:
-      StrCpy (ProductName, L"CHERRYVIEW B5 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B5 PLATFORM");
       break;
     case SocB6:
-      StrCpy (ProductName, L"CHERRYVIEW B6 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B6 PLATFORM");
       break;
     case SocB7:
-      StrCpy (ProductName, L"CHERRYVIEW B7 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW B7 PLATFORM");
       break;
     case SocC0:
-      StrCpy (ProductName, L"CHERRYVIEW C0 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C0 PLATFORM");
       break;
     case SocC1:
-      StrCpy (ProductName, L"CHERRYVIEW C1 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C1 PLATFORM");
       break;
     case SocC2:
-      StrCpy (ProductName, L"CHERRYVIEW C2 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C2 PLATFORM");
       break;
     case SocC3:
-      StrCpy (ProductName, L"CHERRYVIEW C3 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C3 PLATFORM");
       break;
     case SocC4:
-      StrCpy (ProductName, L"CHERRYVIEW C4 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C4 PLATFORM");
       break;
     case SocC5:
-      StrCpy (ProductName, L"CHERRYVIEW C5 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C5 PLATFORM");
       break;
     case SocC6:
-      StrCpy (ProductName, L"CHERRYVIEW C6 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C6 PLATFORM");
       break;
     case SocC7:
-      StrCpy (ProductName, L"CHERRYVIEW C7 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW C7 PLATFORM");
       break;
     case SocD0:
-      StrCpy (ProductName, L"CHERRYVIEW D0 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D0 PLATFORM");
       break;
     case SocD1:
-      StrCpy (ProductName, L"CHERRYVIEW D1 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D1 PLATFORM");
       break;
     case SocD2:
-      StrCpy (ProductName, L"CHERRYVIEW D2 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D2 PLATFORM");
       break;
     case SocD3:
-      StrCpy (ProductName, L"CHERRYVIEW D3 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D3 PLATFORM");
       break;
     case SocD4:
-      StrCpy (ProductName, L"CHERRYVIEW D4 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D4 PLATFORM");
       break;
     case SocD5:
-      StrCpy (ProductName, L"CHERRYVIEW D5 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D5 PLATFORM");
       break;
     case SocD6:
-      StrCpy (ProductName, L"CHERRYVIEW D6 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D6 PLATFORM");
       break;
     case SocD7:
-      StrCpy (ProductName, L"CHERRYVIEW D7 PLATFORM");
+    StrCpy (ProductName, L"CHERRYVIEW D7 PLATFORM");
       break;
     default:
       StrCpy (ProductName, SMBIOS_MISC_TYPE01_PRODUCT_NAME);
@@ -339,3 +339,4 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
 
   return Status;
 }
+

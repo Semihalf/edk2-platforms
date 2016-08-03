@@ -91,11 +91,11 @@ ConvertBase10ToRaw (
   return  RawData;
 }
 
-#define BSEL_CR_OVERCLOCK_CONTROL    0xCD
-#define    FUSE_BSEL_MASK                0x03
+#define BSEL_CR_OVERCLOCK_CONTROL  0xCD
+#define  FUSE_BSEL_MASK        0x03
 
 UINT16 miFSBFrequencyTable[4] = {
-  83,              // 83.3MHz
+  83,            // 83.3MHz
   100,          // 100MHz
   133,          // 133MHz
   117           // 116.7MHz
@@ -117,7 +117,7 @@ DetermineiFsbFromMsr (
   //
   // Determine the processor core frequency
   //
-  UINT64    Temp;
+  UINT64  Temp;
   Temp = (EfiReadMsr (BSEL_CR_OVERCLOCK_CONTROL)) & FUSE_BSEL_MASK;
 
   return miFSBFrequencyTable[(UINT32)(Temp)];
