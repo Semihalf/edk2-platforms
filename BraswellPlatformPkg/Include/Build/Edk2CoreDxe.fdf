@@ -1,0 +1,180 @@
+## @file
+#  FDF file of Platform.
+#
+#  Copyright (c) 2008 - 2015, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+#
+# Below modules will be included in [FV.FVMAIN]
+#
+
+INF MdeModulePkg/Core/Dxe/DxeMain.inf
+INF MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
+INF MdeModulePkg/Universal/SectionExtractionDxe/SectionExtractionDxe.inf
+!if $(ACPI50_ENABLE) == TRUE
+INF  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf
+INF  MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
+INF  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
+!endif
+
+INF IntelFrameworkModulePkg/Universal/CpuIoDxe/CpuIoDxe.inf
+INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
+INF MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
+INF MdeModulePkg/Universal/StatusCodeHandler/RuntimeDxe/StatusCodeHandlerRuntimeDxe.inf
+INF MdeModulePkg/Universal/ReportStatusCodeRouter/Smm/ReportStatusCodeRouterSmm.inf
+INF MdeModulePkg/Universal/StatusCodeHandler/Smm/StatusCodeHandlerSmm.inf
+INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
+
+INF IntelFrameworkModulePkg/Universal/Acpi/AcpiS3SaveDxe/AcpiS3SaveDxe.inf
+INF MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+
+INF BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/CpuInit/MpCpu.inf
+INF MdeModulePkg/Universal/Metronome/Metronome.inf
+INF IntelFspWrapperPkg/FspNotifyDxe/FspNotifyDxe.inf
+INF IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
+INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
+INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
+
+
+
+INF MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
+INF MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
+INF PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
+INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
+
+!if $(DATAHUB_ENABLE) == TRUE
+INF IntelFrameworkModulePkg/Universal/DataHubDxe/DataHubDxe.inf
+!endif
+INF MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
+INF PcAtChipsetPkg/HpetTimerDxe/HpetTimerDxe.inf
+
+
+
+#
+# SMM
+#
+INF MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
+INF MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
+INF BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
+INF UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
+INF MdeModulePkg/Universal/LockBox/SmmLockBox/SmmLockBox.inf
+INF BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/PiSmmCommunication/PiSmmCommunicationSmm.inf
+
+
+#
+# ACPI
+#
+INF MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
+INF MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+
+
+#
+# PCI
+#
+INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+
+
+#
+# Network Modules
+#
+!if $(NETWORK_ENABLE) == TRUE
+#  FILE DRIVER = 22DE1691-D65D-456a-993E-A253DD1F308C {
+#    SECTION PE32 = RealtekUndiPkg/Rtl8111gUndiDxe/$(DXE_ARCHITECTURE)/RtkUndiDxe.efi
+#    SECTION UI = "UNDI"
+#  }
+  INF  MdeModulePkg/Universal/Network/SnpDxe/SnpDxe.inf
+  INF  MdeModulePkg/Universal/Network/DpcDxe/DpcDxe.inf
+  INF  MdeModulePkg/Universal/Network/MnpDxe/MnpDxe.inf
+  INF  MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
+  INF  MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
+  INF  MdeModulePkg/Universal/Network/Udp4Dxe/Udp4Dxe.inf
+  INF  MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
+  INF  MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
+  !if $(NETWORK_IP6_ENABLE) == TRUE
+  INF  NetworkPkg/Ip6Dxe/Ip6Dxe.inf
+  INF  NetworkPkg/Dhcp6Dxe/Dhcp6Dxe.inf
+  INF  NetworkPkg/IpSecDxe/IpSecDxe.inf
+  INF  NetworkPkg/Udp6Dxe/Udp6Dxe.inf
+  INF  NetworkPkg/Mtftp6Dxe/Mtftp6Dxe.inf
+  !endif
+  !if $(NETWORK_IP6_ENABLE) == TRUE
+  INF  NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
+  INF  NetworkPkg/TcpDxe/TcpDxe.inf
+  !else
+  INF  MdeModulePkg/Universal/Network/UefiPxeBcDxe/UefiPxeBcDxe.inf
+  INF  MdeModulePkg/Universal/Network/Tcp4Dxe/Tcp4Dxe.inf
+  !endif
+  !if $(NETWORK_VLAN_ENABLE) == TRUE
+  INF  MdeModulePkg/Universal/Network/VlanConfigDxe/VlanConfigDxe.inf
+  !endif
+  !if $(NETWORK_ISCSI_ENABLE) == TRUE
+    !if $(NETWORK_IP6_ENABLE) == TRUE
+    INF  NetworkPkg/IScsiDxe/IScsiDxe.inf
+    !else
+    INF  MdeModulePkg/Universal/Network/IScsiDxe/IScsiDxe.inf
+    !endif
+  !endif
+!endif
+
+INF BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/SerialDxe/SerialDxe.inf
+
+
+#
+# IDE/SCSI/AHCI
+#
+INF MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
+INF MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
+INF MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
+!if $(SATA_ENABLE) == TRUE
+#INF $(PLATFORM_RC_PACKAGE)/CherryViewSoc/SouthCluster/SataController/Dxe/SataController.inf
+INF MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
+INF MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
+!if $(SCSI_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+!endif
+!endif
+
+
+#
+# Console
+#
+INF MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
+INF MdeModulePkg/Universal/Console/ConSplitterDxe/ConSplitterDxe.inf
+INF MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
+INF MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
+INF MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
+INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
+INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+
+
+#
+# USB
+#
+!if $(USB_ENABLE) == TRUE
+INF MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
+INF MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+INF MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+!endif
+
+#
+# SMBIOS
+#
+INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+
+
+INF PcAtChipsetPkg/8259InterruptControllerDxe/8259.inf
+
