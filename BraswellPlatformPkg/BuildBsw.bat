@@ -9,14 +9,17 @@ REM ---- Do NOT use :: for comments Inside of code blocks() ----
 ::**********************************************************************
 :: Initial Setup
 ::**********************************************************************
+echo Initial variable setting...
 set WORKSPACE=%CD%
 if %WORKSPACE:~-1%==\ set WORKSPACE=%WORKSPACE:~0,-1%
+set PLATFORM_PATH=BraswellPlatformPkg
 set /a build_threads=1
 set "Build_Flags= "
 set "SV_String=_"
 set exitCode=0
 set Arch=X64
 set Compiler=VS2008
+set "SpiLock= "
 
 set VS2008_SP_REGKEY_PATH=HKLM\Software\Microsoft\DevDiv\VS\Servicing\9.0\
 set VS2008_SP_REGKEY=SP
@@ -35,13 +38,8 @@ if exist conf\.cache rmdir /q/s conf\.cache
 set "VCINSTALLDIR="
 set "EDK_TOOLS_PATH="
 cd..
-if /I "%1" == "DEBUG" (
-  copy BaseTools\Conf\tools_def.template Conf\tools_def.txt /Y
-) else (
-  copy BaseTools\Conf\tools_def.template Conf\tools_def.txt /Y
-)
 
-call edksetup.bat > nul
+call edksetup.bat
 cd %WORKSPACE%
 
 @rem InternalOnlyBegin
@@ -84,7 +82,6 @@ set PLATFORM_NAME=BraswellPlatformPkg
 set PLATFORM_PACKAGE=BraswellPlatformPkg
 set PLATFORM2_PACKAGE=BraswellPlatformPkg
 set PLATFORM_RC_PACKAGE=ChvRefCodePkg
-set "UniTool_Excludes=ChtSvPkg R8ChtDeviceSvRestrictedPkg"
 
 ::**********************************************************************
 :: Parse command line arguments
@@ -102,6 +99,11 @@ if /i "%~1"=="fspb" (
 
 if /i "%~1"=="fspw" (
     set FSP_WRAPPER_ENABLE=TRUE
+    shift
+    goto OptLoop
+)
+if /i "%~1"=="fvbin" (
+    set Build_Flags=%Build_Flags% -D ENABLE_FV_BIN=TRUE
     shift
     goto OptLoop
 )
@@ -181,6 +183,13 @@ if /i "%~1"=="/vs13" (
     shift
     goto OptLoop
 )
+if /i "%~1"=="/yL" (
+    set SpiLock=/yL
+    shift
+    goto OptLoop
+)
+
+
 :: Required argument(s)
 if "%~1"=="" (
    echo. & echo Not Enough Arguments Provided, default is Braswell build.
@@ -229,7 +238,7 @@ if "%FSP_WRAPPER_ENABLE%"=="TRUE" (
 ::**********************************************************************
 
 ::Setup DefineAtBuildMacros config file
-set Build_Macros=.\%PLATFORM_NAME%\AutoPlatformCFG.txt
+set Build_Macros=.\%PLATFORM_PATH%\AutoPlatformCFG.txt
 copy /y nul %Build_Macros% >nul
 
 ::output platform specific build macros to DefineAtBuildMacros.dsc
@@ -250,7 +259,7 @@ if "%Arch%"=="IA32" (
 )
 
 ::Stage of copy of BiosId.env in Conf/ with Platform_Type and Build_Target values removed
-findstr /b /v "BOARD_ID  BUILD_TYPE OEM_ID" %PLATFORM_NAME%\BiosId.env > Conf\BiosId.env
+findstr /b /v "BOARD_ID  BUILD_TYPE OEM_ID" %PLATFORM_PATH%\Common\BiosId.env > Conf\BiosId.env
 
 
 if "%target%" == "RELEASE" (
@@ -328,7 +337,7 @@ if "%TOOL_CHAIN_TAG%"=="VS2008x86" (
     echo DEFINE TOOL_CHAIN_VS2010 = FALSE  >> %Build_Macros%
     echo DEFINE TOOL_CHAIN_VS2013 = FALSE  >> %Build_Macros%
 
-    reg query %VS2008_SP_REGKEY_PATH% /v %VS2008_SP_REGKEY% 2>null
+    reg query %VS2008_SP_REGKEY_PATH% /v %VS2008_SP_REGKEY% 2
 
         for /f "tokens=2,*" %%a in ('reg query %VS2008_SP_REGKEY_PATH% /v %VS2008_SP_REGKEY% ^| findstr %VS2008_SP_REGKEY%') do (
         if 0x1==%%b (
@@ -357,7 +366,7 @@ if "%Arch%"=="IA32" (        echo TARGET_ARCH = IA32        >> Conf\target.txt.t
 )
 echo TARGET          = %TARGET%                                >> Conf\target.txt.tmp
 echo TOOL_CHAIN_TAG  = %TOOL_CHAIN_TAG%                        >> Conf\target.txt.tmp
-echo ACTIVE_PLATFORM = %PLATFORM_NAME%/PlatformPkg%Arch%.dsc  >> Conf\target.txt.tmp
+echo ACTIVE_PLATFORM = %PLATFORM_PATH%/PlatformPkg%Arch%.dsc  >> Conf\target.txt.tmp
 echo MAX_CONCURRENT_THREAD_NUMBER = %build_threads%        >> Conf\target.txt.tmp
 
 move /Y Conf\target.txt.tmp Conf\target.txt >nul
@@ -391,7 +400,7 @@ echo Creating BiosId...
 @REM
 @REM Reenable the GenBiosId if it is for external release
 @REM
-%PLATFORM2_PACKAGE%\Tools\GenBiosId\GenBiosId.exe -i Conf\BiosId.env -o %BIOS_ID_OUTPUT_DIR%\BiosId.bin -ob Conf\BiosId.bat
+%PLATFORM_PATH%\Common\Tools\GenBiosId\GenBiosId.exe -i Conf\BiosId.env -o %BIOS_ID_OUTPUT_DIR%\BiosId.bin -ob Conf\BiosId.bat
 if %ERRORLEVEL% NEQ 0 goto BldFail
 call Conf\BiosId.bat
 echo BIOS_ID=%BIOS_ID%
@@ -431,7 +440,7 @@ set BIOS_ID_LOCATION=Build\%PLATFORM_PACKAGE%\%TARGET%_%TOOL_CHAIN_TAG%\IA32\%PL
 @echo  Prebuild:  Generate SetupStrDefs.h, as required by SV Knob data.
 @echo.
 echo %WROKSPACE%
-build -n %NUMBER_OF_PROCESSORS% -m .\%PLATFORM_NAME%\PlatformSetupDxe\PlatformSetupDxe.inf -e %TEST_MENU_BUILD_OPTION%
+build -n %NUMBER_OF_PROCESSORS% -m .\%PLATFORM_PATH%\PlatformSetupDxe\PlatformSetupDxe.inf -e %TEST_MENU_BUILD_OPTION%
 
 @if %ERRORLEVEL% NEQ 0 (
   set SCRIPT_ERROR=1
@@ -515,7 +524,7 @@ if "%FSP_BUILD%"=="TRUE" (
     @echo off
 )
 echo Invoking EDK2 BSW Normal build...
-build %Build_Flags%
+build %Build_Flags% -y BraswellReport.txt
 if %ERRORLEVEL% NEQ 0 goto BldFail
 
 ::**********************************************************************
@@ -523,7 +532,7 @@ if %ERRORLEVEL% NEQ 0 goto BldFail
 ::**********************************************************************
 
 echo Running fce...
-pushd %PLATFORM2_PACKAGE%\Tools\FCE
+pushd %PLATFORM_PATH%\Common\Tools\FCE
 :: Extract Hii data from build and store in HiiDefaultData.txt
 fce.exe read -i %WORKSPACE%\%BUILD_PATH%\FV\Cht.fd > %WORKSPACE%\%BUILD_PATH%\FV\HiiDefaultData.txt
 :: copy the Setup variable to the SetupDefault variable and save changes to ChtXXX.fd
@@ -540,38 +549,38 @@ echo  FD successfully updated with default Hii values.
 set BIOS_Name=%BOARD_ID%%SV_String%%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%.ROM
 if "%PSS-Rename%"=="TRUE"  set BIOS_Name=%BIOS_Name:~0,-3%PSS
 if not exist %BUILD_PATH%\ROM  mkdir %BUILD_PATH%\ROM
-copy /y/b %BUILD_PATH%\FV\Cht%Arch%.fd  %WORKSPACE%\BraswellPlatformPkg\Stitch\%BIOS_Name% >nul
+copy /y/b %BUILD_PATH%\FV\Cht%Arch%.fd  %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\%BIOS_Name% >nul
 copy /y/b %BUILD_PATH%\FV\Cht%Arch%.fd  %BUILD_PATH%\ROM\%BIOS_Name% >nul
 
 echo
 echo Make backup on ROM file (unsigned release)
 echo ================================
-copy /y/b %WORKSPACE%\BraswellPlatformPkg\Stitch\%BIOS_Name% %BUILD_PATH%\ROM\%BIOS_Name%.rel
+copy /y/b %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\%BIOS_Name% %BUILD_PATH%\ROM\%BIOS_Name%.rel
 
 echo.
 echo Calling IFWIStitch...
-pushd %PLATFORM2_PACKAGE%\Stitch
+pushd %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\
 if  /i "%Platform_Type%" == "%Tblt_RVP%" (
    if "%SV_BIOS_ENABLE%" == "TRUE" (
-     call IFWIStitch.bat %BIOS_Name% /C CHTT_SV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
+     call %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIStitch.bat %BIOS_Name% /C CHTT_SV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
    ) else (
-     call IFWIStitch.bat %BIOS_Name% /C CHTT_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
+     call %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIStitch.bat %BIOS_Name% /C CHTT_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
    )
 ) else if /i "%Platform_Type%" == "%eNB_RVP%" (
    if "%SV_BIOS_ENABLE%" == "TRUE" (
-     call IFWIStitch.bat /nG /nM /nI %BIOS_Name% /C BSW_SV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
+     call %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIStitch.bat /nG /nM /nI %SpiLock% %BIOS_Name% /C BSW_SV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
    ) else if "%PPV_ENABLE%" == "TRUE" (
-     call IFWIStitch.bat /nG /nM /nI %BIOS_Name% /C BSW_PPV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
+     call %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIStitch.bat /nG /nM /nI %SpiLock% %BIOS_Name% /C BSW_PPV_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
    ) else (
-     call IFWIStitch.bat /nG /nM /nI %BIOS_Name% /C BSW_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
+     call %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIStitch.bat /nG /nM /nI %SpiLock% %BIOS_Name% /C BSW_Stitch_Config.txt /S %VERSION_MAJOR%_%VERSION_MINOR%
    )
 )
 @echo off
 popd
 
 echo BIOS_ID=%BIOS_ID%
-copy /y/b %PLATFORM2_PACKAGE%\Stitch\%BIOS_ID%.bin %BUILD_PATH%\ROM\
-copy /y/b %PLATFORM2_PACKAGE%\Stitch\%BIOS_Name% %BUILD_PATH%\ROM\
+copy /y/b %PLATFORM_PATH%\Common\Tools\Stitch\%BIOS_ID%.bin %BUILD_PATH%\ROM\
+copy /y/b %PLATFORM_PATH%\Common\Tools\Stitch\%BIOS_Name% %BUILD_PATH%\ROM\
 ::if "%Arch%"=="X64" (
 ::  @call BraswellPlatformPkg\BuildCapsulePkg.bat %TARGET% %Arch%
 ::
@@ -613,6 +622,7 @@ echo    /ia32  Set Arch to IA32  (default: X64)
 echo    /vs13  Set compiler to VisualStudio 2013  (default: 2012)
 echo    /vs10  Set compiler to VisualStudio 2010
 echo    /vs08  Set compiler to VisualStudio 2008
+echo    /yL    Enable SPI lock
 echo.
 echo    Platform Types:  %eNB_RVP% %Tblt_RVP% %Embd_RVP%
 echo    Build Targets:   Debug, Release
@@ -637,3 +647,4 @@ echo %date%  %time%
 exit /b %exitCode%
 
 EndLocal
+
