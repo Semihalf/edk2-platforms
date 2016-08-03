@@ -150,3 +150,4 @@ ReadUsingMmio (
 {
   return (BOOLEAN) ((SpiOffset >= BIOS_REGION_FLASH_OFFSET) && (SpiOffset < (BIOS_REGION_FLASH_OFFSET + PcdGet32 (PcdBiosImageSize))) && (!EfiAtRuntime ()));
 }
+

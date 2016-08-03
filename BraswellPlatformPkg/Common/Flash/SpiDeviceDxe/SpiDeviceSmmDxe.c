@@ -435,3 +435,4 @@ SmmSpiDeviceReady (
                   );
   ASSERT_EFI_ERROR (Status);
 }
+

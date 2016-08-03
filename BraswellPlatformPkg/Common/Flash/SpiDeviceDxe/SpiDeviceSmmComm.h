@@ -71,3 +71,4 @@ typedef struct {
 } SMM_SPI_DEV_SET_RANGE_HEADER;
 
 #endif
+
