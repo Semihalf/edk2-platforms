@@ -662,3 +662,4 @@ InitializeGraphicsOutput (
 
   return Status;
 }
+

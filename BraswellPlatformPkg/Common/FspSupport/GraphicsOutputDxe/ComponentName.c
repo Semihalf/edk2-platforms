@@ -188,3 +188,4 @@ GLOBAL_REMOVE_IF_UNREFERENCED EFI_COMPONENT_NAME2_PROTOCOL mGraphicsOutputCompon
   (EFI_COMPONENT_NAME2_GET_CONTROLLER_NAME) GraphicsOutputComponentNameGetControllerName,
   "en"
 };
+

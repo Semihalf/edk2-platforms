@@ -131,11 +131,11 @@ UpdateSilicionInitUpd (
   PlatformInfo = PcdGetPtr (PcdPlatformInfo);
 
   if (*((UINT32 *)PcdGetPtr (PcdCustomizedVbtFile)) == SIGNATURE_32 ('$', 'V', 'B', 'T')) {
-      // It is a valid VBT Table
-      VbtAddress = (EFI_PHYSICAL_ADDRESS) (UINTN)PcdGetPtr (PcdCustomizedVbtFile);
+    // It is a valid VBT Table
+    VbtAddress = (EFI_PHYSICAL_ADDRESS) (UINTN)PcdGetPtr (PcdCustomizedVbtFile);
   } else {
-      Status = FindVbt (PcdGetPtr (PcdBmpImageGuid), &VbtAddress);
-      ASSERT_EFI_ERROR (Status);
+    Status = FindVbt (PcdGetPtr (PcdBmpImageGuid), &VbtAddress);
+    ASSERT_EFI_ERROR (Status);
   }
 
   //
@@ -347,27 +347,27 @@ GetNvsBuffer (
   VariableSize = 0;
   MrcData = NULL;
 
-    //
-    // TODO: Will remove this hardcode address.
-    //
-    VariableSize = 0x6C58;
+  //
+  // TODO: Will remove this hardcode address.
+  //
+  VariableSize = 0x6C58;
 
-    DEBUG((EFI_D_INFO, "VarSize=0x%x.\n", VariableSize));
+  DEBUG((EFI_D_INFO, "VarSize=0x%x.\n", VariableSize));
 
-    //
-    // Get the MRC Parameters from SPI Flash. This function return the address of this variable in SPI Flash.
-    //
-    Status = PeiGetVariable (
-               EfiMemoryConfigVariable,
-               &gEfiChvVariableGuid,
-               NULL,
-               &VariableSize,
-               &MrcData
-               );
-    DEBUG((EFI_D_INFO, "Get MRC data from SPI Flash at 0x0x%=. \n", (UINT32)MrcData));
+  //
+  // Get the MRC Parameters from SPI Flash. This function return the address of this variable in SPI Flash.
+  //
+  Status = PeiGetVariable (
+             EfiMemoryConfigVariable,
+             &gEfiChvVariableGuid,
+             NULL,
+             &VariableSize,
+             &MrcData
+             );
+  DEBUG((EFI_D_INFO, "Get MRC data from SPI Flash at 0x0x%=. \n", (UINT32)MrcData));
 
-    if (EFI_ERROR(Status))
-        MrcData = NULL;
+  if (EFI_ERROR(Status))
+    MrcData = NULL;
 
   return MrcData;
 }
@@ -589,3 +589,4 @@ GetStackInfo (
 
   return EFI_SUCCESS;
 }
+

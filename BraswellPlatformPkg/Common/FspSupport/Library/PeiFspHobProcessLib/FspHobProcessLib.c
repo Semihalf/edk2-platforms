@@ -1,7 +1,7 @@
 /** @file
   Null instance of Platform Sec Lib.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2015, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -270,8 +270,8 @@ FspHobProcessForMemoryResource (
     if ((Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY) ||
         (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_MEMORY_RESERVED)) {
       DEBUG((DEBUG_INFO, "ResourceAttribute: 0x%x\n", Hob.ResourceDescriptor->ResourceAttribute));
-      DEBUG((DEBUG_INFO, "PhysicalStart: 0x%lx\n", Hob.ResourceDescriptor->PhysicalStart));
-      DEBUG((DEBUG_INFO, "ResourceLength: 0x%lx\n", Hob.ResourceDescriptor->ResourceLength));
+      DEBUG((DEBUG_INFO, "PhysicalStart: 0x%x\n", Hob.ResourceDescriptor->PhysicalStart));
+      DEBUG((DEBUG_INFO, "ResourceLength: 0x%x\n", Hob.ResourceDescriptor->ResourceLength));
       DEBUG((DEBUG_INFO, "Owner: %g\n\n", &Hob.ResourceDescriptor->Owner));
     }
 
@@ -334,9 +334,7 @@ FspHobProcessForMemoryResource (
     while ((Hob.Raw = GetNextHob (EFI_HOB_TYPE_RESOURCE_DESCRIPTOR, Hob.Raw)) != NULL) {
 
       if (Hob.ResourceDescriptor->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY
-         && (Hob.ResourceDescriptor->PhysicalStart >= BASE_1MB)
-         && (Hob.ResourceDescriptor->PhysicalStart + Hob.ResourceDescriptor->ResourceLength <= BASE_4GB)
-        ) {
+         && (Hob.ResourceDescriptor->PhysicalStart >= BASE_1MB)) {
         if (PeiMemoryHob.ResourceDescriptor != Hob.ResourceDescriptor) {
           if (Hob.ResourceDescriptor->ResourceLength > CapsuleBufferLength) {
             CapsuleBuffer       = (VOID *) ((UINTN) Hob.ResourceDescriptor->PhysicalStart);
@@ -375,8 +373,7 @@ FspHobProcessForMemoryResource (
   ASSERT_EFI_ERROR (Status);
 
   if (BootMode == BOOT_ON_FLASH_UPDATE && Capsule != NULL) {
-    Status = Capsule->CreateState ((EFI_PEI_SERVICES **)PeiServices, CapsuleBuffer, CapsuleBufferLength);
-    DEBUG((EFI_D_INFO, "Capsule CreateState :%d\n", Status));
+    Capsule->CreateState ((EFI_PEI_SERVICES **)PeiServices, CapsuleBuffer, CapsuleBufferLength);
   }
 
   return EFI_SUCCESS;
@@ -526,3 +523,4 @@ FspHobProcess (
 
   return Status;
 }
+

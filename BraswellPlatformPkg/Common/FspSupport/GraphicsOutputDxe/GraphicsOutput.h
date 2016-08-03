@@ -50,3 +50,4 @@ typedef struct {
 extern EFI_COMPONENT_NAME_PROTOCOL  mGraphicsOutputComponentName;
 extern EFI_COMPONENT_NAME2_PROTOCOL mGraphicsOutputComponentName2;
 #endif
+

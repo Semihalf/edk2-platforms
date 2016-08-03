@@ -146,3 +146,4 @@ PeiGetNextVariableName (
   );
 
 #endif
+

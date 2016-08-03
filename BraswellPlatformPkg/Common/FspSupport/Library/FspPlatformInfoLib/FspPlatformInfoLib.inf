@@ -20,7 +20,7 @@
 ################################################################################
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = BaseFspPlatformInfoLibSample
+  BASE_NAME                      = FspPlatformInfoLib
   FILE_GUID                      = 7CB6D6ED-5012-4e35-A42E-4C6512085A9E
   MODULE_TYPE                    = SEC
   VERSION_STRING                 = 1.0
@@ -40,7 +40,7 @@
 ################################################################################
 
 [Sources]
-  FspPlatformInfoLibSample.c
+  FspPlatformInfoLib.c
   MemoryMappedVariable.c
 
 
@@ -61,6 +61,7 @@
   ChvRefCodePkg/ChvRefCodePkg.dec
   ChvFspBinPkg/ChvFspBinPkg.dec
   SecurityPkg/SecurityPkg.dec
+  BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/IntelSiliconBasic.dec
 
 [LibraryClasses]
   BaseLib

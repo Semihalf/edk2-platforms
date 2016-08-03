@@ -570,3 +570,4 @@ BltVideoToVideo (
 
   return EFI_SUCCESS;
 }
+
