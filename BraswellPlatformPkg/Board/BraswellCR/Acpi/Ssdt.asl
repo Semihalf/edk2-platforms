@@ -17,7 +17,7 @@ DefinitionBlock (
     "Ssdt.aml",
     "SSDT",
     0x02,       // revision.
-                // A Revision field value greater than or equal to 2 signifies that integers
+                // A Revision field value greater than or equal to 2 signifies that integers 
                 // declared within the Definition Block are to be evaluated as 64-bit values
     "INTEL",    // OEM ID (6 byte string)
     "BSW_RC",   // OEM table ID  (8 byte string)
@@ -96,7 +96,7 @@ DefinitionBlock (
   {
     include("Device/Nfc/Nxp1.asl")
   }
-
+  
   Scope(\_SB.PCI0)
   {
     include("Device/Audio/Audio.asl")

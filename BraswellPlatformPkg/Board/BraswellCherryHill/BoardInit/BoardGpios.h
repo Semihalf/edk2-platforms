@@ -54,150 +54,18 @@
 
 #define GPIO_SOC_RUNTIME_SCI_N  0x4850
 
-/// *****************************************************************************************************************************************
-/// *****************************************************************************************************************************************
-/// *****************************************************************************************************************************************
-/// ***************************************************     CHERRYVIEW GPIO CONFIGURATION   *************************************************
-/// *****************************************************************************************************************************************
-/// *****************************************************************************************************************************************
-/// *****************************************************************************************************************************************
-
 #define ENABLE  1
 #define DISABLE 0
 
-// Braswell Cherry Hill platform
+VOID
+SAI_SettingOfGpioFamilies (
+  GPIO_SAI_INIT*    SAI_Conf_Data,
+  UINT32 familySize
+  );
 
-/// Community Configuration
-/// Family Configuration
-/*
-*   GPIO Families configuration in CherryView
-*
-*/
-
-GPIO_SAI_INIT  mBSW_CH_GPIO_SAI_Init_East[] =
-{ CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_access_reg                      ", 0x0  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_wake_reg                        ", 0x4  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_interrupt_reg                   ", 0x8  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_community_reg                   ", 0xC  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_broadcast_reg            ", 0x10 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_reg                      ", 0x14 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_pad_broadcast_reg               ", 0x18 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_4x2_12_0_regs     ", 0x1C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_4x2_12_1_regs     ", 0x20 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_access_reg                     ", 0x100, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_wake_reg                       ", 0x104, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_interrupt_reg                  ", 0x108, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_community_reg                  ", 0x10C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_broadcast_reg           ", 0x110, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_reg                     ", 0x114, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_pad_broadcast_reg              ", 0x118, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_4x2_12_0_regs    ", 0x11c, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_4x2_12_1_regs    ", 0x120, 0x18310, ENABLE),
-};
-
-GPIO_SAI_INIT  mBSW_CH_GPIO_SAI_Init_North[] =
-{ CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_access_reg                          ", 0x0  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_wake_reg                            ", 0x4  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_interrupt_reg                       ", 0x8  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_community_reg                       ", 0xC  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_broadcast_reg                ", 0x10 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_reg                          ", 0x14 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_pad_broadcast_reg                   ", 0x18 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulphsmvfamily_2x4_rcomp_10_0_regs   ", 0x1C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x4_13_0_regs         ", 0x20 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_3x4_12_0_regs         ", 0x24 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulphsmvfamily_2x4_12_0_regs         ", 0x28 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_3x4_13_0_regs         ", 0x2C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_access_reg                         ", 0x100, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_wake_reg                           ", 0x104, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_interrupt_reg                      ", 0x108, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_community_reg                      ", 0x10C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_broadcast_reg               ", 0x110, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_reg                         ", 0x114, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_pad_broadcast_reg                  ", 0x118, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulphsmvfamily_2x4_rcomp_10_0_regs  ", 0x11C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x4_13_0_regs        ", 0x120, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_3x4_12_0_regs        ", 0x124, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulphsmvfamily_2x4_12_0_regs        ", 0x128, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_3x4_13_0_regs        ", 0x12C, 0x18310, ENABLE),
-};
-
-GPIO_SAI_INIT  mBSW_CH_GPIO_SAI_Init_SouthEast[] =
-{ CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_access_reg                              ", 0x0  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_wake_reg                                ", 0x4  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_interrupt_reg                           ", 0x8  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_community_reg                           ", 0xC  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_broadcast_reg                    ", 0x10 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_reg                              ", 0x14 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_pad_broadcast_reg                       ", 0x18 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_2_regs              ", 0x1C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulphsmvfamily_3x3_rcomp_13_0_regs       ", 0x20 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_hshvfamily_2x3_rcomp_7_0_regs           ", 0x24 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_hshvfamily_3x3_rcomp_9_0_regs           ", 0x28 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulphsmvfamily_3x3_10_0_regs             ", 0x2C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_3x3_11_0_regs             ", 0x30 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_access_reg                             ", 0x100, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_wake_reg                               ", 0x104, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_interrupt_reg                          ", 0x108, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_community_reg                          ", 0x10C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_broadcast_reg                   ", 0x110, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_reg                             ", 0x114, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_pad_broadcast_reg                      ", 0x118, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_2_regs             ", 0x11C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulphsmvfamily_3x3_rcomp_13_0_regs      ", 0x120, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_hshvfamily_2x3_rcomp_7_0_regs          ", 0x124, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_hshvfamily_3x3_rcomp_9_0_regs          ", 0x128, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulphsmvfamily_3x3_10_0_regs            ", 0x12C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_3x3_11_0_regs            ", 0x130, 0x18310, ENABLE),
-};
-
-GPIO_SAI_INIT  mBSW_CH_GPIO_SAI_Init_SouthWest[] =
-{ CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_access_reg                      ",0x0  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_wake_reg                        ",0x4  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_interrupt_reg                   ",0x8  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_community_reg                   ",0xC  , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_broadcast_reg            ",0x10 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_family_reg                      ",0x14 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_pad_broadcast_reg               ",0x18 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulphsmvfamily_2x3_8_1_regs      ",0x1C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_6_regs      ",0x20 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_5_regs      ",0x24 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_4_regs      ",0x28 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_3_regs      ",0x2C , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_1_regs      ",0x30 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_read_access_policy_ulpmsmvfamily_2x3_8_0_regs      ",0x34 , 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_access_reg                     ",0x100, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_wake_reg                       ",0x104, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_interrupt_reg                  ",0x108, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_community_reg                  ",0x10C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_broadcast_reg           ",0x110, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_family_reg                     ",0x114, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_pad_broadcast_reg              ",0x118, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulphsmvfamily_2x3_8_1_regs     ",0x11C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_6_regs     ",0x120, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_5_regs     ",0x124, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_4_regs     ",0x128, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_3_regs     ",0x12C, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_1_regs     ",0x130, 0x18310, ENABLE),
-  CHV_GPIO_SAI_INIT(L"gpio_write_access_policy_ulpmsmvfamily_2x3_8_0_regs     ",0x134, 0x18310, ENABLE),
-};
-
-
-CHV_GPIO_PAD_INIT  mBSW_CH_GpioInitData_SetupBasedConfig[] =
-//              Group Pin#: PAD Name           Mode Select    Mode#   GPIO Config   GPIO TX State      GPIO Light       INT Type         INT Select    Term H/L   Open Drain   Current Source    Mask/Un-Mask        Glitch Cfg           InvertRX_TX        WAKE Cap    Wake_Mask_Bit    GPE        MMIO Addr     Community             Remarks
-{
-  CHV_GPIO_PAD_CONF  (L"N53: GP_CAMERASB01   ",    GPIO    ,    M1   ,       GPO   ,         LOW   ,     NA         ,       NA          ,     NA      ,    NA    ,        NA  ,         NA     ,       NA        ,        NA          ,        NA         ,      NA       ,    NA    ,    NA    ,    0x5040    ,    NORTH    )  ,  //   FLASH_RESET_N
-//CHV_GPIO_PAD_CONF  (L"N53: GP_CAMERASB01   ",    GPIO    ,    M1   ,       GPO   ,         HIGH  ,     NA         ,       NA          ,     NA      ,    NA    ,        NA  ,         NA     ,       NA        ,        NA          ,        NA         ,      NA       ,    NA    ,    NA    ,    0x5040    ,    NORTH    )  ,  //   IMAGING_DFU : USB3 CAM
-//CHV_GPIO_PAD_CONF  (L"N53: GP_CAMERASB01   ",    GPIO    ,    M1   ,       GPO   ,         LOW   ,     NA         ,       NA          ,     NA      ,    NA    ,        NA  ,         NA     ,       NA        ,        NA          ,        NA         ,      NA       ,    NA    ,    NA    ,    0x5040    ,    NORTH    )  ,  //   IMAGING_DFU : MIPI CAM
-};
-
-CHV_GPIO_PAD_INIT  mBSW_CH_GpioInitData_N[] =
-//                         PAD Name              Mode Select    Mode#  GPIO Config  GPIO TX State   GPIO Light       INT Type          INT Select     Term H/L          Open Drain    Current Source        Mask/Un-Mask        Glitch Cfg            InvertRX_TX             WAKE Cap    Wake_Mask_Bit    GPE    MMIO Addr    Community        Remarks
-{
-  CHV_GPIO_PAD_CONF  (L"N25: GPIO_SUS6       ",    GPIO    ,    M1   ,       GPI   ,         NA    ,     NA         ,   Trig_Edge_Low   ,     Line9   ,    NA    ,        NA  ,         NA     ,    NonMaskable  ,   En_Edge_RX_Data  ,   No_Inversion    ,      NA       ,    19    ,    SCI   ,    0x4850    ,    NORTH    )  ,  //   XDP_HLT_BOOT
-  CHV_GPIO_PAD_CONF  (L"N18: GPIO_SUS7       ",    GPIO    ,    M1   ,       GPI   ,         NA    ,     NA         ,       NA          ,     NA      ,    NA    ,        NA  ,         NA     ,       NA        ,        NA          ,   No_Inversion    ,      NA       ,    12    ,    SMI   ,    0x4818    ,    NORTH    )  ,  //
-  CHV_GPIO_PAD_CONF  (L"N23: SEC_GPIO_SUS8   ",    GPIO    ,    M1   ,       GPI   ,         NA    ,     NA         ,       NA          ,     NA      ,    NA    ,        NA  ,         NA     ,       NA        ,        NA          ,   No_Inversion    ,      NA       ,    17    ,    NA    ,    0x4840    ,    NORTH    )  ,  //
-  CHV_GPIO_PAD_CONF  (L"N27: SEC_GPIO_SUS9   ",    GPIO    ,    M1   ,       GPI   ,         LOW   ,     NA         ,   Trig_Level      ,     Line15  ,    NA    ,        NA  ,         NA     ,    NonMaskable  ,   En_RX_Data       ,   Inv_RX_Data     ,      NA       ,    21    ,    SCI   ,    0x4860    ,    NORTH    )  ,  //   GPIO_THERM_ALERT_N
-};
-
+VOID
+CherryHillBoardGpioConfigure (
+  VOID
+  );
 #endif
+

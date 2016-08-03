@@ -258,3 +258,4 @@ InstallAcpiBraswellRC (
 
   return EFI_SUCCESS;
 }
+

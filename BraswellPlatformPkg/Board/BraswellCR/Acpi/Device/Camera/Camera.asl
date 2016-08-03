@@ -52,13 +52,13 @@
 
                 Method (_CRS, 0, NotSerialized)        // _CRS: Current Resource Settings
                 {
-                    Name (SBUF, ResourceTemplate ()    // I2C Resource define
+                    Name (SBUF, ResourceTemplate ()    // I2C Resource define		
                     {
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
-                                0x0035               // N"53" DOVDD18
+                                0x0035		       // N"53" DOVDD18
                             }
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
@@ -72,8 +72,8 @@
                             {   // Pin list
                                 0x0034                 // N"52" RESET
                             }
-
-                        GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+    
+						GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
@@ -175,33 +175,33 @@
                     {
                         Return ("BSW")
                     }
-
+                    
                     // Dsm2PlatformSubStr
                     If(LEqual(Arg0, ToUUID("647A6CA2-8B29-49AC-8806-D58B3D2D3EF5")))
                     {
                         Return ("FFD")
                     }
-
+                    
                     // Dsm2SiliconStr
                     If(LEqual(Arg0, ToUUID("A6E922A1-F7B3-4399-B56A-406AE416843B")))
                     {
                         Return ("BSW")
                     }
-
+                    
                     // Dsm2PlatformStr
                     If(LEqual(Arg0, ToUUID("5960313B-0AB0-4940-8840-2CAFA420C015")))
                     {
                         Return ("INTEL")
                     }
-
+                    
                     // Dsm2Info
                     If(LEqual(Arg0, ToUUID("F486D39F-D657-484B-84A6-42A565712B92")))
                     {
                         Return (Buffer (32)          // BSW CR supports only single lane OV2724 sensor module
                         {
                             0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x07, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                            0x07, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                         })
                     }
@@ -234,21 +234,21 @@
                             Return (0x04)
                         }
 
-                        If (LEqual (Arg2, 0x02))
+                        If (LEqual (Arg2, 0x02))	
                         {
                             Return (0x01003507)        // 1.8V
                         }
-                        If (LEqual (Arg2, 0x03))
+                        If (LEqual (Arg2, 0x03))	
                         {
                             Return (0x01002E08)        // 2.8V
                         }
 
-                        If (LEqual (Arg2, 0x04))
+                        If (LEqual (Arg2, 0x04))	
                         {
                             Return (0x01003400)        // RESET
                         }
 
-                        If (LEqual (Arg2, 0x05))
+                        If (LEqual (Arg2, 0x05))	
                         {
                             Return (0x01003001)        // 1.2V
                         }

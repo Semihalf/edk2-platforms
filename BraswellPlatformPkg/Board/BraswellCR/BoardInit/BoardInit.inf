@@ -25,6 +25,7 @@
 
 [Sources]
   BoardInit.c
+  BoardGpios.c
 
 [LibraryClasses]
   PeiServicesLib
@@ -51,6 +52,12 @@
   ## SOMETIMES_PRODUCES
   gEfiEdkIIPlatformTokenSpaceGuid.PcdOemMemeoryDimmType
 
+  ## SOMETIMES_CONSUMES
+  gEfiEdkIIPlatformTokenSpaceGuid.PcdPlatformInfo
+
+  ## SOMETIMES_PRODUCES
+  gEfiEdkIIPlatformTokenSpaceGuid.PcdGpioInitFunc
+
 [Guids]
   ## SOMETIMES_CONSUMES
   gBswCrImageGuid
@@ -62,6 +69,4 @@
   ## SOMETIMES_PRODUCES
   ## SOMETIMES_CONSUMES
   gBoardDetectedPpiGuid
-
-
 

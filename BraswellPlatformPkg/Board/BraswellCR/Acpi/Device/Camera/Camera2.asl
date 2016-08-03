@@ -311,7 +311,7 @@
       Return(0x00)
     }
   } // End CAM2
-
+  
     //
     // Device STRA
     //
@@ -455,25 +455,25 @@
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
-                                0x0032               // GPIO N"50"
+                                0x0032		       // GPIO N"50"
                             }
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
-                                0x0033               // GPIO dvdd12 camerasb03 N"51"
+                                0x0033		       // GPIO dvdd12 camerasb03 N"51"
                             }
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
-                                0x0038               // GPIO dvdd18 camerasb04 N"56"
+                                0x0038		       // GPIO dvdd18 camerasb04 N"56"
                             }
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
                             )
                             {   // Pin list
-                                0x002D               // GPIO avdd28 camerasb08 N"45"
+                                0x002D		       // GPIO avdd28 camerasb08 N"45"
                             }
                         GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
                             "\\_SB.GPO1", 0x00, ResourceConsumer, ,
@@ -585,33 +585,33 @@
                     {
                         Return ("BSW")
                     }
-
+                    
                     //Dsm2PlatformSubStr
                     If(LEqual(Arg0, ToUUID("647A6CA2-8B29-49AC-8806-D58B3D2D3EF5")))
                     {
                         Return ("FFD")
                     }
-
+                    
                     //Dsm2SiliconStr
                     If(LEqual(Arg0, ToUUID("A6E922A1-F7B3-4399-B56A-406AE416843B")))
                     {
                         Return ("BSW")
                     }
-
+                    
                     //Dsm2PlatformStr
                     If(LEqual(Arg0, ToUUID("5960313B-0AB0-4940-8840-2CAFA420C015")))
                     {
                         Return ("INTEL")
                     }
-
+                    
                     //Dsm2Info
                     If(LEqual(Arg0, ToUUID("F486D39F-D657-484B-84A6-42A565712B92")))
                     {
                         Return (Buffer (32)
                         {
                             0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x02,
-                            0x07, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                            0x07, 0x01, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 
+                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                         })
                     }
@@ -715,8 +715,8 @@
                                 0x002F
                             }
 
-            GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
-                            "\\_SB.GPO1", 0x00, ResourceConsumer, ,
+			GpioIo (Exclusive, PullDefault, 0x0000, 0x0000, IoRestrictionOutputOnly,
+                            "\\_SB.GPO1", 0x00, ResourceConsumer, ,    
                             )
                             {   // Pin list
                                 0x0037   //for camera led camerasb11

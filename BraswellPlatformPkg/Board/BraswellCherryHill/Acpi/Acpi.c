@@ -259,3 +259,4 @@ InstallAcpiBraswellCherryHill (
 
   return EFI_SUCCESS;
 }
+
