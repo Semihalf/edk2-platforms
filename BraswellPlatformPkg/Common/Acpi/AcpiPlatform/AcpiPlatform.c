@@ -1129,3 +1129,4 @@ EnableAcpiCallback (
     IoWrite32 (AcpiBase + R_PCH_ACPI_GPE0a_EN, Gpe0aEn);
   }
 }
+

@@ -35,6 +35,7 @@
   ChvRefCodePkg/ChvRefCodePkg.dec
   IntelFrameworkModulePkg/IntelFrameworkModulePkg.dec
   SecurityPkg/SecurityPkg.dec
+  BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/IntelSiliconBasic.dec
 
 [LibraryClasses]
   HobLib

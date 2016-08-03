@@ -98,7 +98,7 @@ EFI_GLOBAL_NVS_AREA_PROTOCOL  mGlobalNvsArea;
 typedef struct {
   UINT32 PlatformId;
   UINT8  IoApicEnable;
-  UINT8  NMEN;        // Node Manager Enable (aka NPTM)
+  UINT8  NMEN;    // Node Manager Enable (aka NPTM)
   UINT8  TpmEnable      :1;
   UINT8  CStateEnable   :1;
   UINT8  OSC2Report     :1;
@@ -300,3 +300,4 @@ EnableAcpiCallback (
   );
 
 #endif
+

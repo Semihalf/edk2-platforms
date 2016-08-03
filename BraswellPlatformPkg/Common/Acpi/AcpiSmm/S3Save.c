@@ -400,3 +400,4 @@ SaveRuntimeScriptTable (
 
   return EFI_SUCCESS;
 }
+

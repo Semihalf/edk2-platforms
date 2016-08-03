@@ -19,7 +19,7 @@
 
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = PlatformSmm
+  BASE_NAME                      = AcpiSmm
   FILE_GUID                      = 88802B98-ADFE-4414-A695-FB35CA8D11F2
   MODULE_TYPE                    = DXE_SMM_DRIVER
   VERSION_STRING                 = 1.0
