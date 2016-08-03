@@ -221,9 +221,7 @@ if %UpdateSEC% EQU 1 (
   echo ------------------------------
   echo.
   echo   Stitching with SEC Firmware...
-  pushd SEC
-  copy /b/y ..\IFWIHeader\IFWI_HEADER.bin+.\BSW\%SEC_Version%\SEC_Region.bin+.\BSW\%SEC_Version%\Vacant.bin+..\!BIOS_Rom! ..\%BIOS_ID%.bin
-  popd
+  copy /b/y %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\IFWIHeader\IFWI_HEADER.bin+%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\SEC\BSW\%SEC_Version%\SEC_Region.bin+%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\SEC\BSW\%SEC_Version%\Vacant.bin+%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\!BIOS_Rom! %WORKSPACE%\Build\%BIOS_ID%.bin
   if !ERRORLEVEL! NEQ 0 (
     echo. & echo  -- Error during Sec_Stitching ^^!
     goto ScriptFail
@@ -291,3 +289,4 @@ echo.
 REM pause
 exit /b %exitCode%
 EndLocal
+
