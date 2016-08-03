@@ -1,6 +1,6 @@
 ## @file
 #  Assembly code that supports IA32 CPU architectural protocol.
-#
+#                                                                            
 #  Copyright (c) 1999 - 2015, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials

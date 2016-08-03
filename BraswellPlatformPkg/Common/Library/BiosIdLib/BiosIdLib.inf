@@ -50,3 +50,4 @@
 [Depex]
   gEfiLoadedImageProtocolGuid AND
   gEfiFirmwareVolume2ProtocolGuid
+

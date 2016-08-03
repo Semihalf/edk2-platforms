@@ -1,7 +1,7 @@
 /** @file
   This file include all platform action which can be customized by IBV/OEM.
 
-  Copyright (c) 2004 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004 - 2015, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -1888,6 +1888,10 @@ FULL_CONFIGURATION:
     // Chenyunh[TODO]: This is Workgroud to show the fs for uSDcard,
     // Need to root cause this issue.
     //
+    DEBUG ((DEBUG_ERROR, "Start to reconnect all driver.\n"));
+    BdsLibDisconnectAllEfi();
+    BdsLibConnectAll ();
+    DEBUG ((DEBUG_ERROR, "End to reconnect all driver.\n"));
 
     //
     // Perform some platform specific connect sequence
@@ -1943,11 +1947,11 @@ FULL_CONFIGURATION:
     //
     PlatformBdsEnterFrontPageWithHotKey (Timeout, FALSE);
 
-    //
-    // Give one chance to enter the setup if we
-    // select Gummiboot "Reboot Into Firmware Interface"
-    //
-    BootIntoFirmwareInterface();
+  //
+  // Give one chance to enter the setup if we
+  // select Gummiboot "Reboot Into Firmware Interface"
+  //
+  BootIntoFirmwareInterface();
 
     //
     // In default boot mode, always find all boot
@@ -2391,8 +2395,8 @@ ShowProgressHotKey (
   //
   if (TimeoutRemain == 0) {
     if (DebugAssertEnabled())
-    {
-    }
+  {
+  }
     else
     {
     SerialPortWrite ((UINT8 *)"\r\n", 2);
@@ -2572,7 +2576,7 @@ PlatformBdsEnterFrontPageWithHotKey (
   // Install BM HiiPackages.
   // Keep BootMaint HiiPackage, so that it can be covered by global setting.
   //
-    InitBMPackage ();
+  InitBMPackage ();
   do {
 
     BdsSetConsoleMode (TRUE);
@@ -2635,7 +2639,7 @@ PlatformBdsEnterFrontPageWithHotKey (
 
     case FRONT_PAGE_KEY_BOOT_MANAGER:
       //
-      // Remove the installed BootMaint HiiPackages when exit.
+    // Remove the installed BootMaint HiiPackages when exit.
       //
       FreeBMPackage ();
 
@@ -2644,7 +2648,7 @@ PlatformBdsEnterFrontPageWithHotKey (
       //
       CallBootManager ();
 
-      //
+    //
       // Reinstall BootMaint HiiPackages after exiting from Boot Manager.
       //
       InitBMPackage ();
@@ -2925,3 +2929,4 @@ PlatformBdsInitHotKeyEvent (
                   );
   ASSERT_EFI_ERROR (Status);
 }
+

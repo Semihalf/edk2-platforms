@@ -18,7 +18,7 @@
 STATIC
 EFI_STATUS
 SmmSingleSegmentPciAccess (
-  IN EFI_SMM_CPU_IO2_PROTOCOL     *CpuIo,
+  IN EFI_SMM_CPU_IO2_PROTOCOL   *CpuIo,
   IN BOOLEAN                     IsWrite,
   IN SMM_PCI_IO_WIDTH            Width,
   IN SMM_PCI_IO_ADDRESS          *Address,
@@ -44,7 +44,7 @@ SmmPciCfgRead (
   IN OUT VOID               *Buffer
   )
 {
-  EFI_SMM_CPU_IO2_PROTOCOL      *SmmCpuIo;
+  EFI_SMM_CPU_IO2_PROTOCOL    *SmmCpuIo;
 
   ASSERT (mSmst);
 
@@ -72,7 +72,7 @@ SmmPciCfgWrite (
   IN OUT VOID               *Buffer
   )
 {
-  EFI_SMM_CPU_IO2_PROTOCOL      *SmmCpuIo;
+  EFI_SMM_CPU_IO2_PROTOCOL    *SmmCpuIo;
 
   ASSERT (mSmst);
 
@@ -160,3 +160,4 @@ SmmSingleSegmentPciAccess (
 
   return EFI_SUCCESS;
 }
+

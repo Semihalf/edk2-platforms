@@ -46,3 +46,4 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseMmio
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
+

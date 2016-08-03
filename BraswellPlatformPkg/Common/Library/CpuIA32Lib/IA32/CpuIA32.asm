@@ -184,9 +184,9 @@ EfiCpuidExt PROC C PUBLIC USES ebx edi esi
     cpuid
     mov    edi, dword ptr [esp + 38h] ; DWORD PTR Regs
 
-    mov    dword ptr [edi], eax       ; Reg->RegEax
-    mov    dword ptr [edi + 4], ebx       ; Reg->RegEbx
-    mov    dword ptr [edi + 8], ecx       ; Reg->RegEcx
+    mov    dword ptr [edi], eax   	; Reg->RegEax
+    mov    dword ptr [edi + 4], ebx   	; Reg->RegEbx
+    mov    dword ptr [edi + 8], ecx   	; Reg->RegEcx
     mov    dword ptr [edi + 0Ch], edx   ; Reg->RegEdx
 
     popad

@@ -172,3 +172,4 @@ EfiCpuidExt (
     popad
   }
 }
+

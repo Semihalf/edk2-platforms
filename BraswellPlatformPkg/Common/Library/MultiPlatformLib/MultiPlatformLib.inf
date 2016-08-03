@@ -60,3 +60,4 @@
 
   gEfiEdkIIPlatformTokenSpaceGuid.PcdPlatformInfo
   gEfiEdkIIPlatformTokenSpaceGuid.PcdGpioInitFunc
+

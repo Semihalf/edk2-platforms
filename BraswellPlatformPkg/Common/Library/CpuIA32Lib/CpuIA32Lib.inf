@@ -37,3 +37,4 @@
 [Packages]
   MdePkg/MdePkg.dec
   BraswellPlatformPkg/BraswellPlatformPkg.dec
+

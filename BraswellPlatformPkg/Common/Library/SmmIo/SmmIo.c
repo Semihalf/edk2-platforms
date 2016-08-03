@@ -353,3 +353,4 @@ SmmMemAnd32 (
 
   return ;
 }
+

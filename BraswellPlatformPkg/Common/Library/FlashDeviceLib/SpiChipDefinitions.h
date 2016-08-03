@@ -446,22 +446,22 @@ SPI_INIT_TABLE  mInitTable[] = {
   FLASH_SIZE
   },
   {
-  SF_VENDOR_ID_MACRONIX,      // VendorId
-  SF_DEVICE_ID0_MX25UXX,      // DeviceId 0
+  SF_VENDOR_ID_MACRONIX,    // VendorId
+  SF_DEVICE_ID0_MX25UXX,    // DeviceId 0
   SF_DEVICE_ID1_MX25U6435F,   // DeviceId 1
   {
-    SF_INST_WREN,               // Prefix Opcode 0: Write Enable
-    SF_INST_EWSR              // Prefix Opcode 1:  Write Enable (this part doesn't support EWSR)
+    SF_INST_WREN,           // Prefix Opcode 0: Write Enable
+    SF_INST_EWSR        // Prefix Opcode 1:  Write Enable (this part doesn't support EWSR)
   },
   {
-    {EnumSpiOpcodeReadNoAddr,     SF_INST_JEDEC_READ_ID,    EnumSpiCycle50MHz, EnumSpiOperationJedecId        },        // Opcode 0: Read ID
-    {EnumSpiOpcodeRead,            SF_INST_READ,            EnumSpiCycle33MHz, EnumSpiOperationReadData      },      // Opcode 1: Read
-    {EnumSpiOpcodeReadNoAddr,     SF_INST_RDSR,            EnumSpiCycle50MHz, EnumSpiOperationReadStatus     },      // Opcode 2: Read Status Register
-    {EnumSpiOpcodeRead,            SF_INST_SFDP,            EnumSpiCycle50MHz, EnumSpiOperationDiscoveryParameters},    // Opcode 3: Serial Flash Discovery Parameters
-    {EnumSpiOpcodeWrite,        SF_INST_SERASE,         EnumSpiCycle50MHz, EnumSpiOperationErase_4K_Byte  },      // Opcode 4: Sector Erase (4KB)
-    {EnumSpiOpcodeWrite,        SF_INST_64KB_ERASE,     EnumSpiCycle50MHz, EnumSpiOperationErase_64K_Byte  },       // Opcode 5: Block Erase (64KB
-    {EnumSpiOpcodeWrite,        SF_INST_PROG,            EnumSpiCycle50MHz, EnumSpiOperationProgramData_1_Byte},     // Opcode 6: Byte Program
-    {EnumSpiOpcodeWriteNoAddr,    SF_INST_WRSR,            EnumSpiCycle50MHz, EnumSpiOperationWriteStatus      },      // Opcode 7: Write Status Register
+    {EnumSpiOpcodeReadNoAddr,   SF_INST_JEDEC_READ_ID,  EnumSpiCycle50MHz, EnumSpiOperationJedecId    },    // Opcode 0: Read ID
+    {EnumSpiOpcodeRead,      SF_INST_READ,      EnumSpiCycle33MHz, EnumSpiOperationReadData    },    // Opcode 1: Read
+    {EnumSpiOpcodeReadNoAddr,   SF_INST_RDSR,      EnumSpiCycle50MHz, EnumSpiOperationReadStatus   },    // Opcode 2: Read Status Register
+    {EnumSpiOpcodeRead,      SF_INST_SFDP,      EnumSpiCycle50MHz, EnumSpiOperationDiscoveryParameters},  // Opcode 3: Serial Flash Discovery Parameters
+    {EnumSpiOpcodeWrite,    SF_INST_SERASE,     EnumSpiCycle50MHz, EnumSpiOperationErase_4K_Byte  },    // Opcode 4: Sector Erase (4KB)
+    {EnumSpiOpcodeWrite,    SF_INST_64KB_ERASE,   EnumSpiCycle50MHz, EnumSpiOperationErase_64K_Byte  },     // Opcode 5: Block Erase (64KB
+    {EnumSpiOpcodeWrite,    SF_INST_PROG,      EnumSpiCycle50MHz, EnumSpiOperationProgramData_1_Byte},   // Opcode 6: Byte Program
+    {EnumSpiOpcodeWriteNoAddr,  SF_INST_WRSR,      EnumSpiCycle50MHz, EnumSpiOperationWriteStatus    },    // Opcode 7: Write Status Register
   },
   //
   // The offset of the start of the BIOS image in flash. This value is platform specific
@@ -838,3 +838,4 @@ SPI_INIT_TABLE  mInitTable[] = {
   FLASH_SIZE
   }
 };
+

@@ -33,3 +33,4 @@
 #define B_PCH_ACPI_APM_STS      0x00000020
 
 #endif
+

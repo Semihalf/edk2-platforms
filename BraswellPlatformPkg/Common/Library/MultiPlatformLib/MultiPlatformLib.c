@@ -113,3 +113,4 @@ MultiPlatformInfoInit (
 
   return EFI_SUCCESS;
 }
+

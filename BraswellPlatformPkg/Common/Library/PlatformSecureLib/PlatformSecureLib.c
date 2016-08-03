@@ -45,3 +45,4 @@ UserPhysicalPresent (
 
   return (SystemConfiguration->SecureBootUserPhysicalPresent == 1);
 }
+

@@ -49,3 +49,4 @@
 [Pcd.common]
   gEfiPchTokenSpaceGuid.PcdPchAcpiIoPortBaseAddress     # CONSUMES
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress     # CONSUMES
+

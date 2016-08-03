@@ -490,3 +490,4 @@ extern UINT32     mSetupHorizontalResolution   ;
 extern UINT32     mSetupVerticalResolution     ;
 extern EFI_STATUS BdsSetConsoleMode (BOOLEAN);
 #endif // _BDS_PLATFORM_H
+

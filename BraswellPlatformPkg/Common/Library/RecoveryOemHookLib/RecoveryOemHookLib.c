@@ -119,3 +119,4 @@ OemRecoverySecurityCheck (
 {
   return TRUE;
 }
+

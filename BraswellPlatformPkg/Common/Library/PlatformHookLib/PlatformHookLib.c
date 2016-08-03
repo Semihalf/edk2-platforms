@@ -169,16 +169,16 @@ EnableLpssHsUart (
   MmioWrite32 ((UINTN) (IO_BASE_ADDRESS + 0x04828), (UINT32) 0x00910300);
 
   PlatformPchMsgBusAndThenOrEx32(
-        0xA0,
-        0x258,
-        0xFFFFFFFF,
-        (BIT27),
-        0x06,
-        0x07,
-        0x00,
-        0x00,
-        0x00
-        );
+    0xA0,
+    0x258,
+    0xFFFFFFFF,
+    (BIT27),
+    0x06,
+    0x07,
+    0x00,
+    0x00,
+    0x00
+    );
 
   PciLibAddress = PCI_LIB_ADDRESS (0, 30, 3, 0);
   PciWrite32 ((PciLibAddress + PCI_BASE_ADDRESSREG_OFFSET), (UINT32)PcdGet64 (PcdSerialRegisterBase));
@@ -187,30 +187,30 @@ EnableLpssHsUart (
   PciOr16 (PciLibAddress + PCI_COMMAND_OFFSET, (EFI_PCI_COMMAND_BUS_MASTER | EFI_PCI_COMMAND_MEMORY_SPACE));
 
   Buffer32 = (UINT32) (B_PCH_LPSS_HSUART_MEM_PCP_CLKUPDATE |
-                      (0x3D09 << 16) |
-                      (0x1B00 << 1) |
-                      B_PCH_LPSS_HSUART_MEM_PCP_CLKEN);
+            (0x3D09 << 16) |
+            (0x1B00 << 1) |
+            B_PCH_LPSS_HSUART_MEM_PCP_CLKEN);
   MmioWrite32 (
-    (UINTN) (LpssMmioBase0 + R_PCH_LPSS_HSUART_MEM_PCP),
-    Buffer32
+  (UINTN) (LpssMmioBase0 + R_PCH_LPSS_HSUART_MEM_PCP),
+  Buffer32
   );
 
   Buffer32 = (UINT32) (B_PCH_LPSS_HSUART_MEM_RESETS_FUNC | B_PCH_LPSS_HSUART_MEM_RESETS_APB);
   MmioWrite32 (
-    (UINTN) (LpssMmioBase0 + R_PCH_LPSS_HSUART_MEM_RESETS),
-    Buffer32
+  (UINTN) (LpssMmioBase0 + R_PCH_LPSS_HSUART_MEM_RESETS),
+  Buffer32
   );
 
   PlatformPchMsgBusAndThenOrEx32 (
-      0xA0,
-      0x258,
-      (UINT32) ~((BIT19 | BIT18)),
-      (BIT18 | BIT1),
-      0x06,
-      0x07,
-      0x00,
+    0xA0,
+    0x258,
+    (UINT32) ~((BIT19 | BIT18)),
+    (BIT18 | BIT1),
+    0x06,
+    0x07,
     0x00,
-      0x00
+    0x00,
+    0x00
   );
 
   return;
@@ -237,7 +237,7 @@ PlatformHookSerialPortInitialize (
     return RETURN_SUCCESS;
   }
 
-    if ((BOOLEAN)PcdGetBool (PcdSerialUseMmio) == FALSE) {
+  if ((BOOLEAN)PcdGetBool (PcdSerialUseMmio) == FALSE) {
 
     EnableInternalUart ();
   } else {

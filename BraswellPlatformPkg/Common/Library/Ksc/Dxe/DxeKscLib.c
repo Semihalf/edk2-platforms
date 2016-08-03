@@ -182,3 +182,4 @@ ReceiveKscData (
 
   return EFI_SUCCESS;
 }
+
