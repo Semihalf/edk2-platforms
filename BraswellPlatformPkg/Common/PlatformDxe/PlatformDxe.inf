@@ -29,18 +29,22 @@
   ENTRY_POINT                    = PlatformDxeEntryPoint
 
 [sources.common]
-  Platform.c
-  ChvPolicyInitDxe.c
-  ChvPolicyInitDxe.h
-  PchPolicyInitDxe.c
-  PchPolicyInitDxe.h
-  PolicyInitDxe.c
-  PolicyInitDxe.h
-  PlatformGopPolicy.c
-  PpmPolicy.c
-  PpmPolicy.h
-  SaveMemoryConfig.c
-  LpssSccS3Save.c
+  PlatformDxe.h
+  PlatformDxe.c
+  PlatformHookPoints.c
+  Policy/ChvPolicyInitDxe.c
+  Policy/ChvPolicyInitDxe.h
+  Policy/PchPolicyInitDxe.c
+  Policy/PchPolicyInitDxe.h
+  Policy/PolicyInitDxe.c
+  Policy/PolicyInitDxe.h
+  Policy/PlatformGopPolicy.c
+  Policy/PpmPolicy.c
+  Policy/PpmPolicy.h
+  S3/SaveMemoryConfig.c
+  S3/LpssSccS3Save.c
+  Misc/PlatformMiscInit.c
+  Misc/PlatformRtc.c
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -83,6 +87,7 @@
   gEfiChvVariableGuid
   ## SOMETIMES_CONSUMES
   gFspNonVolatileStorageHobGuid
+  gEfiEventExitBootServicesGuid
 
 [Protocols]
   gEfiPciRootBridgeIoProtocolGuid       ## CONSUMES
@@ -90,6 +95,8 @@
   gEfiVariableWriteArchProtocolGuid     ## CONSUMES
   gEfiCpuIo2ProtocolGuid                ## CONSUMES
   gExitPmAuthProtocolGuid               ## SOMETIMES_CONSUMES
+  gEfiPciEnumerationCompleteProtocolGuid
+  gEfiDxeSmmReadyToLockProtocolGuid
 
   ## PRODUCES
   gEfiPlatformCpuProtocolGuid

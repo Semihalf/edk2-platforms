@@ -87,60 +87,60 @@ GetVbtData (
   }
 
   if (*((UINT32 *)PcdGetPtr (PcdCustomizedVbtFile)) == SIGNATURE_32 ('$', 'V', 'B', 'T')) {
-      // It is a valid VBT Table
-      *VbtAddress = (EFI_PHYSICAL_ADDRESS) (UINTN)PcdGetPtr (PcdCustomizedVbtFile);
+    // It is a valid VBT Table
+    *VbtAddress = (EFI_PHYSICAL_ADDRESS) (UINTN)PcdGetPtr (PcdCustomizedVbtFile);
 
 
-      *VbtSize = *((UINT16 *)((UINTN)PcdGetPtr (PcdCustomizedVbtFile) + 24));  // VBT size
+    *VbtSize = *((UINT16 *)((UINTN)PcdGetPtr (PcdCustomizedVbtFile) + 24));  // VBT size
 
-      Status = EFI_SUCCESS;
+    Status = EFI_SUCCESS;
   } else {
 
-      CopyMem (&BmpImageGuid, PcdGetPtr (PcdBmpImageGuid), sizeof(EFI_GUID));
-      DEBUG ((EFI_D_INFO, "[GopPolicy] BmpImageGuid %g\n",&BmpImageGuid));
-      Status = gBS->LocateHandleBuffer (
-                      ByProtocol,
-                      &gEfiFirmwareVolume2ProtocolGuid,
-                      NULL,
-                      &FvProtocolCount,
-                      &FvHandles
-                      );
+    CopyMem (&BmpImageGuid, PcdGetPtr (PcdBmpImageGuid), sizeof(EFI_GUID));
+    DEBUG ((EFI_D_INFO, "[GopPolicy] BmpImageGuid %g\n",&BmpImageGuid));
+    Status = gBS->LocateHandleBuffer (
+                    ByProtocol,
+                    &gEfiFirmwareVolume2ProtocolGuid,
+                    NULL,
+                    &FvProtocolCount,
+                    &FvHandles
+                    );
 
-      if (!EFI_ERROR (Status)) {
-        for (Index = 0; Index < FvProtocolCount; Index++) {
-          Status = gBS->HandleProtocol (
-                          FvHandles[Index],
-                          &gEfiFirmwareVolume2ProtocolGuid,
-                          (VOID **) &Fv
-                          );
-          VbtBufferSize = 0;
-          Status = Fv->ReadSection (
-                         Fv,
-                         &BmpImageGuid,
-                         EFI_SECTION_RAW,
-                         0,
-                         &Buffer,
-                         &VbtBufferSize,
-                         &AuthenticationStatus
-                         );
+    if (!EFI_ERROR (Status)) {
+      for (Index = 0; Index < FvProtocolCount; Index++) {
+        Status = gBS->HandleProtocol (
+                        FvHandles[Index],
+                        &gEfiFirmwareVolume2ProtocolGuid,
+                        (VOID **) &Fv
+                        );
+        VbtBufferSize = 0;
+        Status = Fv->ReadSection (
+                       Fv,
+                       &BmpImageGuid,
+                       EFI_SECTION_RAW,
+                       0,
+                       &Buffer,
+                       &VbtBufferSize,
+                       &AuthenticationStatus
+                       );
 
-          if (!EFI_ERROR (Status)) {
-            *VbtAddress = (EFI_PHYSICAL_ADDRESS)Buffer;
-            DEBUG ((EFI_D_INFO, "[GopPolicy] VbtAddress %x\n",VbtAddress));
-            *VbtSize = (UINT32) VbtBufferSize;
-            Status = EFI_SUCCESS;
-            break;
-          }
+        if (!EFI_ERROR (Status)) {
+          *VbtAddress = (EFI_PHYSICAL_ADDRESS)Buffer;
+          DEBUG ((EFI_D_INFO, "[GopPolicy] VbtAddress %x\n",VbtAddress));
+          *VbtSize = (UINT32) VbtBufferSize;
+          Status = EFI_SUCCESS;
+          break;
         }
-      } else {
-        Status = EFI_NOT_FOUND;
       }
-
-      if (FvHandles != NULL) {
-        gBS->FreePool (FvHandles);
-        FvHandles = NULL;
-      }
+    } else {
+      Status = EFI_NOT_FOUND;
     }
+
+    if (FvHandles != NULL) {
+      gBS->FreePool (FvHandles);
+      FvHandles = NULL;
+    }
+  }
 
   return Status;
 }
@@ -191,3 +191,4 @@ PlatformGOPPolicyEntryPoint (
 
   return Status;
 }
+

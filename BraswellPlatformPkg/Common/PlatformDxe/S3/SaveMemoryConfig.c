@@ -131,3 +131,4 @@ SaveMemoryConfigEntryPoint (
   //
   return RETURN_LOAD_ERROR;
 }
+

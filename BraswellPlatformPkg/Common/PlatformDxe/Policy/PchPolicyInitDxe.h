@@ -46,3 +46,4 @@ PchPlatformPolicyInit (
   );
 
 #endif
+

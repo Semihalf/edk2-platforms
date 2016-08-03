@@ -325,3 +325,4 @@ PchPlatformPolicyInit (
   return Status;
 
 }
+

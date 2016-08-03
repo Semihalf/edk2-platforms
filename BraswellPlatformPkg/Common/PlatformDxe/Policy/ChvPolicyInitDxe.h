@@ -20,7 +20,7 @@
 // CHV Platform Policy init
 //
 /**
-  @todo    add desceription
+  @todo  add desceription
 
 **/
 EFI_STATUS
@@ -33,3 +33,4 @@ ChvPlatformPolicyInit (
   );
 
 #endif
+

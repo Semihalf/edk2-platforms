@@ -41,24 +41,7 @@ PpmPolicyEntry(
   IN EFI_SYSTEM_TABLE *SystemTable
   );
 
-/**
-  Initialize DXE Platform Policy.
 
-  @param[in] ImageHandle          Image handle of this driver.
-  @param[in] SystemTable          Global system service table.
-
-  @retval EFI_SUCCESS             Initialization complete.
-  @retval EFI_UNSUPPORTED         The chipset is unsupported by this driver.
-  @retval EFI_OUT_OF_RESOURCES    Do not have enough resources to initialize the driver.
-  @retval EFI_DEVICE_ERROR        Device error, driver exits abnormally.
-
-**/
-
-EFI_STATUS
-EFIAPI
-PolicyInitDxeEntryPoint (
-  IN EFI_HANDLE                ImageHandle,
-  IN EFI_SYSTEM_TABLE          *SystemTable
-  );
 
 #endif
+
