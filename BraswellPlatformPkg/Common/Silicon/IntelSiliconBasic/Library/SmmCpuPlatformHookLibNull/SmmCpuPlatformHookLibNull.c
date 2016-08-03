@@ -107,3 +107,4 @@ GetPlatformPageTableAttribute (
 {
   return EFI_UNSUPPORTED;
 }
+

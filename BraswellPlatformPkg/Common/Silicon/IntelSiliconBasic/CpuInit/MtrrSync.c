@@ -184,7 +184,7 @@ MpMtrrSynchUp (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 VOID
@@ -231,3 +231,4 @@ SaveBspMtrrForS3 (
 
   ASSERT (TableIndex < MAX_CPU_S3_MTRR_ENTRY);
 }
+

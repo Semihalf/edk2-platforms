@@ -82,7 +82,7 @@ gSmmInitStack   DQ      ?
     movdqa  [rsp + 40h], xmm4
     movdqa  [rsp + 50h], xmm5
 
-    add     rsp, -20h
+    add     rsp, -20h   
     call    SmmInitHandler
     add     rsp, 20h
 
@@ -94,7 +94,7 @@ gSmmInitStack   DQ      ?
     movdqa  xmm2, [rsp + 20h]
     movdqa  xmm3, [rsp + 30h]
     movdqa  xmm4, [rsp + 40h]
-    movdqa  xmm5, [rsp + 50h]
+    movdqa  xmm5, [rsp + 50h]    
 
     rsm
 SmmStartup  ENDP

@@ -137,10 +137,10 @@ typedef struct {
 /**
   @todo Add function description
 
-  @param[in]    Protocol          -   @todo add argument description
-  @param[in]    HostBridgeHandle  -   @todo add argument description
-  @param[in]    Attri             -   @todo add argument description
-  @param[in]    ResAppeture       -   @todo add argument description
+  @param[in]  Protocol          -   @todo add argument description
+  @param[in]  HostBridgeHandle  -   @todo add argument description
+  @param[in]  Attri             -   @todo add argument description
+  @param[in]  ResAppeture       -   @todo add argument description
 
   @retval                         -   @todo add return values
 
@@ -153,3 +153,4 @@ RootBridgeConstructor (
   IN PCI_ROOT_BRIDGE_RESOURCE_APPETURE  *ResAppeture
   );
 #endif
+

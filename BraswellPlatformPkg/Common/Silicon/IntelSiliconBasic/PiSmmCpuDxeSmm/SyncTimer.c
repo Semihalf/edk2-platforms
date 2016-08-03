@@ -109,3 +109,4 @@ IsSyncTimerTimeout (
 
   return (BOOLEAN) (Delta >= mTimeoutTicker);
 }
+

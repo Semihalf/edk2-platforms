@@ -24,7 +24,7 @@ VOID
   IN VOID    *SystemContext
   );
 /**
-  @todo    No description
+  @todo  No description
 
 **/
 typedef struct {
@@ -335,3 +335,4 @@ InitializeException (
 
   return Status;
 }
+

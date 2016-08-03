@@ -20,7 +20,7 @@
 extern MP_SYSTEM_DATA               *mMPSystemData;
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 VOID
@@ -50,7 +50,7 @@ EfiWriteToScript (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 VOID
@@ -87,7 +87,7 @@ CpuMiscEnable (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 VOID
@@ -101,3 +101,4 @@ ProgramProcessorFuncs (
   CpuMiscEnable (MPSystemData->MonitorMwaitEnable,     B_EFI_MSR_IA32_MISC_ENABLE_MONITOR);
 
 }
+

@@ -32,7 +32,7 @@
 .equ    IdtrProfile      ,      LockLocation + 0x16
 .equ    BufferStart      ,      LockLocation + 0x1C
 .equ    Cr3Location      ,      LockLocation + 0x20
-.equ    InitFlag         ,      LockLocation + 0x24
+.equ    InitFlag         ,      LockLocation + 0x24 
 .equ    WakeUpApManner   ,      LockLocation + 0x28
 .equ    BistBuffer       ,      LockLocation + 0x2C
 
@@ -50,7 +50,7 @@
             .long      \Offset          # 32-bit offset
             .word      \Selector        # 16-bit selector
 .endm
-
+ 
 .macro FCALL32 Selector, Offset
             .byte      0x09A
             .long      \Offset          # 32-bit offset
@@ -102,18 +102,18 @@ RendezvousFunnelProcStart:
 #
         .byte 0xB0, 0x08                 # mov        al,  8
         .byte 0xF6, 0xE3                 # mul        bl
-
+        
         .byte 0xBE, 0x2C,  0x0C          # mov        si,  BistBuffer
         .byte 0x03, 0xF0                 # add        si,  ax
 
         .byte 0x66, 0xC7, 0x04
         .byte 0x00000001                 # mov        dword ptr [si], 1           # Set Valid Flag
-        .byte 0x66, 0x89, 0x6C, 0x04     # mov        dword ptr [si + 4], ebp     # Store BIST value
-
+        .byte 0x66, 0x89, 0x6C, 0x04     # mov        dword ptr [si + 4], ebp     # Store BIST value        
+        
         cli
         hlt
         jmp .-2
-
+                                      
 # Switch to flat mode.
 
 flat32Start:
@@ -125,12 +125,12 @@ flat32Start:
         .byte 0xBE, 0x10, 0x0C           # mov        si, GdtrProfile
         .byte 0x66                       # db         66h
         .byte 0x2E, 0x0F, 0x01, 0x14     # lgdt       fword ptr cs:[si]
-
+        
         .byte 0xBE, 0x16, 0x0C           # mov        si, IdtrProfile
         .byte 0x66                       # db         66h
         .byte 0x2E, 0x0F, 0x01, 0x1C     # lidt       fword ptr cs:[si]
-
-
+        
+                                                
         .byte 0x33, 0xC0                 # xor        ax,  ax
         .byte 0x8E, 0xD8                 # mov        ds,  ax
         .byte 0x0F, 0x20, 0xC0           # mov        eax, cr0                    # Get control register 0
@@ -156,7 +156,7 @@ PMODE_ENTRY:                             # protected mode entry point
 
         movl        %esi,%edi
         addl        $InitFlag, %edi
-        cmpl        $2, (%edi)           # Check whether in S3 boot path
+        cmpl        $2, (%edi)	         # Check whether in S3 boot path
         jz          ProgramDynamicStack
 
 ProgramStaticStack:
@@ -165,23 +165,23 @@ ProgramStaticStack:
         movl        %esi, %edi
         addl        $BistBuffer, %edi
         movl        (%edi, %ebx, 8), %ecx             # EBX = CpuNumber
-
+        
         movl        %esi, %edi
         addl        $StackSize, %edi
         movl        (%edi), %eax
-        incl        %ecx
+        incl        %ecx    
         mull        %ecx                              # EAX = StackSize * (CpuNumber + 1)
-
+        
         movl        %esi, %edi
         addl        $StackStart, %edi
         movl        (%edi), %edx
         addl        %edx, %eax                        # EAX = StackStart + StackSize * (CpuNumber + 1)
-
+        
         movl        %eax, %esp
         subl        $MonitorFilterSize, %esp          # Reserved Monitor data space
         orl         $StartupApSignal, %ebx            # EBX = #Cpu run signature
         jmp         ProgramLocalApic
-
+        
 ProgramDynamicStack:
 
         movl        %esi, %edi
@@ -219,7 +219,7 @@ ProgramLocalApic:
         movl        (%edi), %eax
         andl        $0x0FFFE00FF, %eax
         orl         $0x700, %eax
-        movl        %eax, (%edi)
+        movl        %eax, (%edi) 
 
         movl        $0x0FEE00360, %edi
         movl        (%edi), %eax
@@ -236,17 +236,17 @@ EnableXmm:
         #
         movl %cr0, %eax
         orl  $2, %eax
-        movl %eax, %cr0
+        movl %eax, %cr0 
         movl %cr4, %eax
         orl  $0x600, %eax
         movl %eax, %cr4
-
+                   
 L1:
         #
         # Call C Function
         #
         movl         %esi, %edi
-        addl         $RendezvousProc, %edi
+        addl         $RendezvousProc, %edi 
         addl         $WakeUpApManner, %esi                # esi = WakeUpApManner Address Location
 
 WakeUpThisAp:
@@ -315,7 +315,7 @@ HltApLoop:
         cli
         hlt
         jmp         HltApLoop
-
+        
 #RendezvousFunnelProc   ENDP
 RendezvousFunnelProcEnd:
 
@@ -326,19 +326,19 @@ ASM_GLOBAL ASM_PFX(AsmGetAddressMap)
 ASM_PFX(AsmGetAddressMap):
         pushal
         movl         %esp, %ebp
-
+   
         movl         0x24(%ebp), %ebx
         movl         $RendezvousFunnelProcStart, (%ebx)
-        movl         $(PMODE_ENTRY - RendezvousFunnelProcStart), 0x4(%ebx)
+        movl         $(PMODE_ENTRY - RendezvousFunnelProcStart), 0x4(%ebx) 
         movl         $(FLAT32_JUMP - RendezvousFunnelProcStart), 0x8(%ebx)
         movl         $(RendezvousFunnelProcEnd - RendezvousFunnelProcStart), 0xc(%ebx)
-
+        
         popal
         ret
 #AsmGetAddressMap   ENDP
 
 #-------------------------------------------------------------------------------------
-#AsmExchangeRole procedure follows. This procedure executed by current BSP, that is
+#AsmExchangeRole procedure follows. This procedure executed by current BSP, that is 
 #about to become an AP. It switches it'stack with the current AP.
 #AsmExchangeRole (IN   CPU_EXCHANGE_INFO    *MyInfo, IN   CPU_EXCHANGE_INFO    *OthersInfo)#
 #-------------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ ASM_PFX(AsmExchangeRole):
         pushfl
         sgdt        8(%esi)
         sidt        14(%esi)
-
+        
         # Store the its StackPointer
         movl        %esp, 4(%esi)
 
@@ -375,11 +375,11 @@ TryLock1:
         jz          LockObtained1
         PAUSE32
         jmp         TryLock1
-
+        
 LockObtained1:
         movb        $CPU_SWITCH_STATE_STORED, 1(%esi)
         lock xchgb  (%esi), %al
-WaitForOtherStored:
+WaitForOtherStored:        
         # wait until the other CPU finish storing its state
         movb        $NotVacantFlag, %al
 TryLock2:
@@ -388,23 +388,23 @@ TryLock2:
         jz          LockObtained2
         PAUSE32
         jmp         TryLock2
-
+        
 LockObtained2:
         movb        1(%edi), %bl
         lock xchgb  (%edi),  %al
         cmpb        $CPU_SWITCH_STATE_STORED, %bl
         jb          WaitForOtherStored
-
+        
         # Since another CPU already stored its state, load them
         # load GDTR value
         lgdt        8(%edi)
-
+        
         # load IDTR value
         lidt        14(%edi)
 
         # load its future StackPointer
         movl        4(%edi), %esp
-
+                
         # update its switch state to LOADED
         movb        $NotVacantFlag, %al
 TryLock3:
@@ -413,7 +413,7 @@ TryLock3:
         jz          LockObtained3
         PAUSE32
         jmp         TryLock3
-
+        
 LockObtained3:
         movb        $CPU_SWITCH_STATE_LOADED, 1(%esi)
         lock xchgb  (%esi), %al
@@ -428,7 +428,7 @@ TryLock4:
         jz          LockObtained4
         PAUSE32
         jmp         TryLock4
-
+        
 LockObtained4:
         movb        1(%edi), %bl
         lock xchgb  (%edi), %al

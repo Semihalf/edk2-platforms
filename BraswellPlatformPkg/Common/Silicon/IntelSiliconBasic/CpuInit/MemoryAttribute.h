@@ -18,7 +18,7 @@
 
 extern UINT32 mUsedMtrr;
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -27,7 +27,7 @@ typedef struct {
   UINT32  Length;
 } EFI_FIXED_MTRR;
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -134,3 +134,4 @@ SetGcdMemorySpaceAttributes (
   IN UINT64                              Attributes
   );
 #endif
+

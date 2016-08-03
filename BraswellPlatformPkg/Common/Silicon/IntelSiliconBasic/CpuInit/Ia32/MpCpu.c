@@ -88,3 +88,4 @@ InitializeMpSupport (
 
   return EFI_SUCCESS;
 }
+

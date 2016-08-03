@@ -49,7 +49,7 @@ UINT64   mValidMtrrBitsMask;
 
 #pragma pack (1)
 /**
-  @todo        add description
+  @todo    add description
 
 **/
 typedef  struct {
@@ -62,7 +62,7 @@ typedef  struct {
 } SEGMENT_DESCRIPTOR_x64;
 
 /**
-  @todo        Add description
+  @todo    Add description
 
 **/
 
@@ -161,7 +161,7 @@ ALINE_16BYTE_BOUNDRY PSEUDO_DESCRIPTOR_x64 gLidtPseudoDescriptor = {
 };
 
 /**
-  @todo        add function description
+  @todo    add function description
 
 **/
 VOID
@@ -210,7 +210,7 @@ InitializeInterruptTables (
 }
 
 /**
-  @todo        add function description
+  @todo    add function description
 
 **/
 VOID
@@ -288,7 +288,7 @@ InitailizeMemoryAttributes (
 }
 
 /**
-  @todo        add function description
+  @todo    add function description
 
 **/
 VOID  *
@@ -312,7 +312,7 @@ AllocateZeroedPage (
   @param[in]  PageAddress
   @param[in]  **PageDirectoryToConvert
 
-  @todo          review parameters and description
+  @todo      review parameters and description
 
 **/
 VOID
@@ -367,13 +367,13 @@ Convert2MBPageTo4KPages (
 }
 
 /**
-  @todo        Add description to function
+  @todo    Add description to function
 
-  @param[in]   BaseAddress    @todo    Add parameter description
-  @param[out]  PageTable      @todo    Add parameter description
-  @param[out]  Page2MBytes    @todo    Add parameter description
+  @param[in]   BaseAddress    @todo  Add parameter description
+  @param[out]  PageTable      @todo  Add parameter description
+  @param[out]  Page2MBytes    @todo  Add parameter description
 
-  @retval                     @todo    Add return value description
+  @retval                     @todo  Add return value description
 
 **/
 EFI_STATUS
@@ -525,7 +525,7 @@ PrepareMemoryForAPs (
   @param[in]  ApFunction         Address of function assigned to AP.
   @param[in]  WakeUpBuffer       Pointer to the address of wakeup buffer.
 
-  @retval      EFI_SUCCESS        Exchange Info successfully prepared for APs.
+  @retval    EFI_SUCCESS        Exchange Info successfully prepared for APs.
 
 **/
 EFI_STATUS
@@ -716,3 +716,4 @@ PrepareGdtIdtForAP (
 
   return EFI_SUCCESS;
 }
+

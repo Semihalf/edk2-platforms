@@ -38,7 +38,7 @@
 
 [Packages]
   MdePkg/MdePkg.dec
-  BraswellPlatformPkg/BraswellPlatformPkg.dec
+  BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/IntelSiliconBasic.dec
 
 [LibraryClasses]
   UefiDriverEntryPoint

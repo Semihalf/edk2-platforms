@@ -276,7 +276,7 @@ gSavedPageFaultIdtEntry LABEL   DWORD
 gSavedDebugExceptionIdtEntry LABEL   DWORD
     DD      0
     DD      0
-
+    
 
     .code
 

@@ -422,3 +422,4 @@ PiSmmCommunicationPeiEntryPoint (
 
   return RETURN_SUCCESS;
 }
+

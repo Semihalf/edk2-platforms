@@ -20,7 +20,7 @@
 #include "MpCommon.h"
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -54,7 +54,7 @@ typedef struct {
 #define MSR_L3_CACHE_DISABLE  0x40
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -88,7 +88,7 @@ typedef enum {
 #define MAX_FEATURE_NUM  6
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -127,7 +127,7 @@ typedef struct {
 } CPU_DATA_BLOCK;
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -137,7 +137,7 @@ typedef struct {
 } MP_CPU_S3_SCRIPT_DATA;
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -147,7 +147,7 @@ typedef struct {
 } MP_CPU_S3_DATA_POINTER;
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 #pragma pack (1)
@@ -238,7 +238,7 @@ typedef struct {
 #pragma pack (1)
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -252,7 +252,7 @@ typedef struct {
 #define CPU_MP_SERVICE_PRIVATE_SIGNATURE  EFI_SIGNATURE_32 ('m', 'p', '3', '2')
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -634,3 +634,4 @@ GetCoreNumber (
   );
 
 #endif
+

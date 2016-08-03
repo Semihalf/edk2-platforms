@@ -19,7 +19,7 @@
 
 #pragma pack(1)
 /**
-  @todo    No structure description
+  @todo  No structure description
 
 **/
 typedef struct {
@@ -32,7 +32,7 @@ typedef struct {
 #pragma pack()
 
 /**
-  @todo    No structure description
+  @todo  No structure description
 
 **/
 
@@ -54,3 +54,4 @@ AsmGetAddressMap (
   );
 
 #endif
+

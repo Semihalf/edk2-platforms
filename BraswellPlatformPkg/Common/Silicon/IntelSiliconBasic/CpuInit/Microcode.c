@@ -23,7 +23,7 @@ EFI_CPU_MICROCODE_HEADER  **mMicrocodePointerBuffer;
 BOOLEAN                   mVerifyMicrocodeChecksum = TRUE;
 
 //
-//    Function declaration
+//  Function declaration
 //
 EFI_STATUS
 FindLoadMicrocode (
@@ -481,3 +481,4 @@ CheckMicrocodeUpdate (
            DataSize
            );
 }
+

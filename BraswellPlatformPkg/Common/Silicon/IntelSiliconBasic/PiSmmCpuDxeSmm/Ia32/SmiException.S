@@ -24,7 +24,7 @@ ASM_GLOBAL  ASM_PFX(gSavedDebugExceptionIdtEntry)
 ASM_GLOBAL  ASM_PFX(FeaturePcdGet (PcdCpuSmmProfileEnable))
 ASM_GLOBAL  ASM_PFX(InitializeSmmExternalVectorTablePtr)
 
-    .data
+    .data 
 
 NullSeg:    .quad 0
             .quad 0                     # reserved for future use
@@ -436,16 +436,16 @@ ExternalVectorTablePtr:  .long 0
 # Saved IDT Entry for Page Fault
 #
 ASM_PFX(gSavedPageFaultIdtEntry):
-    .long      0
-    .long      0
+    .long      0                        
+    .long      0        
 
 #
 # Saved IDT Entry for INT 1
 #
 ASM_PFX(gSavedDebugExceptionIdtEntry):
-    .long      0
-    .long      0
-
+    .long      0                        
+    .long      0        
+    
     .text
 
 ASM_PFX(InitializeSmmExternalVectorTablePtr):
@@ -917,7 +917,7 @@ PFHandlerEntry:
     # Align stack to make sure that EFI_FX_SAVE_STATE_IA32 of EFI_SYSTEM_CONTEXT_IA32
     # is 16-byte aligned
     #
-    andl    $0xfffffff0, %esp
+    andl    $0xfffffff0, %esp 
     subl    $12, %esp
 
 ## UINT32  Edi, Esi, Ebp, Esp, Ebx, Edx, Ecx, Eax;
@@ -1120,7 +1120,7 @@ ASM_PFX(InitializeIDT):
     .long      IDT_SIZE / 8
     lea      _SmiExceptionHandlers - 8, %ebx
     popl    %ecx
-L1:
+L1: 
     leal    (%ebx,%ecx,8),%eax
     movw    %ax,(%edx,%ecx,8)
     shrl    $16,%eax
@@ -1155,10 +1155,10 @@ L2:
 
     cmpb    $0, ASM_PFX(FeaturePcdGet (PcdCpuSmmProfileEnable))
     jz      L3
-
+    
 #
 # Save INT 1 IDT entry in gSavedDebugExceptionIdtEntry
-#
+#    
     leal    _SmiIDT + 1 * 8, %ebx
     leal    ASM_PFX(gSavedDebugExceptionIdtEntry), %edx
     movl    (%ebx), %eax

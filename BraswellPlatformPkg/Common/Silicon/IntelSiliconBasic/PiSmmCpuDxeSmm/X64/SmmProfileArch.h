@@ -104,3 +104,4 @@ InitPagesForPFHandler (
   );
 
 #endif // _SMM_PROFILE_ARCH_H_
+

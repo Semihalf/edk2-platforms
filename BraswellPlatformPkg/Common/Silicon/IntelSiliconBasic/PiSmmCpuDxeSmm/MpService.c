@@ -1757,3 +1757,4 @@ SmmCpuSync2SendSmiAllExcludingSelf (
   SendSmiIpiAllExcludingSelf();
   return EFI_SUCCESS;
 }
+

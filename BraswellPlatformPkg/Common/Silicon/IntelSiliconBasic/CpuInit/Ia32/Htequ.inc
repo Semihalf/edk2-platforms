@@ -29,7 +29,7 @@ GdtrProfile         equ        LockLocation + 10h
 IdtrProfile         equ        LockLocation + 16h
 BufferStart         equ        LockLocation + 1Ch
 Cr3Location         equ        LockLocation + 20h
-InitFlag            equ        LockLocation + 24h
+InitFlag            equ        LockLocation + 24h 
 WakeUpApManner      equ        LockLocation + 28h
 BistBuffer          equ        LockLocation + 2Ch
 PAUSE32   MACRO

@@ -1,4 +1,4 @@
-;; @file
+;; @file 
 ;  Assembly code of the implementation of X64 CPU architectural protocol
 ;
 ;  Copyright (c) 2005 - 2015, Intel Corporation. All rights reserved.<BR>
@@ -74,7 +74,7 @@ ENDM
 ; +---------------------+ <-- RBP, 16-byte aligned
 ;
 
-CommonInterruptEntry PROC  PUBLIC
+CommonInterruptEntry PROC  PUBLIC  
   cli
   ;
   ; All interrupt handlers are invoked through interrupt gates, so
@@ -97,7 +97,7 @@ NoErrorCode:
   ;
   push    [rsp]
   mov     qword ptr [rsp + 8], 0
-@@:
+@@:       
   push    rbp
   mov     rbp, rsp
 
@@ -337,18 +337,18 @@ in_long_mode::
     mov rsp, rbx              ; On a new stack now
 
     mov rcx, [rbp+10h]        ; Pass Hob Start in RCX
-    mov rax, [rbp+20h]        ; Get the function pointer for
+    mov rax, [rbp+20h]        ; Get the function pointer for 
                               ; PpisNeededByDxeIplEntryPoint into EAX
     call fword ptr [rax]      ; Make the call into PpisNeededByDxeIplEntryPoint
 
     mov ecx, [rbp+10h]        ; Pass Hob Start in RCX
-    mov eax, [rbp+28h]        ; Get the function pointer for
+    mov eax, [rbp+28h]        ; Get the function pointer for 
                               ; DxeCoreEntryPoint into EAX
     call fword ptr [rax]      ; Make the call into Dxe Core
 
     call CommonInterruptEntry
 
-    mov rdi, CommonInterruptEntry
+    mov rdi, CommonInterruptEntry 
 
     lgdt  fword ptr [rdi]
 

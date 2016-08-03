@@ -39,7 +39,7 @@ extern UINT64     mValidMtrrBitsMask;
 /**
   @todo Add function description
 
-  @retval          @todo add return values
+  @retval      @todo add return values
 
 **/
 VOID
@@ -61,7 +61,7 @@ PreMtrrChange (
 /**
   @todo Add function description
 
-  @retval      @todo add return values
+  @retval    @todo add return values
 
 **/
 VOID
@@ -973,3 +973,4 @@ SetGcdMemorySpaceAttributes (
 
   return EFI_SUCCESS;
 }
+

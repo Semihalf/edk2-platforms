@@ -121,7 +121,7 @@ gSmiStack   DD      ?
     pop     ebp
     mov     eax, 80000001h
     cpuid
-    bt      edx, 29                     ; check cpuid to identify X64 or IA32
+    bt      edx, 29                     ; check cpuid to identify X64 or IA32 
     lea     edi, [ebp - (@1 - _SmiEntryPoint) + 7fc8h]
     lea     esi, [edi + 4]
     jnc     @2
@@ -134,14 +134,14 @@ gSmiStack   DD      ?
     mov     dr7, edx                    ; restore DR6 & DR7 before running C code
 @3:
     mov     ecx, [esp]                  ; CPU Index
-
+    
     push    ecx
     mov     eax, SmiRendezvous
     call    eax
     pop     ecx
 
     cmp     FeaturePcdGet (PcdCpuSmmDebug), 0
-    jz      @4
+    jz	    @4
 
     mov     ecx, dr6
     mov     edx, dr7

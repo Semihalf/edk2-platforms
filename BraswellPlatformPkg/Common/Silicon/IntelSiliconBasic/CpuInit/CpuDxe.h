@@ -49,7 +49,7 @@
 #include "CpuDataStruct.h"
 
 #define BSEL_CR_OVERCLOCK_CONTROL   0xCD
-#define    FUSE_BSEL_MASK              0x07
+#define  FUSE_BSEL_MASK              0x07
 
 #define INTERRUPT_VECTOR_NUMBER   256
 #define INTERRUPT_GATE_ATTRIBUTE  0x8e00
@@ -238,3 +238,4 @@ PCIConfigWA  (
       )
 
 #endif
+

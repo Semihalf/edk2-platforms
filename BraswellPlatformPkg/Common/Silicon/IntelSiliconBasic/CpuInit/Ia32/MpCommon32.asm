@@ -14,14 +14,14 @@
 ;;
 
 .686p
-.model  flat
+.model  flat        
 .data
 .stack
 .code
 .MMX
 .XMM
 
- include  Htequ.inc
+ include  Htequ.inc 
 PAUSE32   MACRO
             DB      0F3h
             DB      090h
@@ -44,7 +44,7 @@ TryGetLock:
         jz          LockObtained
 
         PAUSE32
-        jmp         TryGetLock
+        jmp         TryGetLock       
 
 LockObtained:
         popad
@@ -52,7 +52,7 @@ LockObtained:
 AsmAcquireMPLock   ENDP
 
 ;-------------------------------------------------------------------------------
-;  AsmReleaseMPLock (&Lock);
+;  AsmReleaseMPLock (&Lock);                                                    
 ;-------------------------------------------------------------------------------------
 AsmReleaseMPLock   PROC  near C  PUBLIC
 
@@ -63,13 +63,13 @@ AsmReleaseMPLock   PROC  near C  PUBLIC
         mov         ebx, dword ptr [ebp+24h]
         db 0f0h                       ; opcode for lock instruction
         xchg        al, byte ptr [ebx]
-
+        
         popad
         ret
 AsmReleaseMPLock   ENDP
 
 ;-------------------------------------------------------------------------------
-;  AsmGetGdtrIdtr (&Gdt, &Idt);
+;  AsmGetGdtrIdtr (&Gdt, &Idt);                                                    
 ;-------------------------------------------------------------------------------------
 AsmGetGdtrIdtr   PROC  near C  PUBLIC
 
@@ -85,7 +85,7 @@ AsmGetGdtrIdtr   PROC  near C  PUBLIC
         lea         esi, IdtDesc
         mov         edi, dword ptr [ebp+28h]
         mov         dword ptr [edi], esi
-
+        
         popad
         ret
 AsmGetGdtrIdtr   ENDP

@@ -1367,3 +1367,4 @@ InitIdtr (
 {
   SmmRegisterExceptionHandler (&mSmmCpuService, EXCEPT_IA32_DEBUG, DebugExceptionHandler);
 }
+

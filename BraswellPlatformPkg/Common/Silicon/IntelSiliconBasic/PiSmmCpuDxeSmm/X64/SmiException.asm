@@ -158,15 +158,15 @@ IDT_SIZE = (offset _SmiIDTEnd - offset _SmiIDT)
 ;  Saved IDT Entry for Page Fault
 ;
 gSavedPageFaultIdtEntry    LABEL   QWORD
-    DQ      0
-    DQ      0
+    DQ      0                        
+    DQ      0 
 
 ;
 ;  Saved IDT Entry for INT 1
 ;
 gSavedDebugExceptionIdtEntry    LABEL   QWORD
-    DQ      0
-    DQ      0
+    DQ      0                        
+    DQ      0 
 
 ExternalVectorTablePtr QWORD 0 ; point to the external interrupt vector table
 
@@ -179,7 +179,7 @@ _PFLOCK     DB      0
 
     .code
 
-InitializeSmmExternalVectorTablePtr PROC
+InitializeSmmExternalVectorTablePtr PROC 
     mov     ExternalVectorTablePtr, rcx
     ret
 InitializeSmmExternalVectorTablePtr ENDP
@@ -231,7 +231,7 @@ IHDLRIDX    = IHDLRIDX + 1
     ; Since here the stack pointer is 16-byte aligned, so
     ; EFI_FX_SAVE_STATE_X64 of EFI_SYSTEM_CONTEXT_x64
     ; is 16-byte aligned
-    ;
+    ;       
 
 ;; UINT64  Rdi, Rsi, Rbp, Rsp, Rbx, Rdx, Rcx, Rax;
 ;; UINT64  R8, R9, R10, R11, R12, R13, R14, R15;
@@ -330,7 +330,7 @@ IHDLRIDX    = IHDLRIDX + 1
 ;; call into exception handler
     mov     rcx, [rbp + 8]
     mov     rax, ExternalVectorTablePtr  ; get the interrupt vectors base
-    mov     rax, [rax + rcx * 8]
+    mov     rax, [rax + rcx * 8]       
     or      rax, rax                        ; NULL?
 
     je    nonNullValue;
@@ -439,7 +439,7 @@ nonNullValue:
     cmp     qword ptr [rsp + 8], 1
     jnz     @Done
 ; Clear TF bit after INT1 handler runs
-    btc     dword ptr [rsp + 40], 8  ;RFLAGS
+    btc     dword ptr [rsp + 40], 8  ;RFLAGS    
 
 @Done:
 
@@ -497,7 +497,7 @@ InitializeIDT   PROC
     mov     [rdx], rax
     mov     rax, [rcx + 8]
     mov     [rdx + 8], rax
-@@:
+@@:    
     ret
 InitializeIDT   ENDP
 

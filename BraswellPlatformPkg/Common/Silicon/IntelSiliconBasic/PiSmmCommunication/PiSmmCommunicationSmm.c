@@ -286,3 +286,4 @@ PiSmmCommunicationSmmEntryPoint (
 
   return Status;
 }
+

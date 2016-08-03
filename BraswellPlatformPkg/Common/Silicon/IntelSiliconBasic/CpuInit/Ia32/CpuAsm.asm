@@ -14,7 +14,7 @@
   page    ,132
   title   CPU ARCHITECTURAL DXE PROTOCOL ASSEMBLY HOOKS
 .686p
-.model  flat
+.model  flat        
 
 .data
 ExternalVectorTablePtr DD ?             ; Table of call backs
@@ -40,47 +40,47 @@ UINTN    TYPEDEF    UINT32
 ;---------------------------------------;
 ; _InitializeIdt                ;
 ;----------------------------------------------------------------------------;
-;
+; 
 ; Protocol prototype
 ;   InitializeIdt (
 ;   IN EFI_CPU_INTERRUPT_HANDLER TableStart,
 ;   IN UINTN                     *IdtTablePtr,
 ;   IN UINT16                    IdtLimit
 ;   )
-;
+;           
 ; Routine Description:
-;
+; 
 ;  Creates an IDT table starting at IdtTablPtr. It has IdtLimit/8 entries.
 ;  Table is initialized to intxx where xx is from 00 to number of entries or
 ;  100h, whichever is smaller. After table has been initialized the LIDT
 ;  instruction is invoked.
-;
-;  TableStart is the pointer to the callback table and is not used by
+; 
+;  TableStart is the pointer to the callback table and is not used by 
 ;  InitializedIdt but by commonEntry. CommonEntry handles all interrupts,
 ;  does the context save and calls the callback entry, if non-NULL.
 ;  It is the responsibility of the callback routine to do hardware EOIs.
-;
+; 
 ; Arguments:
-;
+; 
 ;   TableStart          - Pointer to interrupt callback table
 ;
 ;   IdtTablePtr         - Pointer to IDT table
 ;
 ;   IdtLimit            - IDT Table limit = number of interrupt entries * 8
-;
-; Returns:
-;
+; 
+; Returns: 
+; 
 ;   Nothing
 ;
-;
+; 
 ; Input:  [ebp][0]  = Original ebp
 ;         [ebp][4]  = Return address
 ;         [ebp][8]  = TableStart
 ;         [ebp][0c] = *IdtTablePtr
 ;         [ebp][10] = IdtLimit
-;
+;          
 ; Output: Nothing
-;
+;           
 ; Destroys: Nothing
 ;-----------------------------------------------------------------------------;
 
@@ -98,7 +98,7 @@ _InitializeIdt  proc near public
 
   mov     eax, [ebp+0ch]                ; Get Start of IDT
   mov     Idtr1, eax
-
+  
   mov     edi, OFFSET Idtr              ; Load IDT register
   lidt    FWORD PTR es:[edi]
 
@@ -108,45 +108,45 @@ _InitializeIdt  proc near public
 _InitializeIdt  endp
 
 ;----------------------------------------------------------------------------;
-;
+; 
 ; Protocol prototype
 ;   None
-;
+;           
 ; Routine Description:
-;
+; 
 ;  These routines handle the individual interrupts. These routines always
 ;  gain control on any interrupt or exception. They save EAX and place
-;  the interrupt number in EAX. CommonEntry is then jumped to.
+;  the interrupt number in EAX. CommonEntry is then jumped to. 
 ;  instruction is invoked.
-;
-;  CommonEntry handles all interrupts,does the context save and calls the
-;  callback entry, if non-NULL. It is the responsibility of the callback
+; 
+;  CommonEntry handles all interrupts,does the context save and calls the 
+;  callback entry, if non-NULL. It is the responsibility of the callback 
 ;  routine to do hardware EOIs. Callbacks are entered into the table
 ;  located at TableStart. Entries are modified by the InstallInterruptHandler
 ;  and UninstallInterruptHandler protocols.
-;
+; 
 ; Arguments to CommonEntry:
-;
+; 
 ;   EAX                 - Interrupt or exception number
 ;
 ;   TableStart          - Pointer to interrupt callback table
-;
-; Returns:
-;
+; 
+; Returns: 
+; 
 ;   Nothing
 ;
-;
+; 
 ; Output: Nothing
-;
+;           
 ; Destroys: Nothing
 ;-----------------------------------------------------------------------------;
 
 TemplateStart:
    push eax
-
-   ;mov  eax, 0nnh (nn stands for vector number, which will be fixed at runtime
+   
+   ;mov  eax, 0nnh (nn stands for vector number, which will be fixed at runtime 
    DB   0b8h
-VectorNumber:
+VectorNumber:   
    DD   00h
 
    jmp  dword ptr [CommonInterruptEntry];
@@ -193,7 +193,7 @@ NoErrorCode:
   ;
   push    [esp]
   mov     dword ptr [esp + 4], 0
-@@:
+@@:       
   push    ebp
   mov     ebp, esp
 
@@ -385,30 +385,30 @@ nonNullValue:
 ;---------------------------------------;
 ; _GetTemplateAddressMap                  ;
 ;----------------------------------------------------------------------------;
-;
+; 
 ; Protocol prototype
 ;   GetTemplateAddressMap (
 ;     INTERRUPT_HANDLER_TEMPLATE_MAP *AddressMap
 ;   );
-;
+;           
 ; Routine Description:
-;
+; 
 ;  Return address map of interrupt handler template so that C code can generate
 ;  interrupt handlers, and dynamically do address fix.
-;
+; 
 ; Arguments:
-;
-;
-; Returns:
-;
+; 
+; 
+; Returns: 
+; 
 ;   Nothing
 ;
-;
+; 
 ; Input:  [ebp][0]  = Original ebp
 ;         [ebp][4]  = Return address
-;
+;          
 ; Output: Nothing
-;
+;           
 ; Destroys: Nothing
 ;-----------------------------------------------------------------------------;
 _GetTemplateAddressMap  proc near public
@@ -419,8 +419,8 @@ _GetTemplateAddressMap  proc near public
   mov ebx, dword ptr [ebp+08h]
   mov dword ptr [ebx],    TemplateStart
   mov dword ptr [ebx+4h], TemplateEnd - TemplateStart
-
-  ; if code in Template is updated, the value fills into the 3rd parameter
+  
+  ; if code in Template is updated, the value fills into the 3rd parameter 
   ; also needs update
   mov dword ptr [ebx+8h], VectorNumber - TemplateStart
 
@@ -434,31 +434,31 @@ _GetTemplateAddressMap  endp
 ;---------------------------------------;
 ; _InitializeSelectors                  ;
 ;----------------------------------------------------------------------------;
-;
+; 
 ; Protocol prototype
 ;   InitializeSelectors (
 ;   )
-;
+;           
 ; Routine Description:
-;
+; 
 ;  Creates an new GDT in RAM.  The problem is that our former selectors
-;  were ROM based and the EFI OS Loader does not manipulate the machine state
+;  were ROM based and the EFI OS Loader does not manipulate the machine state 
 ;  to change them (as it would for a 16-bit PC/AT startup code that had to
 ;  go from Real Mode to flat mode).
-;
+; 
 ; Arguments:
-;
-;
-; Returns:
-;
+; 
+; 
+; Returns: 
+; 
 ;   Nothing
 ;
-;
+; 
 ; Input:  [ebp][0]  = Original ebp
 ;         [ebp][4]  = Return address
-;
+;          
 ; Output: Nothing
-;
+;           
 ; Destroys: Nothing
 ;-----------------------------------------------------------------------------;
 
@@ -471,7 +471,7 @@ _InitializeSelectors  proc near public
   pushad
   mov     edi, OFFSET Gdtr    ; Load GDT register
 
-  mov     ax,cs               ; Get the selector data from our code image
+  mov     ax,cs               ; Get the selector data from our code image          
   mov     es,ax
   lgdt    FWORD PTR es:[edi]  ; and update the GDTR
 
@@ -485,13 +485,13 @@ SelectorRld::
   mov     es, ax
   mov     fs, ax
   mov     gs, ax
-  mov     ss, ax
+  mov     ss, ax  
 
   popad
   pop     ebp
   ret
 _InitializeSelectors  endp
-
+  
 ;------------------------------------------------------------------------------
 ;  VOID
 ;  CpuEnableInterrupt (
@@ -513,7 +513,7 @@ CpuEnableInterrupt ENDP
 CpuDisableInterrupt PROC C    PUBLIC
     cli
     ret
-CpuDisableInterrupt ENDP
+CpuDisableInterrupt ENDP  
 
 ;------------------------------------------------------------------------------
 ;  VOID
@@ -535,7 +535,7 @@ CpuInitFloatPointUnit ENDP
 GetCodeSegment PROC C    PUBLIC
     mov  ax,cs
     ret
-GetCodeSegment ENDP
+GetCodeSegment ENDP  
 
 
 ;------------------------------------------------------------------------------
@@ -569,7 +569,7 @@ EfiInvd ENDP
 ;------------------------------------------------------------------------------
 _GetIdt     proc    near public
   push    ebp                    ; C prolog
-
+        
   mov     ebp, esp
   mov     eax, [ebp+8]
   sidt    FWORD PTR [eax]
@@ -581,19 +581,19 @@ _GetIdt ENDP
 GetCoreNumber PROC C    PUBLIC
 
     push ebx
-
+    
     mov  eax, 4
     mov  ecx, 0
     cpuid
-
+    
     shr  eax, 26
     and  eax, 3fh
     inc  al
-
+    
     pop  ebx
-
+    
     ret
-
+    
 GetCoreNumber ENDP
 
 

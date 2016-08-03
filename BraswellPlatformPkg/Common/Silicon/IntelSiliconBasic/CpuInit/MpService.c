@@ -975,11 +975,11 @@ PollForInitialization (
 }
 
 /**
-  @todo    Add function description
+  @todo  Add function description
 
-  @param[in]    Location          @todo    Add argument description
+  @param[in]    Location          @todo  Add argument description
 
-  @retval       EFI_SUCCESS       @todo    Add argument description
+  @retval       EFI_SUCCESS       @todo  Add argument description
 
 **/
 EFI_STATUS
@@ -1779,3 +1779,4 @@ LegacyRegionAPCount (
 
   AsmReleaseMPLock (&mMPSystemData->APSerializeLock);
 }
+

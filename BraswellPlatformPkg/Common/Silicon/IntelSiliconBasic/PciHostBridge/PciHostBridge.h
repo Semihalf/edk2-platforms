@@ -48,7 +48,7 @@ typedef struct {
 //  HostBridge Resource Allocation interface
 //
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -59,7 +59,7 @@ NotifyPhase (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -70,7 +70,7 @@ GetNextRootBridge (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -82,7 +82,7 @@ GetAttributes (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -94,7 +94,7 @@ StartBusEnumeration (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -106,7 +106,7 @@ SetBusNumbers (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -118,7 +118,7 @@ SubmitResources (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -130,7 +130,7 @@ GetProposedResources (
   );
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -146,7 +146,7 @@ PreprocessController (
 // Help function
 //
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 UINT64
@@ -155,3 +155,4 @@ Power2MaxMemory (
   );
 
 #endif
+

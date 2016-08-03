@@ -14,8 +14,8 @@
 ;;
 
 .686p
-.model  flat
-.code
+.model  flat        
+.code        
 
 include  Htequ.inc
 ;-------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ RendezvousFunnelProcStart::
         db 8ch,  0c8h                 ; mov        ax,  cs
         db 8eh,  0d8h                 ; mov        ds,  ax
         db 8eh,  0c0h                 ; mov        es,  ax
-        db 8eh,  0d0h                 ; mov        ss,  ax
+        db 8eh,  0d0h                 ; mov        ss,  ax 
         db 33h,  0c0h                 ; xor        ax,  ax
         db 8eh,  0e0h                 ; mov        fs,  ax
         db 8eh,  0e8h                 ; mov        gs,  ax
@@ -76,18 +76,18 @@ RendezvousFunnelProcStart::
 ;
         db 0B0h, 08h                  ; mov        al,  8
         db 0F6h, 0E3h                 ; mul        bl
-
+        
         db 0BEh, 2Ch,  0Ch            ; mov        si,  BistBuffer
         db 03h,  0F0h                 ; add        si,  ax
-
+       
         db 66h,  0C7h, 04h
         dd 00000001h                  ; mov        dword ptr [si], 1           ; Set Valid Flag
-        db 66h,  89h,  6Ch,  04h      ; mov        dword ptr [si + 4], ebp     ; Store BIST value
-
+        db 66h,  89h,  6Ch,  04h      ; mov        dword ptr [si + 4], ebp     ; Store BIST value        
+        
         cli
         hlt
         jmp $-2
-
+                                      
 ; Switch to flat mode.
 
 flat32Start::
@@ -99,12 +99,12 @@ flat32Start::
         db 0BEh, 10h, 0Ch             ; mov        si, GdtrProfile
         db 66h                        ; db         66h
         db 2Eh,0Fh, 01h, 14h          ; lgdt       fword ptr cs:[si]
-
+        
         db 0BEh, 16h, 0Ch             ; mov        si, IdtrProfile
         db 66h                        ; db         66h
         db 2Eh,0Fh, 01h, 1Ch          ; lidt       fword ptr cs:[si]
-
-
+        
+                                                
         db 33h, 0C0h                  ; xor        ax,  ax
         db 8Eh, 0D8h                  ; mov        ds,  ax
         db 0Fh, 20h, 0C0h             ; mov        eax, cr0                    ; Get control register 0
@@ -139,23 +139,23 @@ ProgramStaticStack::
         mov         edi, esi
         add         edi, BistBuffer
         mov         ecx, dword ptr [edi + 8 * ebx]    ; EBX = CpuNumber
-
+        
         mov         edi, esi
         add         edi, StackSize
         mov         eax, dword ptr [edi]
-        inc         ecx
+        inc         ecx    
         mul         ecx                               ; EAX = StackSize * (CpuNumber + 1)
-
+        
         mov         edi, esi
         add         edi, StackStart
         mov         edx, dword ptr [edi]
         add         eax, edx                          ; EAX = StackStart + StackSize * (CpuNumber + 1)
-
+        
         mov         esp, eax
         sub         esp, MonitorFilterSize            ; Reserved Monitor data space
         or          ebx, StartupApSignal              ; ebx = #Cpu run signature
         jmp         ProgramLocalApic
-
+        
 ProgramDynamicStack::
 
         mov         edi, esi
@@ -215,7 +215,7 @@ EnableXmm::
         mov eax, cr4
         or eax, 600h
         mov cr4, eax
-
+                   
 @@:
         ;
         ; Call C Function
@@ -290,7 +290,7 @@ HltApLoop::
         cli
         hlt
         jmp         HltApLoop
-
+        
 RendezvousFunnelProc   ENDP
 RendezvousFunnelProcEnd::
 ;-------------------------------------------------------------------------------------
@@ -300,19 +300,19 @@ AsmGetAddressMap   PROC  near C  PUBLIC
 
         pushad
         mov         ebp,esp
-
+   
         mov         ebx, dword ptr [ebp+24h]
         mov         dword ptr [ebx], RendezvousFunnelProcStart
         mov         dword ptr [ebx+4h], PMODE_ENTRY - RendezvousFunnelProcStart
         mov         dword ptr [ebx+8h], FLAT32_JUMP - RendezvousFunnelProcStart
         mov         dword ptr [ebx+0ch], RendezvousFunnelProcEnd - RendezvousFunnelProcStart
-
+        
         popad
         ret
 AsmGetAddressMap   ENDP
 
 ;-------------------------------------------------------------------------------------
-;AsmExchangeRole procedure follows. This procedure executed by current BSP, that is
+;AsmExchangeRole procedure follows. This procedure executed by current BSP, that is 
 ;about to become an AP. It switches it'stack with the current AP.
 ;AsmExchangeRole (IN   CPU_EXCHANGE_INFO    *MyInfo, IN   CPU_EXCHANGE_INFO    *OthersInfo);
 ;-------------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ AsmExchangeRole   PROC  near C  PUBLIC
         pushfd
         sgdt        fword ptr [esi+8]
         sidt        fword ptr [esi+14]
-
+        
         ; Store the its StackPointer
         mov         dword ptr [esi+4],esp
 
@@ -349,13 +349,13 @@ TryLock1:
         jz          LockObtained1
         PAUSE32
         jmp         TryLock1
-
+        
 LockObtained1:
         mov         byte ptr [esi+1], CPU_SWITCH_STATE_STORED
         db 0f0h                       ; opcode for lock instruction
         xchg        al, byte ptr [esi]
 
-WaitForOtherStored::
+WaitForOtherStored::        
         ; wait until the other CPU finish storing its state
         mov         al, NotVacantFlag
 TryLock2:
@@ -365,24 +365,24 @@ TryLock2:
         jz          LockObtained2
         PAUSE32
         jmp         TryLock2
-
+        
 LockObtained2:
         mov         bl, byte ptr [edi+1]
         db 0f0h                       ; opcode for lock instruction
         xchg        al, byte ptr [edi]
         cmp         bl, CPU_SWITCH_STATE_STORED
         jb          WaitForOtherStored
-
+        
         ; Since another CPU already stored its state, load them
         ; load GDTR value
         lgdt        fword ptr [edi+8]
-
+        
         ; load IDTR value
         lidt        fword ptr [edi+14]
 
         ; load its future StackPointer
         mov         esp, dword ptr [edi+4]
-
+                
         ; update its switch state to LOADED
         mov         al, NotVacantFlag
 TryLock3:
@@ -392,7 +392,7 @@ TryLock3:
         jz          LockObtained3
         PAUSE32
         jmp         TryLock3
-
+        
 LockObtained3:
         mov         byte ptr [esi+1], CPU_SWITCH_STATE_LOADED
         db 0f0h                       ; opcode for lock instruction
@@ -409,7 +409,7 @@ TryLock4:
         jz          LockObtained4
         PAUSE32
         jmp         TryLock4
-
+        
 LockObtained4:
         mov         bl, byte ptr [edi+1]
         db 0f0h                       ; opcode for lock instruction

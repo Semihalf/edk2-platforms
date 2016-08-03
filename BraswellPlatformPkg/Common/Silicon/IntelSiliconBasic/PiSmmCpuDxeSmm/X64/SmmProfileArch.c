@@ -300,3 +300,4 @@ RestorePageTableAbove4G (
 
   return;
 }
+

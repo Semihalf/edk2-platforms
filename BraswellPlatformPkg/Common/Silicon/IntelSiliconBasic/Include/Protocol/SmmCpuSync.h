@@ -105,3 +105,4 @@ struct _SMM_CPU_SYNC_PROTOCOL {
 extern EFI_GUID gSmmCpuSyncProtocolGuid;
 
 #endif
+

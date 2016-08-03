@@ -13,7 +13,7 @@
 ;
 ;;
 
-include  Htequ.inc
+include  Htequ.inc 
 ;-------------------------------------------------------------------------------------
 
 ;-------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ RendezvousFunnelProcStart::
         db 8ch,  0c8h                 ; mov        ax,  cs
         db 8eh,  0d8h                 ; mov        ds,  ax
         db 8eh,  0c0h                 ; mov        es,  ax
-        db 8eh,  0d0h                 ; mov        ss,  ax
+        db 8eh,  0d0h                 ; mov        ss,  ax 
         db 33h,  0c0h                 ; xor        ax,  ax
         db 8eh,  0e0h                 ; mov        fs,  ax
         db 8eh,  0e8h                 ; mov        gs,  ax
@@ -60,7 +60,7 @@ RendezvousFunnelProcStart::
         db flat32Start - ($ + 1)      ; jz         flat32Start
 
 ; Record BIST information
-;
+;        
         db 0B0h, 08h                  ; mov        al,  8
         db 0F6h, 0E3h                 ; mul        bl
 
@@ -70,7 +70,7 @@ RendezvousFunnelProcStart::
 
         db 66h,  0C7h, 04h
         dd 00000001h                  ; mov        dword ptr [si], 1           ; Set Valid Flag
-        db 66h,  89h,  6Ch,  04h      ; mov        dword ptr [si + 4], ebp     ; Store BIST value
+        db 66h,  89h,  6Ch,  04h      ; mov        dword ptr [si + 4], ebp     ; Store BIST value        
 
         cli
         hlt
@@ -101,7 +101,7 @@ flat32Start::
 
         db 0BFh                       ; opcode of mov di, imm16
         dw LongModeStartJump - RendezvousFunnelProcStart                       ; Get offset of LongModeStartJump
-        db 66h,  8Bh, 3Dh             ; mov        edi,dword ptr [di]          ; EDI is keeping the LongModeStart Jump Address
+        db 66h,  8Bh, 3Dh             ; mov        edi,dword ptr [di]          ; EDI is keeping the LongModeStart Jump Address 
 
         db 31h,  0C0h                 ; xor        ax,  ax
         db 8Eh,  0D8h                 ; mov        ds,  ax
@@ -179,7 +179,7 @@ LongModeStart::
         add         edx, RunLoopAndMwaitLoop64Jump - LongModeStart
         mov         dword ptr [rdx], eax
 
-;
+; 
 ; ProgramStack
 ;
         xor         rcx, rcx
@@ -306,7 +306,7 @@ RunLoopAndMwaitLoop32::
 
         db 66h,  0B8h, 18h,  00h      ; mov        ax,  18h
         db 66h,  8Eh,  0D8h           ; mov        ds,  ax
-        db 8eh,  0d0h                 ; mov        ss,  ax
+        db 8eh,  0d0h                 ; mov        ss,  ax 
 
         db 0Fh,  20h,  0C0h           ; mov        eax, cr0                    ; Read CR0.
         db 0Fh,  0BAh, 0F0h, 1Fh      ; btr        eax, 31                     ; Reset PG=0.
@@ -387,9 +387,9 @@ AsmGetAddressMap   PROC   PUBLIC
         mov         qword ptr [rcx+18h], LongModeStart - RendezvousFunnelProcStart
         mov         qword ptr [rcx+20h], LONG_JUMP - RendezvousFunnelProcStart
         mov         qword ptr [rcx+28h], RendezvousFunnelProcEnd - RendezvousFunnelProcStart
-
+        
         ret
-
+        
 AsmGetAddressMap   ENDP
 
 AsmGetGdtrIdtr   PROC    PUBLIC
@@ -401,16 +401,16 @@ AsmGetGdtrIdtr   PROC    PUBLIC
         sidt        IdtDesc
         lea         rax, IdtDesc
         mov         [rdx], rax
-
+        
         ret
-
+        
 AsmGetGdtrIdtr   ENDP
 
 AsmGetCr3   PROC    PUBLIC
-
+        
         mov rax, cr3
         ret
-
+        
 AsmGetCr3   ENDP
 
 
@@ -423,24 +423,24 @@ TryGetLock:
         jz          LockObtained
 
         pause
-        jmp         TryGetLock
+        jmp         TryGetLock       
 
 LockObtained:
         ret
-
+        
 AsmAcquireMPLock   ENDP
 
 AsmReleaseMPLock   PROC    PUBLIC
 
         mov         al, VacantFlag
         xchg        al, byte ptr [rcx]
-
+        
         ret
-
+        
 AsmReleaseMPLock   ENDP
 
 ;-------------------------------------------------------------------------------------
-;AsmExchangeRole procedure follows. This procedure executed by current BSP, that is
+;AsmExchangeRole procedure follows. This procedure executed by current BSP, that is 
 ;about to become an AP. It switches it'stack with the current AP.
 ;AsmExchangeRole (IN   CPU_EXCHANGE_INFO    *MyInfo, IN   CPU_EXCHANGE_INFO    *OthersInfo);
 ;-------------------------------------------------------------------------------------
@@ -470,10 +470,10 @@ AsmExchangeRole   PROC    PUBLIC
 
         mov         rax, cr0
         push        rax
-
+        
         mov         rax, cr4
         push        rax
-
+        
         ; rsi contains MyInfo pointer
         mov         rsi, rcx
 
@@ -484,7 +484,7 @@ AsmExchangeRole   PROC    PUBLIC
         pushfq
         sgdt        fword ptr [rsi + 16]
         sidt        fword ptr [rsi + 26]
-
+        
         ; Store the its StackPointer
         mov         qword ptr [rsi + 8], rsp
 
@@ -497,13 +497,13 @@ TryLock1:
         jz          LockObtained1
         pause
         jmp         TryLock1
-
+        
 LockObtained1:
         mov         byte ptr [rsi + 1], CPU_SWITCH_STATE_STORED
         db 0f0h                       ; opcode for lock instruction
         xchg        al, byte ptr [rsi]
 
-WaitForOtherStored::
+WaitForOtherStored::        
         ; wait until the other CPU finish storing its state
         mov         al, NotVacantFlag
 TryLock2:
@@ -513,24 +513,24 @@ TryLock2:
         jz          LockObtained2
         PAUSE32
         jmp         TryLock2
-
+        
 LockObtained2:
         mov         bl, byte ptr [rdi + 1]
         db 0f0h                       ; opcode for lock instruction
         xchg        al, byte ptr [rdi]
         cmp         bl, CPU_SWITCH_STATE_STORED
         jb          WaitForOtherStored
-
+        
         ; Since another CPU already stored its state, load them
         ; load GDTR value
         lgdt        fword ptr [rdi + 16]
-
+        
         ; load IDTR value
         lidt        fword ptr [rdi + 26]
 
         ; load its future StackPointer
         mov         rsp, qword ptr [rdi + 8]
-
+                
         ; update its switch state to LOADED
         mov         al, NotVacantFlag
 TryLock3:
@@ -540,7 +540,7 @@ TryLock3:
         jz          LockObtained3
         PAUSE32
         jmp         TryLock3
-
+        
 LockObtained3:
         mov         byte ptr [rsi+1], CPU_SWITCH_STATE_LOADED
         db 0f0h                      ; opcode for lock instruction
@@ -557,7 +557,7 @@ TryLock4:
         jz          LockObtained4
         PAUSE32
         jmp         TryLock4
-
+        
 LockObtained4:
         mov         bl, byte ptr [rdi+1]
         db 0f0h                       ; opcode for lock instruction
@@ -570,10 +570,10 @@ LockObtained4:
 
         pop         rax
         mov         cr4, rax
-
+        
         pop         rax
         mov         cr0, rax
-
+        
         pop         r15
         pop         r14
         pop         r13
@@ -595,7 +595,7 @@ AsmExchangeRole   ENDP
 
 GdtDesc             QWORD    0
                     WORD     0
-
+                    
 IdtDesc             QWORD    0
                     WORD     0
 

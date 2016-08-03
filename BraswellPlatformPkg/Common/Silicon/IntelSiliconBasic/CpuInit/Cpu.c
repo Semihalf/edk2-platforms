@@ -232,7 +232,7 @@ DisableInterrupt (
   @param[out]     State                    Pointer to the CPU's current interrupt state
 
   @retval         EFI_SUCCESS              If interrupts were disabled in the CPU.
-  @retval         EFI_INVALID_PARAMETER       State is NULL.
+  @retval         EFI_INVALID_PARAMETER     State is NULL.
 
 **/
 EFI_STATUS
@@ -629,7 +629,7 @@ Done:
 }
 
 /**
-  @todo    Add structure description
+  @todo  Add structure description
 
 **/
 typedef struct {
@@ -839,7 +839,7 @@ InitializeCpu (
 /**
   Determine the processor core frequency
 
-  @retval          Processor core frequency multiplied by 3
+  @retval      Processor core frequency multiplied by 3
 
 **/
 UINT16
@@ -997,3 +997,4 @@ ApCpuInitBeforeBoot (
   )
 {
 }
+

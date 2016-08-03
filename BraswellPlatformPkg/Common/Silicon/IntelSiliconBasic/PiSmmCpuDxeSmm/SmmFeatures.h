@@ -218,3 +218,4 @@ SmmWriteReg64 (
   );
 
 #endif
+

@@ -357,16 +357,16 @@ _SmiIDTEnd:
 # Saved IDT Entry for Page Fault
 #
 ASM_PFX(gSavedPageFaultIdtEntry):
-    .quad      0
-    .quad      0
+    .quad      0                        
+    .quad      0 
 
 #
 # Saved IDT Entry for INT 1
 #
 ASM_PFX(gSavedDebugExceptionIdtEntry):
-    .quad      0
-    .quad      0
-
+    .quad      0                        
+    .quad      0 
+    
 ExternalVectorTablePtr: .quad 0        # point to the external interrupt vector table
 
 #
@@ -550,7 +550,7 @@ L1:
     # Since here the stack pointer is 16-byte aligned, so
     # EFI_FX_SAVE_STATE_X64 of EFI_SYSTEM_CONTEXT_x64
     # is 16-byte aligned
-    #
+    #       
 
 ## UINT64  Rdi, Rsi, Rbp, Rsp, Rbx, Rdx, Rcx, Rax;
 ## UINT64  R8, R9, R10, R11, R12, R13, R14, R15;
@@ -683,7 +683,7 @@ L5:
 ## UINT64  Dr0, Dr1, Dr2, Dr3, Dr6, Dr7;
 ## Skip restoration of DRx registers to support in-circuit emualators
 ## or debuggers set breakpoint in interrupt/exception context
-    addq    $8 * 6, %rsp
+    addq    $8 * 6, %rsp 
 
 ## UINT64  Cr0, Cr1, Cr2, Cr3, Cr4, Cr8;
     popq    %rax
@@ -758,7 +758,7 @@ L6:
     cmpq    $1, 8(%rsp)
     jnz     Done
 # Clear TF bit after INT1 handler runs
-    btcl    $8, 40(%rsp)                 #RFLAGS
+    btcl    $8, 40(%rsp)                 #RFLAGS    
 
 Done:
 
@@ -816,7 +816,7 @@ L3:
     movq    (%rcx), %rax
     movq    %rax, (%rdx)
     movq    8(%rcx), %rax
-    movq    %rax, 8(%rdx)
-
+    movq    %rax, 8(%rdx)    
+    
 L4:
     ret

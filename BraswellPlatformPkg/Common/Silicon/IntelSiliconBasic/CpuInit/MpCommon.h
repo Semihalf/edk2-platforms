@@ -53,7 +53,7 @@
 #define SIZE_OF_MCE_HANDLER 16
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -67,7 +67,7 @@ typedef struct {
 #pragma pack()
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -83,7 +83,7 @@ typedef enum {
 } WAKEUP_AP_MANNER;
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 typedef struct {
@@ -423,3 +423,4 @@ LegacyRegionAPCount (
   );
 
 #endif
+

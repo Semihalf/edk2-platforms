@@ -469,7 +469,7 @@ NotifyPhase (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 EFI_STATUS
@@ -1103,3 +1103,4 @@ Power2MaxMemory (
 
   return Result;
 }
+

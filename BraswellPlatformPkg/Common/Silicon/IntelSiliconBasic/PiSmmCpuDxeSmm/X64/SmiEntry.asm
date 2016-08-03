@@ -202,7 +202,7 @@ gSmiStack   DQ      ?
     sub     rsp, 208h
     DB      48h                         ; FXSAVE64
     fxsave  [rsp]
-
+    
     add     rsp, -20h
     call    rax
     add     rsp, 20h
@@ -211,8 +211,8 @@ gSmiStack   DQ      ?
     ; Restore FP registers
     ;
     DB      48h                         ; FXRSTOR64
-    fxrstor [rsp]
-
+    fxrstor [rsp]  
+ 
     mov     rax, offset FeaturePcdGet (PcdCpuSmmDebug) ;Get absolute address. Avoid RIP relative addressing
     cmp     byte ptr [rax], 0
     jz      @2

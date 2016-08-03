@@ -114,7 +114,7 @@ CpuSwitchStacks PROC        PUBLIC
     call  rcx            ; rcx = EntryPoint
  ;
  ; no ret as we have a new stack and we jumped to the new location
- ;
+ ;     
 CpuSwitchStacks  ENDP
 
 ;------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ CpuSwitchStacks  ENDP
 ; CpuSwitchStacks2Args (
 ;   IN  UINTN EntryPoint,   // rcx
 ;   IN  UINTN Parameter1,   // rdx
-;   IN  UINTN Parameter2,   // r8
+;   IN  UINTN Parameter2,   // r8  
 ;   IN  UINTN NewStack,     // r9
 ;   IN  UINTN Bsp           // Only used on IPF
 ;   );
@@ -130,14 +130,14 @@ CpuSwitchStacks  ENDP
 ; BSP not used on IA-32
 ;
 ;------------------------------------------------------------------------------
-CpuSwitchStacks2Args PROC        PUBLIC
+CpuSwitchStacks2Args PROC        PUBLIC     
     mov   rsp,  r8       ; rsp = NewStack
     push  r8             ; Parameter2
     push  rdx            ; Parameter1
     call  rcx            ; rcx = EntryPoint
  ;
  ; no ret as we have a new stack and we jumped to the new location
- ;
+ ;     
  CpuSwitchStacks2Args  ENDP
 
 
@@ -147,7 +147,7 @@ CpuSwitchStacks2Args PROC        PUBLIC
 ;   VOID
 ;   );
 ;------------------------------------------------------------------------------
-CpuCodeSegment PROC        PUBLIC
+CpuCodeSegment PROC        PUBLIC  
     xor   eax, eax
     mov   eax, cs
     ret
@@ -178,9 +178,9 @@ CpuLoadGlobalDescriptorTable PROC   PUBLIC
 CpuLoadGlobalDescriptorTable  ENDP
 
 CpuInitSelectors PROC   PUBLIC
-  int 68h
-  ret
-CpuInitSelectors    ENDP
+	int 68h
+	ret
+CpuInitSelectors    ENDP 
 ;------------------------------------------------------------------------------
 ; VOID
 ; CpuLoadInterruptDescriptorTable (

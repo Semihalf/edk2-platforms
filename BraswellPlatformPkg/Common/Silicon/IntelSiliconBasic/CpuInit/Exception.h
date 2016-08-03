@@ -69,3 +69,4 @@ InitializeException (
   IN  EFI_CPU_ARCH_PROTOCOL *CpuProtocol
   );
 #endif
+

@@ -24,7 +24,7 @@ VOID
   IN VOID    *SystemContext
   );
 /**
-  @todo        No structure description
+  @todo    No structure description
 
 **/
 typedef struct {

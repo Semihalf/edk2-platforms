@@ -30,7 +30,7 @@ EFI_GUID  mSmramCpuNvsHeaderGuid = EFI_SMRAM_CPU_NVS_HEADER_GUID;
 CHAR16    EfiPlatformCpuInfoVariable[] = L"PlatformCpuInfo";
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 BOOLEAN
@@ -454,7 +454,7 @@ int _outp(
 #endif
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 VOID
@@ -877,3 +877,4 @@ ResetAPs (
   )
 {
 }
+

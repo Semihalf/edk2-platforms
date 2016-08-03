@@ -42,7 +42,7 @@ RendezvousFunnelProcStart:
         .byte 0x8c,0xc8               # mov        ax,  cs
         .byte 0x8e,0xd8               # mov        ds,  ax
         .byte 0x8e,0xc0               # mov        es,  ax
-        .byte 0x8e,0xd0               # mov        ss,  ax
+        .byte 0x8e,0xd0               # mov        ss,  ax 
         .byte 0x33,0xc0               # xor        ax,  ax
         .byte 0x8e,0xe0               # mov        fs,  ax
         .byte 0x8e,0xe8               # mov        gs,  ax

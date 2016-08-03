@@ -15,7 +15,7 @@
   page    ,132
   title   MP ASSEMBLY HOOKS
 .686p
-.model  flat
+.model  flat        
 .data
 .stack
 .code
@@ -45,13 +45,13 @@ _MpMtrrSynchUpEntry  PROC    NEAR    PUBLIC
     ;
     mov eax, cr3
     mov cr3, eax
-
+    
     mov eax, edx
 
     ret
-
+    
 _MpMtrrSynchUpEntry  ENDP
-
+    
 _MpMtrrSynchUpExit  PROC    NEAR    PUBLIC
 
     push    ebp             ; C prolog

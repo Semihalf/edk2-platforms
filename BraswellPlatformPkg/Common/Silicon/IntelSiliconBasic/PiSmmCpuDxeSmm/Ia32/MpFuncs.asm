@@ -14,8 +14,8 @@
 ;;
 
 .686p
-.model  flat,C
-.code
+.model  flat,C       
+.code        
 
 EXTERN  InitializeFloatingPointUnits:PROC
 
@@ -47,7 +47,7 @@ RendezvousFunnelProcStart::
         db 8ch,  0c8h                 ; mov        ax,  cs
         db 8eh,  0d8h                 ; mov        ds,  ax
         db 8eh,  0c0h                 ; mov        es,  ax
-        db 8eh,  0d0h                 ; mov        ss,  ax
+        db 8eh,  0d0h                 ; mov        ss,  ax 
         db 33h,  0c0h                 ; xor        ax,  ax
         db 8eh,  0e0h                 ; mov        fs,  ax
         db 8eh,  0e8h                 ; mov        gs,  ax
@@ -67,10 +67,10 @@ flat32Start::
         dw IdtrProfile                ; mov        si, IdtrProfile
         db 66h                        ; db         66h
         db 2Eh,  0Fh, 01h, 1Ch        ; lidt       fword ptr cs:[si]
-
+        
         db 33h,  0C0h                 ; xor        ax,  ax
         db 8Eh,  0D8h                 ; mov        ds,  ax
-
+        
         db 0Fh,  20h, 0C0h            ; mov        eax, cr0                    ; Get control register 0
         db 66h,  83h, 0C8h, 01h       ; or         eax, 000000001h             ; Set PE bit (bit #0)
         db 0Fh,  22h, 0C0h            ; mov        cr0, eax
@@ -133,12 +133,12 @@ Releaselock::
         test        eax, eax
         jz          GoToSleep
         call        eax                           ; Call C function
-
+        
 GoToSleep::
         cli
         hlt
         jmp         $-2
-
+        
 RendezvousFunnelProc   ENDP
 RendezvousFunnelProcEnd::
 ;-------------------------------------------------------------------------------------
@@ -148,16 +148,16 @@ AsmGetAddressMap   PROC  near C  PUBLIC
 
         pushad
         mov         ebp,esp
-
+   
         mov         ebx, dword ptr [ebp+24h]
         mov         dword ptr [ebx], RendezvousFunnelProcStart
         mov         dword ptr [ebx+4h], PMODE_ENTRY - RendezvousFunnelProcStart
         mov         dword ptr [ebx+8h], FLAT32_JUMP - RendezvousFunnelProcStart
         mov         dword ptr [ebx+0ch], RendezvousFunnelProcEnd - RendezvousFunnelProcStart
-
+        
         popad
         ret
-
+        
 AsmGetAddressMap   ENDP
 
 END

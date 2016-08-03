@@ -1,0 +1,206 @@
+## @file
+#  IntelSiBasic Package.
+#
+#  Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+[Defines]
+  DEC_SPECIFICATION              = 0x00010005
+  PACKAGE_NAME                   = IntelSiBasicPkg
+  PACKAGE_GUID                   = AF1E4740-7083-4D4E-A83E-2A662CCF3A31
+  PACKAGE_VERSION                = 0.1
+
+[Includes]
+  Include
+
+[Guids]
+gIntelSiBasicPkgTokenSpaceGuid  = { 0x6de9e48c, 0x622, 0x4a33, { 0xab, 0x29, 0xdd, 0xc8, 0xd4, 0xf9, 0xc7, 0x6d}}
+
+## Include/MultiPlatSupport.h
+gDefaultDataFileGuid                        = { 0x1ae42876, 0x008f, 0x4161, { 0xb2, 0xb7, 0x1c, 0x0d, 0x15, 0xc5, 0xef, 0x43 }}
+gDefaultDataOptSizeFileGuid                 = { 0x003e7b41, 0x98a2, 0x4be2, { 0xb2, 0x7a, 0x6c, 0x30, 0xc7, 0x65, 0x52, 0x25 }}
+
+gEfiHtBistHobGuid  =  {0xbe644001, 0xe7d4, 0x48b1, {0xb0, 0x96, 0x8b, 0xa0, 0x47, 0xbc, 0x7a, 0xe7}}
+
+## Include/Guid/IA32FamilyCpuPkgTokenSpace.h
+  gEfiCpuTokenSpaceGuid          = { 0x2ADA836D, 0x0A3D, 0x43D6, { 0xA2, 0x5A, 0x38, 0x45, 0xCA, 0xD2, 0xD4, 0x00 }}
+
+[Protocols]
+## Include/Protocol/FlashDeviceInfo.h
+gFlashDeviceInfoProtocolGuid                = { 0xcdd3ef06, 0xe873, 0x46ee, { 0xa0, 0x64, 0x7e, 0xc0, 0xb2, 0xc5, 0x6c, 0x11 }}
+
+gSmmCpuSyncProtocolGuid        = { 0xd5950985, 0x8be3, 0x4b1c, { 0xb6, 0x3f, 0x95, 0xd1, 0x5a, 0xb3, 0xb6, 0x5f }}
+gSmmCpuSync2ProtocolGuid       = { 0x9db72e22, 0x9262, 0x4a18, { 0x8f, 0xe0, 0x85, 0xe0, 0x3d, 0xfa, 0x96, 0x73 }}
+gEfiSmmCpuServiceProtocolGuid  = { 0x1d202cab, 0xc8ab, 0x4d5c, { 0x94, 0xf7, 0x3c, 0xfc, 0xc0, 0xd3, 0xd3, 0x35 }}
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic]
+#
+# ACPI timer
+#
+gIntelSiBasicPkgTokenSpaceGuid.PcdAcpiIoBaseAddress|0x1800|UINT16|0x10000021
+gIntelSiBasicPkgTokenSpaceGuid.AcpiTimerLength|24|UINT8|0x10000022
+
+#
+# SATA controller
+#
+gIntelSiBasicPkgTokenSpaceGuid.SataMaxSataPort|8|UINT8|0x10000023
+gIntelSiBasicPkgTokenSpaceGuid.SataMaxDevicesPerPort|1|UINT8|0x10000024
+
+#
+# CPU
+#
+gIntelSiBasicPkgTokenSpaceGuid.CpuNumberOfThreadsPerCore|2|UINT32|0x10000025
+gIntelSiBasicPkgTokenSpaceGuid.CpuNumberOfCoresPerDie|2|UINT32|0x10000026
+gIntelSiBasicPkgTokenSpaceGuid.CpuNumberOfDiesPerPackage|1|UINT32|0x10000027
+gIntelSiBasicPkgTokenSpaceGuid.CpuNumberOfPackages|1|UINT32|0x10000028
+
+gIntelSiBasicPkgTokenSpaceGuid.PcdFlashMicroCodeRegionBase|0xFFD60000|UINT32|0x20000015
+gIntelSiBasicPkgTokenSpaceGuid.PcdFlashMicroCodeRegionSize|0x00023000|UINT32|0x20000016
+gIntelSiBasicPkgTokenSpaceGuid.PcdFlashMicroCodeOffset|0x00|UINT32|0x20000017
+
+#
+# PCI Host bridge
+#
+##
+## PcdEfiGcdAllocateType is using for EFI_GCD_ALLOCATE_TYPE selection
+## value of the struct
+##  0x00 EfiGcdAllocateAnySearchBottomUp
+##  0x01 EfiGcdAllocateMaxAddressSearchBottomUp
+##  0x03 EfiGcdAllocateAnySearchTopDown
+##  0x04 EfiGcdAllocateMaxAddressSearchTopDown
+##
+##  below value should not using in this situation
+##  0x05 EfiGcdMaxAllocateType : design for max value of struct
+##  0x02 EfiGcdAllocateAddress : design for speccification address allocate
+##
+gIntelSiBasicPkgTokenSpaceGuid.PcdEfiGcdAllocateType|0x01|UINT8|0x40000000
+
+##
+## Allocate 56 KB [0x2000..0xFFFF] of I/O space for Pci Devices
+## If PcdPciReservedMemLimit =0  Pci Reserved default  MMIO Limit is PciExpressBase else use PcdPciReservedMemLimit .
+##
+gIntelSiBasicPkgTokenSpaceGuid.PcdPciReservedIobase   |0x1000     |UINT16|0x00010041
+gIntelSiBasicPkgTokenSpaceGuid.PcdPciReservedIoLimit  |0xFFFF     |UINT16|0x00010042
+gIntelSiBasicPkgTokenSpaceGuid.PcdMmioBase  |0x80000000 |UINT32|0x00010043
+gIntelSiBasicPkgTokenSpaceGuid.PcdPciReservedMemLimit |0x00000000 |UINT32|0x00010044
+gIntelSiBasicPkgTokenSpaceGuid.PcdPciReservedMemAbove4GBBase  |0x0000000000000000 |UINT64|0x00010045
+gIntelSiBasicPkgTokenSpaceGuid.PcdPciReservedMemAbove4GBLimit |0x0000000000000000 |UINT64|0x00010046
+
+##
+## Indicates the receive FIFO depth of UART controller.<BR><BR>
+## @Prompt Default UART Receive FIFO Depth.
+gIntelSiBasicPkgTokenSpaceGuid.PcdUartDefaultReceiveFifoDepth|1|UINT16|0x00000031
+
+## Indidates if SMM Delay feature is supported.<BR><BR>
+#   TRUE  - SMM Delay feature is supported.<BR>
+#   FALSE - SMM Delay feature is not supported.<BR>
+# @Prompt SMM Delay feature.
+gEfiCpuTokenSpaceGuid.PcdCpuSmmUseDelayIndication|TRUE|BOOLEAN|0x60000018
+## Indidates if SMM Block feature is supported.<BR><BR>
+#   TRUE  - SMM Block feature is supported.<BR>
+#   FALSE - SMM Block feature is not supported.<BR>
+# @Prompt SMM Block feature.
+gEfiCpuTokenSpaceGuid.PcdCpuSmmUseBlockIndication|TRUE|BOOLEAN|0x60000019
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic]
+
+  ## Specifies maximum number of processors supported by the platform.
+  # @Prompt Maximum number of processors supported by the platform.
+  gEfiCpuTokenSpaceGuid.PcdCpuMaxLogicalProcessorNumber|64|UINT32|0x30000002
+  ## Specifies timeout value in microseconds for the BSP in SMM to wait for all APs to come into SMM.
+  # @Prompt AP synchronization timeout value in SMM.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmApSyncTimeout|1000000|UINT64|0x32132104
+  ## Specifies stack size in bytes for each processor in SMM.
+  # @Prompt Processor stack size in SMM.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmStackSize|0x2000|UINT32|0x32132105
+  ## Specifies buffer size in bytes to save SMM profile data. The value should be a multiple of 4KB.
+  # @Prompt SMM profile data buffer size.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmProfileSize|0x200000|UINT32|0x32132107
+  ## Indidates if SMM Code Access Check is enabled.
+  #  If enabled, the SMM handler cannot execut the code outside ranges defined by SMRR.
+  #  This PCD is suggested to TRUE in production image.<BR><BR>
+  #   TRUE  - SMM Code Access Check will be enabled.<BR>
+  #   FALSE - SMM Code Access Check will be disabled.<BR>
+  # @Prompt SMM Code Access Check.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmCodeAccessCheckEnable|TRUE|BOOLEAN|0x60000013
+
+
+
+[PcdsFeatureFlag]
+    ## Indicates if BSP election in SMM will be enabled.
+  #  If enabled, a BSP will be dynamically elected among all processors in each SMI.
+  #  Otherwise, processor 0 is always as BSP in each SMI.<BR><BR>
+  #   TRUE  - BSP election in SMM will be enabled.<BR>
+  #   FALSE - BSP election in SMM will be disabled.<BR>
+  # @Prompt Enable BSP election in SMM.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmEnableBspElection|TRUE|BOOLEAN|0x32132106
+  ## Indicates if SMM Debug will be enabled.
+  #  If enabled, hardware breakpoints in SMRAM can be set outside of SMM mode and take effect in SMM.<BR><BR>
+  #   TRUE  - SMM Debug will be enabled.<BR>
+  #   FALSE - SMM Debug will be disabled.<BR>
+  # @Prompt Enable SMM Debug.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmDebug|FALSE|BOOLEAN|0x1000001B
+  ## Indicates if SMM Stack Guard will be enabled.
+  #  If enabled, stack overflow in SMM can be caught which eases debugging.<BR><BR>
+  #   TRUE  - SMM Stack Guard will be enabled.<BR>
+  #   FALSE - SMM Stack Guard will be disabled.<BR>
+  # @Prompt Enable SMM Stack Guard.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmStackGuard|FALSE|BOOLEAN|0x1000001C
+  ## Indicates if SMM Startup AP in a blocking fashion.
+  #   TRUE  - SMM Startup AP in a blocking fashion.<BR>
+  #   FALSE - SMM Startup AP in a non-blocking fashion.<BR>
+  # @Prompt SMM Startup AP in a blocking fashion.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmBlockStartupThisAp|FALSE|BOOLEAN|0x32132108
+  ## Indicates if SMM Profile will be enabled.
+  #  If enabled, instruction executions in and data accesses to memory outside of SMRAM will be logged.
+  #  This PCD is only for validation purpose. It should be set to false in production.<BR><BR>
+  #   TRUE  - SMM Profile will be enabled.<BR>
+  #   FALSE - SMM Profile will be disabled.<BR>
+  # @Prompt Enable SMM Profile.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmProfileEnable|FALSE|BOOLEAN|0x32132109
+  ## Indicates if the SMM profile log buffer is a ring buffer.
+  #  If disabled, no additional log can be done when the buffer is full.<BR><BR>
+  #   TRUE  - the SMM profile log buffer is a ring buffer.<BR>
+  #   FALSE - the SMM profile log buffer is a normal buffer.<BR>
+  # @Prompt The SMM profile log buffer is a ring buffer.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmProfileRingBuffer|FALSE|BOOLEAN|0x3213210a
+  ## Indicates if SMM MP sync data resides in un-cached RAM.<BR><BR>
+  #   TRUE  - SMM MP sync data will be resided in un-cached RAM.<BR>
+  #   FALSE - SMM MP sync data will be resided in cached RAM.<BR>
+  # @Prompt SMM MP sync data resides in un-cached RAM.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmUncacheCpuSyncData|FALSE|BOOLEAN|0x3213210D
+  ## Indidates if CPU SMM hot-plug will be enabled.<BR><BR>
+  #   TRUE  - SMM CPU hot-plug will be enabled.<BR>
+  #   FALSE - SMM CPU hot-plug will be disabled.<BR>
+  # @Prompt SMM CPU hot-plug.
+  gEfiCpuTokenSpaceGuid.PcdCpuHotPlugSupport|FALSE|BOOLEAN|0x3213210C
+  ## Indidates if lock SMM Feature Control MSR.<BR><BR>
+  #   TRUE  - SMM Feature Control MSR will be locked.<BR>
+  #   FALSE - SMM Feature Control MSR will not be locked.<BR>
+  # @Prompt Lock SMM Feature Control MSR.
+  gEfiCpuTokenSpaceGuid.PcdCpuSmmFeatureControlMsrLock|TRUE|BOOLEAN|0x3213210B
+
+[PcdsDynamic,PcdsDynamicEx]
+  ## Contains the pointer to CPU Configuration Context Buffer defined in the CpuConfigLib.
+  # @Prompt The pointer to CPU Configuration Context Buffer.
+  gEfiCpuTokenSpaceGuid.PcdCpuConfigContextBuffer|0x0|UINT64|0x50000001
+  ## Used for a callback mechanism for the CPU MP driver.
+  #  The CPU MP driver will set this PCD at pre-defined points. If there is callback function registered on it,
+  #  the callback function will be triggered, and it may change the value of PcdCpuCallbackSignal.
+  # @Prompt PCD for CPU callback signal.
+  gEfiCpuTokenSpaceGuid.PcdCpuCallbackSignal|0x0|UINT8|0x50000002
+  ## Contains the pointer to a CPU S3 data buffer of structure ACPI_CPU_DATA.
+  # @Prompt The pointer to a CPU S3 data buffer.
+  gEfiCpuTokenSpaceGuid.PcdCpuS3DataAddress|0x0|UINT64|0x60000010
+  ## Contains the pointer to a CPU Hot Plug Data structure if CPU hot-plug is supported.
+  # @Prompt The pointer to CPU Hot Plug Data.
+  gEfiCpuTokenSpaceGuid.PcdCpuHotPlugDataAddress|0x0|UINT64|0x60000011

@@ -96,7 +96,7 @@
 [Packages]
   MdePkg/MdePkg.dec
   IntelFrameworkModulePkg/IntelFrameworkModulePkg.dec
-  BraswellPlatformPkg/BraswellPlatformPkg.dec
+  BraswellPlatformPkg/Common/Silicon/IntelSiliconBasic/IntelSiliconBasic.dec
 
 [LibraryClasses]
   BaseMemoryLib

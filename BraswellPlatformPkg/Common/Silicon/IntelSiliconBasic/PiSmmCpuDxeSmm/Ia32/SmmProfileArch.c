@@ -64,3 +64,4 @@ RestorePageTableAbove4G (
   )
 {
 }
+

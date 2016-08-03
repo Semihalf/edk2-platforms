@@ -404,7 +404,7 @@ RootBridgeConstructor (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -499,7 +499,7 @@ RootBridgeIoPollMem (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -593,7 +593,7 @@ RootBridgeIoPollIo (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -662,7 +662,7 @@ RootBridgeIoMemRead (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -732,7 +732,7 @@ RootBridgeIoMemWrite (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -814,7 +814,7 @@ RootBridgeIoIoRead (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -895,7 +895,7 @@ RootBridgeIoIoWrite (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -979,7 +979,7 @@ RootBridgeIoCopyMem (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1017,7 +1017,7 @@ RootBridgeIoPciRead (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1247,7 +1247,7 @@ RootBridgeIoFreeBuffer (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1268,7 +1268,7 @@ RootBridgeIoFlush (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1349,7 +1349,7 @@ RootBridgeIoSetAttributes (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1385,7 +1385,7 @@ RootBridgeIoConfiguration (
 }
 
 /**
-  @todo    add description
+  @todo  add description
 
 **/
 /**
@@ -1457,3 +1457,4 @@ RootBridgeIoPciRW (
 
   return EFI_SUCCESS;
 }
+

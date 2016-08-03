@@ -82,7 +82,7 @@ ASM_PFX(gSmbase): .space 4
     .space  2
 _GdtDesc:   .space 4
             .space 2
-Start32bit:
+Start32bit: 
     leal    DSC_OFFSET(%edi),%ebx
     movw    DSC_DS(%ebx),%ax
     movl    %eax,%ds
@@ -118,7 +118,7 @@ L1:
     popl    %ebp
     movl    $0x80000001, %eax
     cpuid
-    btl     $29, %edx                   # check cpuid to identify X64 or IA32
+    btl     $29, %edx                   # check cpuid to identify X64 or IA32 
     leal    (0x7fc8 - (L1 - _SmiEntryPoint))(%ebp), %edi
     leal    4(%edi), %esi
     jnc     L2
@@ -132,7 +132,7 @@ L7:
 L3:
 
     pushl   (%esp)
-
+    
     movl    $ASM_PFX(SmiRendezvous), %eax
     call    *%eax
     popl    %ecx

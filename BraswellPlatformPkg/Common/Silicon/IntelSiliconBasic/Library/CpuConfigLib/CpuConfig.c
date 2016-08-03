@@ -959,3 +959,4 @@ SearchFeatureEntry (
   FeatureEntry = CPU_FEATURE_ENTRY_FROM_LINK (Link);
   return FeatureEntry;
 }
+

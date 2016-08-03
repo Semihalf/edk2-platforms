@@ -38,7 +38,7 @@ ASM_PFX(MpMtrrSynchUpEntry):
     #
     movl %cr3, %eax
     movl %eax, %cr3
-
+    
     movl %edx, %eax
     ret
 #MpMtrrSynchUpEntry  ENDP
@@ -63,7 +63,7 @@ ASM_PFX(MpMtrrSynchUpExit):
     #
     movl 8(%ebp), %eax
     movl %eax, %cr4
-
+    
     pop %ebp
     ret
 #MpMtrrSynchUpExit  ENDP

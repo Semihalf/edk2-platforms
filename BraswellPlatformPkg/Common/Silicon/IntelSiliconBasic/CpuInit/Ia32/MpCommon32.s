@@ -32,7 +32,7 @@
 .equ    IdtrProfile      ,      LockLocation + 0x16
 .equ    BufferStart      ,      LockLocation + 0x1C
 .equ    Cr3Location      ,      LockLocation + 0x20
-.equ    InitFlag         ,      LockLocation + 0x24
+.equ    InitFlag         ,      LockLocation + 0x24 
 .equ    WakeUpApManner   ,      LockLocation + 0x28
 .equ    BistBuffer       ,      LockLocation + 0x2C
 
@@ -59,7 +59,7 @@ TryGetLock:
 
     PAUSE32
 
-        jmp         TryGetLock
+        jmp         TryGetLock       
 
 LockObtained:
         popal
@@ -83,7 +83,7 @@ ASM_PFX(AsmReleaseMPLock):
 #AsmReleaseMPLock   ENDP
 
 #-------------------------------------------------------------------------------
-#  AsmGetGdtrIdtr (&Gdt, &Idt)#
+#  AsmGetGdtrIdtr (&Gdt, &Idt)#                                                    
 #-------------------------------------------------------------------------------------
 ASM_GLOBAL ASM_PFX(AsmGetGdtrIdtr)
 ASM_PFX(AsmGetGdtrIdtr):
@@ -98,7 +98,7 @@ ASM_PFX(AsmGetGdtrIdtr):
         leal        IdtDesc, %esi
         movl        0x28(%ebp), %edi
         movl        %esi, (%edi)
-
+        
         popal
         ret
 #AsmGetGdtrIdtr   ENDP
@@ -109,6 +109,6 @@ GdtDesc:                        # GDT descriptor
         .word       0x0         # filled using sgdt
 
 IdtDesc:                        # IDT descriptor
-        .word        0x0         # IDT limit
+        .word      	0x0         # IDT limit
         .word       0x0         # IDT base and limit will be
         .word       0x0         # filled using sidt

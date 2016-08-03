@@ -39,7 +39,7 @@ Idtr1:                             .space  4
 .equ    IdtrProfile      ,      LockLocation + 0x16
 .equ    BufferStart      ,      LockLocation + 0x1C
 .equ    Cr3Location      ,      LockLocation + 0x20
-.equ    InitFlag         ,      LockLocation + 0x24
+.equ    InitFlag         ,      LockLocation + 0x24 
 .equ    WakeUpApManner   ,      LockLocation + 0x28
 .equ    BistBuffer       ,      LockLocation + 0x2C
 
@@ -53,47 +53,47 @@ Idtr1:                             .space  4
 #---------------------------------------#
 # _InitializeIdt                #
 #----------------------------------------------------------------------------#
-#
+# 
 # Protocol prototype
 #   InitializeIdt (
 #   IN EFI_CPU_INTERRUPT_HANDLER TableStart,
 #   IN UINTN                     *IdtTablePtr,
 #   IN UINT16                    IdtLimit
 #   )
-#
+#           
 # Routine Description:
-#
+# 
 #  Creates an IDT table starting at IdtTablPtr. It has IdtLimit/8 entries.
 #  Table is initialized to intxx where xx is from 00 to number of entries or
 #  100h, whichever is smaller. After table has been initialized the LIDT
 #  instruction is invoked.
-#
-#  TableStart is the pointer to the callback table and is not used by
+# 
+#  TableStart is the pointer to the callback table and is not used by 
 #  InitializedIdt but by commonEntry. CommonEntry handles all interrupts,
 #  does the context save and calls the callback entry, if non-NULL.
 #  It is the responsibility of the callback routine to do hardware EOIs.
-#
+# 
 # Arguments:
-#
+# 
 #   TableStart          - Pointer to interrupt callback table
 #
 #   IdtTablePtr         - Pointer to IDT table
 #
 #   IdtLimit            - IDT Table limit = number of interrupt entries * 8
-#
-# Returns:
-#
+# 
+# Returns: 
+# 
 #   Nothing
 #
-#
+# 
 # Input:  [ebp][0]  = Original ebp
 #         [ebp][4]  = Return address
 #         [ebp][8]  = TableStart
 #         [ebp][0c] = *IdtTablePtr
 #         [ebp][10] = IdtLimit
-#
+#          
 # Output: Nothing
-#
+#           
 # Destroys: Nothing
 #-----------------------------------------------------------------------------#
 
@@ -121,51 +121,51 @@ ASM_PFX(InitializeIdt):
   ret
 
 #----------------------------------------------------------------------------#
-#
+# 
 # Protocol prototype
 #   None
-#
+#           
 # Routine Description:
-#
+# 
 #  These routines handle the individual interrupts. These routines always
 #  gain control on any interrupt or exception. They save EAX and place
-#  the interrupt number in EAX. CommonEntry is then jumped to.
+#  the interrupt number in EAX. CommonEntry is then jumped to. 
 #  instruction is invoked.
-#
-#  CommonEntry handles all interrupts,does the context save and calls the
-#  callback entry, if non-NULL. It is the responsibility of the callback
+# 
+#  CommonEntry handles all interrupts,does the context save and calls the 
+#  callback entry, if non-NULL. It is the responsibility of the callback 
 #  routine to do hardware EOIs. Callbacks are entered into the table
 #  located at TableStart. Entries are modified by the InstallInterruptHandler
 #  and UninstallInterruptHandler protocols.
-#
+# 
 # Arguments to CommonEntry:
-#
+# 
 #   EAX                 - Interrupt or exception number
 #
 #   TableStart          - Pointer to interrupt callback table
-#
-# Returns:
-#
+# 
+# Returns: 
+# 
 #   Nothing
 #
-#
+# 
 # Output: Nothing
-#
+#           
 # Destroys: Nothing
 #-----------------------------------------------------------------------------#
 
-TemplateStart:
+TemplateStart: 
    pushl %eax
 
-   #mov  eax, 0nnh (nn stands for vector number, which will be fixed at runtime
+   #mov  eax, 0nnh (nn stands for vector number, which will be fixed at runtime 
    .byte 0xb8
-VectorNumber:
+VectorNumber:   
    .long 0x0
 
    jmp  *CommonInterruptEntry
-TemplateEnd:
+TemplateEnd: 
 
-CommonEntry:
+CommonEntry: 
 
 #---------------------------------------#
 # _CommonEntry                  #
@@ -199,7 +199,7 @@ CommonEntry:
   btl     %eax, %cs:ASM_PFX(mErrorCodeFlag)
   jc      L1
 
-NoErrorCode:
+NoErrorCode: 
   #
   # Push a dummy error code on the stack
   # to maintain coherent stack map
@@ -324,7 +324,7 @@ L1:
   call    *%eax
   addl    $8, %esp
 
-nonNullValue:
+nonNullValue: 
   cli
 
 ## UINT32  ExceptionData#
@@ -402,30 +402,30 @@ nonNullValue:
 #---------------------------------------#
 # _GetTemplateAddressMap                  #
 #----------------------------------------------------------------------------#
-#
+# 
 # Protocol prototype
 #   GetTemplateAddressMap (
 #     INTERRUPT_HANDLER_TEMPLATE_MAP *AddressMap
 #   )#
-#
+#           
 # Routine Description:
-#
+# 
 #  Return address map of interrupt handler template so that C code can generate
 #  interrupt handlers, and dynamically do address fix.
-#
+# 
 # Arguments:
-#
-#
-# Returns:
-#
+# 
+# 
+# Returns: 
+# 
 #   Nothing
 #
-#
+# 
 # Input:  [ebp][0]  = Original ebp
 #         [ebp][4]  = Return address
-#
+#          
 # Output: Nothing
-#
+#           
 # Destroys: Nothing
 #-----------------------------------------------------------------------------#
 ASM_GLOBAL ASM_PFX(GetTemplateAddressMap)
@@ -438,7 +438,7 @@ ASM_PFX(GetTemplateAddressMap):
   movl $TemplateStart, (%ebx)
   movl $(TemplateEnd - TemplateStart), 4(%ebx)
 
-  # Note: if code in Template is updated, the value fills into the 3rd parameter
+  # Note: if code in Template is updated, the value fills into the 3rd parameter 
   # also needs update
   movl $(VectorNumber - TemplateStart), 8(%ebx)
 
@@ -451,31 +451,31 @@ ASM_PFX(GetTemplateAddressMap):
 #---------------------------------------#
 # _InitializeSelectors                  #
 #----------------------------------------------------------------------------#
-#
+# 
 # Protocol prototype
 #   InitializeSelectors (
 #   )
-#
+#           
 # Routine Description:
-#
+# 
 #  Creates an new GDT in RAM.  The problem is that our former selectors
-#  were ROM based and the EFI OS Loader does not manipulate the machine state
+#  were ROM based and the EFI OS Loader does not manipulate the machine state 
 #  to change them (as it would for a 16-bit PC/AT startup code that had to
 #  go from Real Mode to flat mode).
-#
+# 
 # Arguments:
-#
-#
-# Returns:
-#
+# 
+# 
+# Returns: 
+# 
 #   Nothing
 #
-#
+# 
 # Input:  [ebp][0]  = Original ebp
 #         [ebp][4]  = Return address
-#
+#          
 # Output: Nothing
-#
+#           
 # Destroys: Nothing
 #-----------------------------------------------------------------------------#
 
@@ -489,7 +489,7 @@ ASM_PFX(InitializeSelectors):
   pushal
   movl    $Gdtr, %edi
 
-  movw    %cs,%ax             # Get the selector data from our code image
+  movw    %cs,%ax             # Get the selector data from our code image          
   .byte 0x66
   movw    %ax,%es
   lgdt    %es:(%edi)
@@ -538,7 +538,7 @@ ASM_GLOBAL ASM_PFX(CpuDisableInterrupt)
 ASM_PFX(CpuDisableInterrupt):
     cli
     ret
-#CpuDisableInterrupt ENDP
+#CpuDisableInterrupt ENDP  
 
 #------------------------------------------------------------------------------
 #  VOID
@@ -562,7 +562,7 @@ ASM_GLOBAL ASM_PFX(GetCodeSegment)
 ASM_PFX(GetCodeSegment):
     movw  %cs, %ax
     ret
-#GetCodeSegment ENDP
+#GetCodeSegment ENDP  
 
 
 #------------------------------------------------------------------------------
@@ -598,7 +598,7 @@ ASM_PFX(EfiInvd):
 ASM_GLOBAL ASM_PFX(GetIdt)
 ASM_PFX(GetIdt):
   push    %ebp                    # C prolog
-
+        
   movl    %esp, %ebp
   movl    8(%ebp), %eax
   sidt    (%eax)
@@ -621,7 +621,7 @@ ASM_PFX(C1eExceptionHandler):
   cli
   pushal
 
-  # Verify if GPE was caused by C1e write.
+  # Verify if GPE was caused by C1e write.  
   # If not, pass control to real exception handler.
   cmp    $0, ASM_PFX(mWroteMsr)
   je     notourexception
@@ -654,19 +654,19 @@ ASM_GLOBAL ASM_PFX(GetCoreNumber)
 ASM_PFX(GetCoreNumber):
 
     pushl %ebx
-
+    
     movl  $4, %eax
     movl  $0, %ecx
     cpuid
-
+    
     shrl  $26, %eax
     andl  $0x3f, %eax
     incb  %al
-
+    
     popl  %ebx
-
+    
     ret
-
+    
 #GetCoreNumber ENDP
 
 #-----------------------------------------------------------------------------#
@@ -684,7 +684,7 @@ Gdtr:    .word GDT_END - GDT_BASE - 1
 
         .p2align 4
 
-GDT_BASE:
+GDT_BASE: 
 # null descriptor
 # .equ                NULL_SEL, $-GDT_BASE # Selector [0]
         .word 0         # limit 15:0
@@ -757,5 +757,5 @@ GDT_BASE:
         .byte 0         # page-granular, 32-bit
         .byte 0
 
-GDT_END:
+GDT_END: 
 

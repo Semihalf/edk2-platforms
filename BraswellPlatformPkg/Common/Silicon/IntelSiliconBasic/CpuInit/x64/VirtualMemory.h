@@ -118,7 +118,7 @@ typedef union {
   UINT64    Uint64;
 } x64_PAGE_TABLE_ENTRY_2M;
 /**
-  @todo    Add union description
+  @todo  Add union description
 
 **/
 typedef union {
@@ -132,7 +132,7 @@ typedef union {
   UINT64  Reserved:57;
 } x64_PAGE_TABLE_ENTRY_COMMON;
 /**
-  @todo    Add union description
+  @todo  Add union description
 
 **/
 typedef union {
@@ -145,3 +145,4 @@ typedef union {
 #pragma pack()
 
 #endif
+
