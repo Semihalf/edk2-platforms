@@ -201,3 +201,4 @@ extern EFI_GUID gSpiFlashPartProtocolGuid;
 extern EFI_GUID gSpiFlashPartSyncGuid;
 
 #endif  //  __SPI_FLASH_PART_H__
+

@@ -1310,3 +1310,4 @@ extern EFI_GUID gEfiSetupVariableGuid;
 #define SETUP_DATA SYSTEM_CONFIGURATION
 
 #endif // #ifndef _SETUP_VARIABLE
+

@@ -31,3 +31,4 @@ Intel Corporation.
 extern EFI_GUID gEfiIfrFrontPageGuid;
 
 #endif
+

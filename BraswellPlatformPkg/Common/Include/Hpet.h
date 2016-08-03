@@ -28,8 +28,9 @@
 // HPET Definitions
 //
 #define EFI_ACPI_HPET_TABLE_REVISION            0x1
-#define MAIN_COUNTER_MIN_PERIODIC_CLOCK_TICKS    0x80        //approx 1ms
+#define MAIN_COUNTER_MIN_PERIODIC_CLOCK_TICKS  0x80        //approx 1ms
 
 #define HPET_BASE_ADDRESS                       0xFED00000
 #define EFI_ACPI_EVENT_TIMER_BLOCK_ID           0x8086A201
 #endif
+

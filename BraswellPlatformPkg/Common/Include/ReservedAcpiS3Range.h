@@ -31,3 +31,4 @@ typedef struct {
 #define RESERVED_ACPI_S3_RANGE_OFFSET (EFI_PAGE_SIZE - sizeof (RESERVED_ACPI_S3_RANGE))
 
 #endif
+

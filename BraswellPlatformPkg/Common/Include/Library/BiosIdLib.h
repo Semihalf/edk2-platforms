@@ -97,3 +97,4 @@ GetBiosVersionDateTime (
   );
 
 #endif
+

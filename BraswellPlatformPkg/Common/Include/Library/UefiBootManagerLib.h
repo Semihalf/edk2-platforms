@@ -796,3 +796,4 @@ EfiBootManagerGetVariableAndSize (
   );
 
 #endif
+

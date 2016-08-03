@@ -113,3 +113,4 @@
 #define BITRANGE(From, Width, Value)  (((Value) >> (From)) & ((1 << (Width)) - 1))
 
 #endif
+

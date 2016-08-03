@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004 - 2015, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -63,31 +63,31 @@ typedef enum {
 #define SF_DEVICE_ID0_W25XXX        0x30
 #define SF_DEVICE_ID1_W25X32        0x16
 #define SF_DEVICE_ID1_W25X64        0x17
-#define SF_DEVICE_ID0_W25QXX        0x60
+#define SF_DEVICE_ID0_W25QXX        0x40
 #define SF_DEVICE_ID1_W25Q16        0x15
 #define SF_DEVICE_ID1_W25Q32        0x16
 #define SF_DEVICE_ID1_W25Q64        0x17
 #define SF_DEVICE_ID1_W25Q128       0x18
 
-#define    SF_VENDOR_ID_MACRONIX       0xC2
-#define    SF_DEVICE_ID0_MX25LXX       0x20
-#define    SF_DEVICE_ID1_MX25L16       0x15
-#define    SF_DEVICE_ID1_MX25L32       0x16
-#define    SF_DEVICE_ID1_MX25L64       0x17
-#define    SF_DEVICE_ID1_MX25L128      0x18
+#define  SF_VENDOR_ID_MACRONIX       0xC2
+#define  SF_DEVICE_ID0_MX25LXX       0x20
+#define  SF_DEVICE_ID1_MX25L16       0x15
+#define  SF_DEVICE_ID1_MX25L32       0x16
+#define  SF_DEVICE_ID1_MX25L64       0x17
+#define  SF_DEVICE_ID1_MX25L128      0x18
 #define SF_DEVICE_ID0_MX25UXX       0x25
 #define SF_DEVICE_ID1_MX25U6435F    0x37
 
-#define    SF_VENDOR_ID_NUMONYX        0x20
+#define  SF_VENDOR_ID_NUMONYX        0x20
 #define SF_DEVICE_ID0_N25Q064       0xBB
 #define SF_DEVICE_ID1_N25Q064       0x17
-#define    SF_DEVICE_ID0_M25PXXX       0x71
-#define    SF_DEVICE_ID0_N25QXXX       0xBA
-#define    SF_DEVICE_ID1_M25PX16       0x15
-#define    SF_DEVICE_ID1_N25Q032       0x16
-#define    SF_DEVICE_ID1_M25PX32       0x16
-#define    SF_DEVICE_ID1_M25PX64       0x17
-#define    SF_DEVICE_ID1_N25Q128       0x18
+#define  SF_DEVICE_ID0_M25PXXX       0x71
+#define  SF_DEVICE_ID0_N25QXXX       0xBA
+#define  SF_DEVICE_ID1_M25PX16       0x15
+#define  SF_DEVICE_ID1_N25Q032       0x16
+#define  SF_DEVICE_ID1_M25PX32       0x16
+#define  SF_DEVICE_ID1_M25PX64       0x17
+#define  SF_DEVICE_ID1_N25Q128       0x18
 
 #define SF_VENDOR_ID_SST            0xBF
 #define SF_DEVICE_ID0_SST25VF0XXX   0x25
@@ -155,9 +155,9 @@ typedef enum {
 #define SF_DEVICE_ID1_W25X32       0x16
 #define SF_DEVICE_ID1_W25X64       0x17
 
-#define    SF_VENDOR_ID_MX                0xC2
-#define    SF_DEVICE_ID0_25L1605A        0x20
-#define    SF_DEVICE_ID1_25L1605A        0x15
+#define  SF_VENDOR_ID_MX        0xC2
+#define  SF_DEVICE_ID0_25L1605A    0x20
+#define  SF_DEVICE_ID1_25L1605A    0x15
 
 #define SF_VENDOR_ID_NUMONYX        0x20
 #define SF_DEVICE_ID0_M25PX16       0x71
@@ -211,10 +211,10 @@ typedef enum {
 #define SF_INST_DOFR            0x3B     // Dual Output Fast Read
 #define SF_INST_SFDP            0x5A     // Serial Flash Discovery Parameters
 
-#define SECTOR_SIZE_4KB     0x1000       // Common 4kBytes sector size
-#define SECTOR_SIZE_64KB    0x10000      // Common 64kBytes sector size
-#define BLOCK_SIZE_64KB     0x00010000   // Common 64kBytes block size
-#define MAX_FWH_SIZE        0x00100000   // 8Mbit (Note that this can also be used for the 4Mbit )
+#define SECTOR_SIZE_4KB   0x1000       // Common 4kBytes sector size
+#define SECTOR_SIZE_64KB  0x10000      // Common 64kBytes sector size
+#define BLOCK_SIZE_64KB   0x00010000   // Common 64kBytes block size
+#define MAX_FWH_SIZE      0x00100000   // 8Mbit (Note that this can also be used for the 4Mbit )
 
 //
 // Prefix Opcode Index on the host SPI controller
@@ -239,3 +239,4 @@ typedef enum {
 } SPI_OPCODE_INDEX;
 
 #endif
+

@@ -70,7 +70,7 @@
 #define KSC_B_BOARD_ID_BIT_16           0x80    // Bit7 =1 means 16 bit implementation
 #define KSC_C_FAB_ID                    0x0D    // Get the board fab ID in the lower 3 bits
 #define KSC_C_SYSTEM_POWER_OFF          0x22    // Turn off the system power
-#define KSC_C_NIC_PRESENCE              0X27    // WLAN NIC Card presence Information
+#define KSC_C_NIC_PRESENCE              0X27  // WLAN NIC Card presence Information
 #define KSC_C_LAN_ON                    0x46    // Turn on the power to LAN through EC/KSC
 #define KSC_C_LAN_OFF                   0x47    // Turn off the power to LAN through EC/KSC
 #define KSC_C_GET_TEMP                  0x50    // Returns the CPU temperature as read from the SMBus thermal sensor.
@@ -280,3 +280,4 @@ ReceiveKscStatus (
   );
 
 #endif
+

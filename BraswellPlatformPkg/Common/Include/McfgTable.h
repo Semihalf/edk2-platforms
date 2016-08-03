@@ -60,3 +60,4 @@ typedef struct {
 #pragma pack()
 
 #endif // _MCFG_TABLE_H
+

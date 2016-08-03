@@ -153,13 +153,13 @@ typedef enum {
 // Hardware_ID table for Product_Line_ID == INTEL_CHT_TABLET
 //
 typedef enum {
-    CHT_TABLET_RVP1        = 0, /* Cherry Trail RVP Fab 1 */
-    CHT_TABLET_RVP2        = 1, /* Cherry Trail RVP Fab 2 */
-    CHT_TABLET_RVP3        = 2, /* Cherry Trail RVP Fab 3 */
-    CHT_TABLET_FFD_PR0    = 3, /* Cherry Trail FFRD PR0 */
-    CHT_TABLET_FFD_PR1    = 4, /* Cherry Trail FFRD PR1 */
-    CHT_TABLET_FFD_PR2    = 5, /* Cherry Trail FFRD PR2 */
-    CHT_TABLET_UNKNOWN    = 0xFF
+  CHT_TABLET_RVP1    = 0, /* Cherry Trail RVP Fab 1 */
+  CHT_TABLET_RVP2    = 1, /* Cherry Trail RVP Fab 2 */
+  CHT_TABLET_RVP3    = 2, /* Cherry Trail RVP Fab 3 */
+  CHT_TABLET_FFD_PR0  = 3, /* Cherry Trail FFRD PR0 */
+  CHT_TABLET_FFD_PR1  = 4, /* Cherry Trail FFRD PR1 */
+  CHT_TABLET_FFD_PR2  = 5, /* Cherry Trail FFRD PR2 */
+  CHT_TABLET_UNKNOWN  = 0xFF
 }INTEL_CHT;
 
 typedef enum {
@@ -172,7 +172,7 @@ typedef enum {
 typedef enum {
     FFD_8_PR0  = 1,  // FFRD8 PR0
     FFD_8_PR1  = 2,   // FFRD8 PR1
-    FFD_8_PR2  = 3   // FFRD8 PR1
+  FFD_8_PR2  = 3   // FFRD8 PR1
 } FFD_ID_LIST;
 
 //
@@ -314,3 +314,4 @@ InstallPlatformSysCtrlGPIONotify (
   );
 
 #endif
+

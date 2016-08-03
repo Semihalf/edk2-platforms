@@ -32,3 +32,4 @@ typedef struct {
 extern EFI_GUID gEfiGraphicsInfoHobGuid;
 
 #endif
+

@@ -25,3 +25,4 @@ extern EFI_GUID gEfiMemoryConfigDataGuid;
 extern CHAR16   EfiMemoryConfigVariable[];
 
 #endif
+

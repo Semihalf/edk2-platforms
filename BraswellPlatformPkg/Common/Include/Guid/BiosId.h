@@ -22,3 +22,4 @@
 extern EFI_GUID gEfiBiosIdGuid;
 
 #endif
+

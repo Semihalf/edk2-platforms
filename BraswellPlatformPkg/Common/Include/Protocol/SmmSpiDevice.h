@@ -30,3 +30,4 @@ extern EFI_GUID gSmmSpiDeviceProtocolGuid;
 typedef SPI_DEVICE_PROTOCOL SMM_SPI_DEVICE_PROTOCOL;
 
 #endif
+

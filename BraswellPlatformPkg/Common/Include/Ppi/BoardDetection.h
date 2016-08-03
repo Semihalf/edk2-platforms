@@ -20,3 +20,4 @@ extern EFI_GUID gBoardDetectionStartPpiGuid;
 extern EFI_GUID gBoardDetectedPpiGuid;
 
 #endif
+
