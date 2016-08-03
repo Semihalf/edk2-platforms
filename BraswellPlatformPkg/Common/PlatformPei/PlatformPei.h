@@ -16,6 +16,50 @@
 #ifndef __PEI_PLATFORM_H__
 #define __PEI_PLATFORM_H__
 
+#include <FrameworkPei.h>
+#include <IndustryStandard/SmBus.h>
+#include <IndustryStandard/Pci22.h>
+#include <Ppi/AtaController.h>
+#include <Guid/Capsule.h>
+#include <Ppi/Cache.h>
+#include <Ppi/MasterBootMode.h>
+#include <Guid/MemoryTypeInformation.h>
+#include <Guid/RecoveryDevice.h>
+#include <Guid/SetupVariable.h>
+#include <Ppi/ReadOnlyVariable2.h>
+#include <Ppi/FvLoadFile.h>
+#include <Ppi/DeviceRecoveryModule.h>
+#include <Ppi/Capsule.h>
+#include <Ppi/Reset.h>
+#include <Ppi/Stall.h>
+#include <Ppi/BootInRecoveryMode.h>
+#include <Guid/FirmwareFileSystem2.h>
+#include <Ppi/MemoryDiscovered.h>
+#include <Ppi/RecoveryModule.h>
+#include <Ppi/Smbus2.h>
+#include <Ppi/FirmwareVolumeInfo.h>
+#include <Ppi/EndOfPeiPhase.h>
+#include <Library/DebugLib.h>
+#include <Library/PeimEntryPoint.h>
+#include <Library/BaseLib.h>
+#include <Library/PeiServicesLib.h>
+#include <Library/BaseMemoryLib.h>
+#include <Library/HobLib.h>
+#include <Library/PciCf8Lib.h>
+#include <Library/IoLib.h>
+#include <Library/PciLib.h>
+#include <Library/ReportStatusCodeLib.h>
+#include <Library/PcdLib.h>
+#include <Library/SmbusLib.h>
+#include <Library/TimerLib.h>
+#include <Library/PrintLib.h>
+#include <Library/ResetSystemLib.h>
+#include <Library/MemoryAllocationLib.h>
+#include <Library/PerformanceLib.h>
+#include <Library/CacheMaintenanceLib.h>
+#include <Library/MtrrLib.h>
+#include <Library/RecoveryOemHookLib.h>
+
 #define PEI_STALL_RESOLUTION            1
 #define STALL_PEIM_SIGNATURE   SIGNATURE_32('p','p','u','s')
 
@@ -77,6 +121,29 @@ MemoryDiscoveredPpiNotifyCallback (
   IN VOID                                 *Ppi
   );
 
+EFI_STATUS
+EFIAPI
+PostSiliconInitialization(
+  IN EFI_PEI_SERVICES                     **PeiServices,
+  IN EFI_PEI_NOTIFY_DESCRIPTOR            *NotifyDescriptor,
+  IN VOID                                 *Ppi
+  );
+
+EFI_STATUS
+EFIAPI
+PostMemoryInitialization(
+  IN EFI_PEI_SERVICES                     **PeiServices,
+  IN EFI_PEI_NOTIFY_DESCRIPTOR            *NotifyDescriptor,
+  IN VOID                                 *Ppi
+  );
+
+EFI_STATUS
+EFIAPI
+PreMemoryInitialization(
+  IN CONST EFI_PEI_SERVICES                     **PeiServices
+  );
+
+
 /**
   This is the callback function notified by FvFileLoader PPI, it depends on FvFileLoader PPI to load
   the PEIM into memory.
@@ -88,12 +155,6 @@ MemoryDiscoveredPpiNotifyCallback (
   @retval  EFI_SUCCESS             If it completed successfully.
 
 **/
-EFI_STATUS
-EndOfPeiPpiNotifyCallback (
-  IN CONST EFI_PEI_SERVICES       **PeiServices,
-  IN EFI_PEI_NOTIFY_DESCRIPTOR    *NotifyDescriptor,
-  IN VOID                         *Ppi
-  );
 EFI_STATUS
 EFIAPI
 FvFileLoaderPpiNotifyCallback (
@@ -162,4 +223,11 @@ CapsulePpiNotifyCallback (
   IN EFI_PEI_NOTIFY_DESCRIPTOR  *NotifyDescriptor,
   IN VOID                       *Ppi
   );
+
+EFI_STATUS
+GetSystemConfiguration (
+  IN CONST EFI_PEI_SERVICES    **PeiServices
+  );
+
 #endif
+

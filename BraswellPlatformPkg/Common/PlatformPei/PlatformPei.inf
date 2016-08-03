@@ -4,7 +4,7 @@
 #  This module will do chipset programming, create platforminfo hob, install
 #  required mmio policy ppi.
 #
-#  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 1999 - 2015, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -23,16 +23,19 @@
   MODULE_TYPE                    = PEIM
   VERSION_STRING                 = 1.0
   ENTRY_POINT                    = PeiInitPlatform
-  PI_SPECIFICATION_VERSION         = 0x0001000A
+  PI_SPECIFICATION_VERSION       = 0x0001000A
 
 [Sources.common]
-  Generic/Recovery.c
-  Platform.c
-  Platform.h
-  MemoryCallback.c
-  CommonHeader.h
-  Stall.c
-  BootMode.c
+  PreMemory/Stall.c
+  PreMemory/BootMode.c
+  PreMemory/SystemConfiguration.c
+  PostMemory/MemoryCallback.c
+  PostMemory/Recovery.c
+  PlatformPei.c
+  PlatformPei.h
+  PlatformHookPoints.c
+
+
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -44,6 +47,7 @@
   UefiCpuPkg/UefiCpuPkg.dec
   CryptoPkg/CryptoPkg.dec
   ChvFspBinPkg/ChvFspBinPkg.dec
+  IntelFspWrapperPkg/IntelFspWrapperPkg.dec
 
 [LibraryClasses]
   PeimEntryPoint
@@ -75,10 +79,12 @@
   ## PRODUCES
   gEfiPeiMasterBootModePpiGuid
 
+  ## PRODUCES
   gBoardDetectionStartPpiGuid
 
-  ## NOTIFY
-  gEfiEndOfPeiSignalPpiGuid
+  ## CONSUMES
+  gFspInitDonePpiGuid
+
 [Guids]
   ## SOMETIMES_CONSUMES  ## Variable:L"Setup"
   gEfiSetupVariableGuid

@@ -1226,3 +1226,4 @@ SYSTEM_CONFIGURATION  gDefaultSystemConfiguration = {
 };
 
 #endif // #ifndef _SETUP_VARIABLE_DEFAULT_H
+

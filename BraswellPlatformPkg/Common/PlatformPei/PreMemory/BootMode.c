@@ -13,8 +13,7 @@
 
 **/
 
-#include "CommonHeader.h"
-#include "Platform.h"
+#include "PlatformPei.h"
 #include "PlatformBaseAddresses.h"
 #include "PchRegs.h"
 #include <Guid/SetupVariable.h>
@@ -107,7 +106,7 @@ IsBootWithNoChange (
   DEBUG ((EFI_D_INFO, "IsFirstBoot = %x , EnableFastBoot= %x. \n", IsFirstBoot, EnableFastBoot));
 
   if ((!IsFirstBoot) && EnableFastBoot) {
-      PcdSetBool (PcdBootToFirmwareUserInterface, FALSE);
+    PcdSetBool (PcdBootToFirmwareUserInterface, FALSE);
     return TRUE;
   } else {
     return FALSE;
@@ -164,9 +163,7 @@ UpdateBootMode (
     Status = PeiServicesInstallPpi (&mPpiListRecoveryBootMode);
     BootMode  = BOOT_IN_RECOVERY_MODE;
   } else if (IsBootWithNoChange(PeiServices)) {
-        if(BootMode != BOOT_ON_S3_RESUME) {
-      BootMode = BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
-        }
+    BootMode = BOOT_ASSUMING_NO_CONFIGURATION_CHANGES;
   }
 
 #ifdef EFI_DEBUG

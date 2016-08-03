@@ -32,7 +32,7 @@
 **/
 
 
-#include "CommonHeader.h"
+#include "PlatformPei.h"
 
 EFI_STATUS
 EFIAPI

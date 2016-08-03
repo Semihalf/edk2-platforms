@@ -13,7 +13,7 @@
 
 **/
 
-#include "CommonHeader.h"
+#include "PlatformPei.h"
 #include "PlatformBaseAddresses.h"
 #include "PchRegs.h"
 
@@ -83,3 +83,4 @@ Stall (
 
   return EFI_SUCCESS;
 }
+
