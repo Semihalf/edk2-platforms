@@ -1,6 +1,6 @@
 #/** @file
 #  makefile for building the GenBiosId utility.
-#
+#  
 #  Copyright (c) 1999 - 2015, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
@@ -10,7 +10,7 @@
 #
 #  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
 #  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
-#
+#  
 #**/
 
 !INCLUDE ..\Makefiles\ms.common
@@ -20,5 +20,4 @@ APPNAME = GenBiosId
 OBJECTS = GenBiosId.obj
 
 !INCLUDE ..\Makefiles\ms.app
-
 

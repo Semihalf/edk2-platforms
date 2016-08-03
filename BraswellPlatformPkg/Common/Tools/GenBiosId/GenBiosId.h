@@ -145,3 +145,4 @@ FillTimeStamp (
   );
 
 #endif // _GEN_BIOS_ID_MPG_
+

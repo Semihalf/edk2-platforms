@@ -415,3 +415,4 @@ FillTimeStamp (
 
   ConvertToUnicode (StrTime, StrTimeStampUnicode);
 }
+
