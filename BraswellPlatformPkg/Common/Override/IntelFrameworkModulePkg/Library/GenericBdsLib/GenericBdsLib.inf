@@ -20,6 +20,7 @@
 [Defines]
   INF_VERSION                    = 0x00010018
   BASE_NAME                      = GenericBdsLib
+  MODULE_UNI_FILE                = GenericBdsLib.uni
   FILE_GUID                      = e405ec31-ccaa-4dd4-83e8-0aec01703f7e
   MODULE_TYPE                    = DXE_DRIVER
   VERSION_STRING                 = 1.0

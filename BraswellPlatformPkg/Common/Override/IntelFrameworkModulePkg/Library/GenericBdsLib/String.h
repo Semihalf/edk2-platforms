@@ -46,3 +46,4 @@ BdsLibGetStringById (
   );
 
 #endif // _STRING_H_
+

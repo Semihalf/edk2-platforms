@@ -30,3 +30,4 @@ BdsLibGetStringById (
 {
   return HiiGetString (gBdsLibStringPackHandle, Id, NULL);
 }
+

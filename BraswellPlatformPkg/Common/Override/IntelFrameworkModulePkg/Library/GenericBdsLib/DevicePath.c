@@ -31,3 +31,4 @@ DevicePathToStr (
 {
   return ConvertDevicePathToText (DevPath, TRUE, TRUE);
 }
+

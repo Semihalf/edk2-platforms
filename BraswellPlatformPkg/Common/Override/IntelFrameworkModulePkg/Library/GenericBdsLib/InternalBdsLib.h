@@ -192,3 +192,4 @@ SetVariableAndReportStatusCodeOnError (
   );
 
 #endif // _BDS_LIB_H_
+
