@@ -85,7 +85,7 @@ form formid = SOUTH_CLUSTER_FORM_ID,
   //
   // Jump to PSS Chip Form
   //
-
+    
   //
   // Jump to Misc Configuration Form
   //
@@ -108,7 +108,7 @@ form formid     = MISC_OPTIONS_FORM_ID,
     option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING |RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE), value = 1, flags =  RESET_REQUIRED;
   endoneof;
-
+  
 
   oneof varid   = Setup.StateAfterG3,
     prompt      = STRING_TOKEN(STR_STATE_AFTER_G3),
@@ -123,8 +123,8 @@ form formid     = MISC_OPTIONS_FORM_ID,
     option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
   endoneof;
-
-
+  
+  
 //  oneof varid   = Setup.EnableSataClockSpreadSpec,
 //    prompt      = STRING_TOKEN(STR_SATA_CLOCK_SPREAD_SPEC_ENABLE),
 //    help        = STRING_TOKEN(STR_SATA_CLOCK_SPREAD_SPEC_ENABLE_HELP),
@@ -207,7 +207,7 @@ form formid = ISCT_CONFIGURATION_ID,
     endoneof;
 
   endif;
-
+ 
 endform;
 
 //
@@ -338,7 +338,7 @@ form formid = LPSS_OPTIONS_FORM_ID,
     option text = STRING_TOKEN(STR_I2C_FFRD), value=0x4A, flags=0 | RESET_REQUIRED;
   endoneof;
  endif;
-
+    
   subtitle text = STRING_TOKEN(STR_NULL_STRING);
 
   subtitle text = STRING_TOKEN(STR_BTH_DEVICE_SETTING_SUBTITLE);
@@ -362,7 +362,7 @@ form formid = LPSS_OPTIONS_FORM_ID,
     endif;
 
   subtitle text = STRING_TOKEN(STR_NULL_STRING);
-  subtitle text = STRING_TOKEN(STR_CAMERA_DEVICE_SETTING_SUBTITLE);
+  subtitle text = STRING_TOKEN(STR_CAMERA_DEVICE_SETTING_SUBTITLE);	
 
     suppressif ideqval Setup.Ellensburg == 1;
       oneof varid   = Setup.RvpCameraDevSel,
@@ -458,7 +458,7 @@ endif;
     option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE),  value = 1, flags = RESET_REQUIRED;
   endoneof;
-
+  
   suppressif ideqval Setup.EmmcTxTuningEnable == 1 OR ideqval Setup.EmmcRxTuningEnable == 1;
     oneof varid   = Setup.EmmcDriverMode,
       prompt      = STRING_TOKEN(STR_EMMC_DRIVER_MODE_PROMPT),
@@ -607,7 +607,7 @@ form formid     = PCH_PCIERP1_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortTHS[OFFSET_0],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_THS_PROMPT0),
       help        = STRING_TOKEN(STR_PCH_PCIE_THS_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -624,14 +624,14 @@ form formid     = PCH_PCIERP1_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortNccSsc[OFFSET_0],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
     oneof varid   = Setup.PcieRootPortTxEqDeemphSelection[OFFSET_0],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_HELP),
-      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_DEEMPH_3P5DB), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -768,7 +768,7 @@ form formid       = PCH_PCIERP2_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortTHS[OFFSET_1],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_THS_PROMPT1),
       help        = STRING_TOKEN(STR_PCH_PCIE_THS_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -784,14 +784,14 @@ form formid       = PCH_PCIERP2_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortNccSsc[OFFSET_1],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
     oneof varid   = Setup.PcieRootPortTxEqDeemphSelection[OFFSET_1],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_HELP),
-      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_DEEMPH_3P5DB), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -928,7 +928,7 @@ form formid       = PCH_PCIERP3_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortTHS[OFFSET_2],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_THS_PROMPT2),
       help        = STRING_TOKEN(STR_PCH_PCIE_THS_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -944,14 +944,14 @@ form formid       = PCH_PCIERP3_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortNccSsc[OFFSET_2],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
     oneof varid   = Setup.PcieRootPortTxEqDeemphSelection[OFFSET_2],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_HELP),
-      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_DEEMPH_3P5DB), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -1088,7 +1088,7 @@ form formid       = PCH_PCIERP4_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortTHS[OFFSET_3],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_THS_PROMPT3),
       help        = STRING_TOKEN(STR_PCH_PCIE_THS_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -1104,14 +1104,14 @@ form formid       = PCH_PCIERP4_OPTIONS_FORM_ID,
     oneof varid   = Setup.PcieRootPortNccSsc[OFFSET_3],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_NCC_SSC_HELP),
-      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
     oneof varid   = Setup.PcieRootPortTxEqDeemphSelection[OFFSET_3],
       prompt      = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_TXEQDEEMPH_HELP),
-      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEEMPH_6DB), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED; 
       option text = STRING_TOKEN(STR_DEEMPH_3P5DB), value = 1, flags = RESET_REQUIRED;
     endoneof;
 
@@ -1154,7 +1154,7 @@ form formid     = PCH_PCIEX_S0IX_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
     endoneof;
 
-  suppressif ideqval Setup.PcieS0iX == 0x0;
+  suppressif ideqval Setup.PcieS0iX == 0x0;  
     oneof varid   = Setup.D0S0IxPolicy,
       prompt      = STRING_TOKEN(STR_PCH_PCIE_D0_S0IX_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_D0_S0IX_HELP),
@@ -1163,7 +1163,7 @@ form formid     = PCH_PCIEX_S0IX_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_D0_S0IX_STRING2), value = 2, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
       option text = STRING_TOKEN(STR_D0_S0IX_STRING3), value = 3, flags = RESET_REQUIRED;
     endoneof;
-
+    
     oneof varid   = Setup.ClkReqEnable,
       prompt      = STRING_TOKEN(STR_PCH_PCIE_CLKREQ_STS_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_CLKREQ_STS_HELP),
@@ -1181,7 +1181,7 @@ form formid     = PCH_PCIEX_S0IX_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_CLKREQ_STRING3), value = 3, flags = RESET_REQUIRED;
     endoneof;
   endif;
-
+  
     oneof varid   = Setup.LtrLatencyScale,
       prompt      = STRING_TOKEN(STR_PCH_PCIE_LTR_LATSC_PROMPT),
       help        = STRING_TOKEN(STR_PCH_PCIE_LTR_LATSC_HELP),
@@ -1190,22 +1190,22 @@ form formid     = PCH_PCIEX_S0IX_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_LTR_LAT_SCL_STRING2), value = 2, flags = DEFAULT | MANUFACTURING |RESET_REQUIRED;
       option text = STRING_TOKEN(STR_LTR_LAT_SCL_STRING3), value = 3, flags = RESET_REQUIRED;
       option text = STRING_TOKEN(STR_LTR_LAT_SCL_STRING4), value = 4, flags = RESET_REQUIRED;
-      option text = STRING_TOKEN(STR_LTR_LAT_SCL_STRING5), value = 5, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_LTR_LAT_SCL_STRING5), value = 5, flags = RESET_REQUIRED;      
     endoneof;
-
+    
     numeric varid = Setup.LtrLatencyValue,
       prompt      = STRING_TOKEN (STR_PCH_PCIE_LTR_LATVAL_PROMPT),
       help        = STRING_TOKEN (STR_PCH_PCIE_LTR_LATVAL_HELP),
       minimum     = 1,
       maximum     = 200,
       step        = 1,    // Stepping of 0 equates to a manual entering of a value, otherwise it will auto-increment with a left/right arrow
-      default     = 150,
+      default     = 150,   
     endnumeric;
   endif;
 endform; //End of PCH_PCIEX_S0IX_OPTIONS_FORM_ID
 
 
-
+  
 //
 // USB Configurations
 //
@@ -1228,7 +1228,7 @@ form formid     = USB_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags = RESET_REQUIRED;
     endoneof;
-
+    
     oneof varid   = Setup.PchUsbSsicInitSequence,
       prompt      = STRING_TOKEN(STR_PCH_SSIC_INIT_SEQ_SUPPORT_PROMPT),
       help        = STRING_TOKEN(STR_PCH_SSIC_INIT_SEQ_SUPPORT_HELP),
@@ -1298,11 +1298,11 @@ form formid     = USB_OPTIONS_FORM_ID,
       option text = STRING_TOKEN(STR_OFF), value = 0, flags = RESET_REQUIRED;
       option text = STRING_TOKEN(STR_ON), value = 1, flags = RESET_REQUIRED;
       option text = STRING_TOKEN(STR_AUTO), value = 2, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
-#else
+#else      
       option text = STRING_TOKEN(STR_OFF), value = 0, flags = RESET_REQUIRED;
       option text = STRING_TOKEN(STR_ON), value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
       option text = STRING_TOKEN(STR_AUTO), value = 2, flags = RESET_REQUIRED;
-#endif
+#endif  
     endoneof;
   endif;
 
@@ -1592,16 +1592,16 @@ form formid     = AZALIA_OPTIONS_FORM_ID,
     option text = STRING_TOKEN(STR_PCI_MODE_STRING), value = 1, flags = RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ACPI_MODE_STRING), value = 2, flags = RESET_REQUIRED;
   endoneof;
-
+  
   subtitle text = STRING_TOKEN(STR_NULL_STRING);
-
+  
   oneof varid   = Setup.AudioCodecSuppport,
     prompt      = STRING_TOKEN(STR_AUDIO_CODEC_PROMPT),
     help        = STRING_TOKEN(STR_AUDIO_CODEC_HELP),
     option text = STRING_TOKEN(CODEC_RVP),   value=0, flags= DEFAULT | MANUFACTURING | RESET_REQUIRED;
     option text = STRING_TOKEN(CODEC_EB),    value=1, flags= 0 | RESET_REQUIRED;
   endoneof;
-
+  
   subtitle text = STRING_TOKEN(STR_NULL_STRING);
 
   suppressif ideqval Setup.AzaliaDs == 0x1;

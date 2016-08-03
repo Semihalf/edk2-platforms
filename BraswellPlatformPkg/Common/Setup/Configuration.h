@@ -73,3 +73,4 @@
 #define SATA_MODE_AHCI                      1
 #define SATA_MODE_RAID                      2
 #endif // #ifndef _CONFIGURATION_H
+
