@@ -1,16 +1,16 @@
-      Sample UEFI Firmware for the N-series Intel® Pentium® Processor
-      and Intel® Celeron® Processor Families (formerly Braswell)
+      Sample UEFI Firmware for the N-series Intel(R) Pentium(R) Processor
+      and Intel(R) Celeron(R) Processor Families (formerly Braswell)
 
-The N-series Intel® Pentium® processor and Intel® Celeron® processor families
+The N-series Intel(R) Pentium(R) processor and Intel(R) Celeron(R) processor families
 (formerly Braswell) use a multicore System on a Chip (SoC) based on a new
 microarchitecture and are manufactured on Intel’s industry leading tri-gate
 14nm process. http://ark.intel.com/products/codename/66094/Braswell#@Embedded 
 
 This sample UEFI firmware is designed for N-series Intel Pentium processor and
 Intel Celeron processor families, and has been verified on the Intel Cherry Hill
-BSP. This sample codebase uses the Intel UDK2015 core and Intel® Firmware Support
-Package (Intel® FSP) to demonstrate building a full UEFI solution by combining
-open source EDK II with Intel® FSP binaries.
+BSP. This sample codebase uses the Intel UDK2015 core and Intel(R) Firmware Support
+Package (Intel(R) FSP) to demonstrate building a full UEFI solution by combining
+open source EDK II with Intel(R) FSP binaries.
 
 This code combines elements from github, intel.com/fsp and firmware.intel.com
 
@@ -38,18 +38,30 @@ This code combines elements from github, intel.com/fsp and firmware.intel.com
    d. Change folder name from "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\edk2-BaseTools-win32”
       to "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\win32”
 
-4) Download the 'Intel® Firmware Support Package for Intel® Pentium® and Celeron®
-   Processor N3000 Product Families and Intel® Atom™ x5-E8000 Processor'
+4) Download the 'Intel(R) Firmware Support Package for Intel(R) Pentium(R) and Celeron(R)
+   Processor N3000 Product Families and Intel(R) Atom™ x5-E8000 Processor'
    (BSW_MR1) from http://intel.com/fsp
    
-5) Run the Intel® FSP installer and copy the following files into the Workspace:
-   a. Copy FspUpdVpd.h into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\Include" directory.
-   b. Create the "FspBinary" sub-directory under the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg"
+5) Run the Intel(R) FSP installer and copy the following files into the Workspace:
+   a. Default install directory: "C:\Program Files (x86)\Braswell FSP Kit MR1\FSP" 
+   b. Copy FspUpdVpd.h into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\Include" directory.
+   c. Create the "FspBinary" sub-directory under the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg"
       directory, if it does not exist ("C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary").
-   c. Copy BSWFSP.fd into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary" directory.
+   d. Copy BSWFSP.fd into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary" directory.
    
 6) Download the 'BraswellPlatformPkg' package from firmware.intel.com:
    https://firmware.intel.com/projects/braswell-uefi
+   NOTE: The directory structure of BraswellPlatformPkg changed between the 2016-06-15
+   and 2016-08-05 releases. Check your BraswellPlatformPkg git hash to determine which 
+   version to download.
+   If BraswellPlatformPkg hash is f71cf3bf29aa216bc72f703815a7f96fb2ca0592(2016-08-05 release) or
+   after this hash, please download this link:
+   https://firmware.intel.com/sites/default/files/BraswellPlatformPkg_2016-08-05.zip
+   If BraswellPlatformPkg hash is 471674c0aa4350c48e5e9e8f2d8962883f582275(2016-06-15 release), 
+   please download this link:
+   https://firmware.intel.com/sites/default/files/BraswellPlatformPkg_2016-06-15.zip
+
+   
 
 7) Unzip the 'BraswellPlatformPkg' package and move the contents into the Workspace:
    a. Copy the "BraswellPlatformPkg" sub-directory over the existing directory
@@ -95,7 +107,7 @@ OS Configuration:
       (/vs08 = Visual Studio 2008; /vs10 = Visual Studio 2010; /vs13 = Visual Studio 2013) 
                
    3) After the build successfully completes, the 8MB firmware binary image
-      will be located in "C:\MyWorkspace\edk2-platforms\BraswellPlatformPkg\Stitch\"      
+      will be located in "C:\MyWorkspace\edk2-platforms\Build\"  
 
 3b. Build Steps (64-bit)
    1) To build a 64-bit release version
@@ -111,13 +123,13 @@ OS Configuration:
       (/vs08 = Visual Studio 2008; /vs10 = Visual Studio 2010; /vs13 = Visual Studio 2013) 
                
    3) After the build successfully completes, the 8MB firmware binary image
-      will be located in "C:\MyWorkspace\edk2-platforms\BraswellPlatformPkg\Stitch\"      
+      will be located in "C:\MyWorkspace\edk2-platforms\Build\"      
       
 ================================================================================
                            VALIDATED OS
 ================================================================================ 
 1. Yocto Revision 1.8 (x64)
-2. Microsoft Windows 10 Enterprise, Build 10586 (x64 [64-bit] and x86 [32-bit])
+2. Microsoft Windows 10 Enterprise, Build 10240 (x64 [64-bit] and x86 [32-bit])
 3. Ubuntu 15.10 Desktop (x64)
 
 ================================================================================
@@ -131,6 +143,12 @@ https://github.com/mangguo321/Braswell/blob/master/Documents/Open_Braswell_Platf
 
 3. Yocto BSP for Intel N3700, N3000, N3050, N3150 Mobile and Embedded Processors
 https://www.yoctoproject.org/downloads/bsps/fido18/cherry-hill-bsp-braswell
+
+================================================================================
+                                  KNOWN ISSUES
+================================================================================
+
+1. Linux build environments are not currently supported.
 
 ================================================================================
                                   MAINTAINERS
