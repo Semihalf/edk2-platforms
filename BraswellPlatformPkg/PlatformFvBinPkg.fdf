@@ -200,7 +200,7 @@ FV = FVSHELL
   #
 $(FLASH_REGION_FSP_OFFSET) | $(FLASH_REGION_FSP_SIZE)
 gFspWrapperTokenSpaceGuid.PcdFlashFvFspBase | gFspWrapperTokenSpaceGuid.PcdFlashFvFspSize
-FILE = ChvFspBinPkg/FspBinary/BswFsp$(TARGET).fd
+FILE = ChvFspBinPkg/FspBinary/BswFsp.fd
 
   #
   # VBT FV for FSP

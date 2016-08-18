@@ -34,20 +34,20 @@ This code combines elements from github, intel.com/fsp and firmware.intel.com
 3) Get the BaseTools binary:
    a. git clone https://github.com/tianocore/edk2-BaseTools-win32.git
    b. git checkout ea691aec89b06aa83474100df1de000a875b4ea0
-   c. Put BaseTools Binary "edk2-BaseTools-win32" into MyWorkspace\edk2-platforms\BaseTools\Bin”, 
-   d. Change folder name from "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\edk2-BaseTools-win32”
-      to "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\win32”
+   c. Put BaseTools Binary "edk2-BaseTools-win32" into MyWorkspace\edk2-platforms\BaseTools\Bin", 
+   d. Change folder name from "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\edk2-BaseTools-win32"
+      to "C:\MyWorkspace\edk2-platforms\BaseTools\Bin\win32"
 
-4) Download the 'Intel(R) Firmware Support Package for Intel(R) Pentium(R) and Celeron(R)
-   Processor N3000 Product Families and Intel(R) Atom™ x5-E8000 Processor'
-   (BSW_MR1) from http://intel.com/fsp
+4) Get the 'Intel(R) Firmware Support Package for Intel(R) Pentium(R) and Celeron(R)
+   Processor N3000 Product Families and Intel(R) Atom(TM) x5-E8000 Processor' from 
+   https://github.com/IntelFsp/FSP/tree/Braswell :
+   git clone -b Braswell https://github.com/IntelFsp/FSP.git
    
-5) Run the Intel(R) FSP installer and copy the following files into the Workspace:
-   a. Default install directory: "C:\Program Files (x86)\Braswell FSP Kit MR1\FSP" 
-   b. Copy FspUpdVpd.h into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\Include" directory.
-   c. Create the "FspBinary" sub-directory under the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg"
+5) Copy the following files into the Workspace:
+   a. Copy FspUpdVpd.h into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\Include" directory.
+   b. Create the "FspBinary" sub-directory under the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg"
       directory, if it does not exist ("C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary").
-   d. Copy BSWFSP.fd into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary" directory.
+   c. Copy BSWFSP.fd into the "C:\MyWorkspace\edk2-platforms\ChvFspBinPkg\FspBinary" directory.
    
 6) Download the 'BraswellPlatformPkg' package from firmware.intel.com:
    https://firmware.intel.com/projects/braswell-uefi
