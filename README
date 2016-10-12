@@ -1,9 +1,0 @@
-This repository is used by EDK II sample platforms.
-
-The EDK II sample platforms live upstream in the EDK II repository,
-but they may use this repository for platform specific branches and
-tags.
-
-The branches and tags created should have a name that is associated
-with the platform that they are used for. This will prevent confusion
-about which sample platform uses the branch or tag.
