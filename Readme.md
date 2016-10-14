@@ -12,7 +12,6 @@ EDK II community.  This serves several purposes:
   choose to help finish and validate
 * Allow more platforms to be used as part of the edk2 validation and
   release cycle.
-* Not intended to be used for bug fixes.
 
 # Process for creating, using, and maintaining platforms
 1. Create a new repo called edk2-platforms
@@ -38,21 +37,21 @@ EDK II community.  This serves several purposes:
 
     1. Maintainer sends patch email to edk2-devel mailing list
        announcing the creation of a new branch in edk2-platforms 
-       with Readme.MD.  Readme.MD must be in root of branch with 
+       with Readme.md.  Readme.md must be in root of branch with 
        summary, owners, status, build instructions, target update
        instructions, OS compatibility, known issues/limitations, 
        links to related materials, and anything else a developer 
        needs to use platform(s) in that branch.  
 
-    2. Readme.MD must provide the PACKAGES_PATH setting required to 
+    2. Readme.md must provide the PACKAGES_PATH setting required to 
        build along with the branch names of other repos that platform 
        requires.  This allows a platform developer(s) to use packages 
-       from edk2/master or to use packages from a validates UDK release
+       from edk2/master or to use packages from a validated UDK release
        (e.g. edk2/UDK2015).
  
-    3. Maintainer creates branch with Readme.MD in edk2-platforms
+    3. Maintainer creates branch with Readme.md in edk2-platforms
 
-    4. An edk2-platforms branch for platforms under developer use the 
+    4. An edk2-platforms branch for platforms under development use the 
        following branch naming convention:
 
          `edk2-platforms/devel-*`
@@ -66,7 +65,7 @@ EDK II community.  This serves several purposes:
 
     1. Commit message subject format:
 
-         `[platforms/branch PATCH]: Package/Module: Subject`
+         `[PATCH][platforms/branch]: Package/Module: Subject`
 
     2. Directly commit changes to branch or if community review is desired,
        use edk2-devel review process.
@@ -89,14 +88,14 @@ EDK II community.  This serves several purposes:
 
     1. Clone edk2-platforms/[branch name]
 
-    2. Following instructions in Readme.MD to build firmware and
+    2. Following instructions in Readme.md to build firmware and
        update target platform
 
 # Multiple Platform Template
 
-This section is a template for a Readme.MD in an edk2-platforms branch
-that support multiple platforms.  The list of platforms is presented here
-with links to the Readme.MD in each platform subdirectory
+This section is a template for a Readme.md file in an edk2-platforms branch
+that supports multiple platforms.  The list of platforms is presented here
+with links to the Readme.md in each platform subdirectory.
 
 * [Sample Platform](SamplePlatformPkg/Readme.md)
 * [Another Platform](AnotherPlatformPkg/Readme.md)
