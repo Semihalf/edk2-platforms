@@ -1,6 +1,6 @@
 This repository contains platforms maintained by the EDK II community.
 
-#Introduction
+# Introduction
 Need place on tianocore.org where platforms can be maintained by the 
 EDK II community.  This serves several purposes:
 
@@ -14,7 +14,7 @@ EDK II community.  This serves several purposes:
   release cycle.
 * Not intended to be used for bug fixes.
 
-#Process for creating, using, and maintaining platforms
+# Process for creating, using, and maintaining platforms
 1. Create a new repo called edk2-platforms
 
     1. The default branch edk2-platforms/master contains all open 
@@ -91,3 +91,13 @@ EDK II community.  This serves several purposes:
 
     2. Following instructions in Readme.MD to build firmware and
        update target platform
+
+# Multiple Platform Template
+
+This section is a template for a Readme.MD in an edk2-platforms branch
+that support multiple platforms.  The list of platforms is presented here
+with links to the Readme.MD in each platform subdirectory
+
+* [Sample Platform](SamplePlatformPkg/Readme.md)
+* [Another Platform](AnotherPlatformPkg/Readme.md)
+* [Yet Another Platform](YetAnotherPlatformPkg/Readme.md)
