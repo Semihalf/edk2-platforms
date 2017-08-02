@@ -245,7 +245,7 @@ INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET
 INF EdkCompatibilityPkg/Compatibility/AcpiVariableHobOnSmramReserveHobThunk/AcpiVariableHobOnSmramReserveHobThunk.inf
 !endif
 
-INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/PiSmmCommunicationPei.inf
+INF UefiCpuPkg/PiSmmCommunication/PiSmmCommunicationPei.inf
 !if $(TPM_ENABLED) == TRUE
 INF SecurityPkg/Tcg/TrEEConfig/TrEEConfigPei.inf
 INF SecurityPkg/Tcg/TcgPei/TcgPei.inf
@@ -314,6 +314,7 @@ INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET
   INF  SourceLevelDebugPkg/DebugAgentPei/DebugAgentPei.inf
 !endif
 
+INF  UefiCpuPkg/CpuIoPei/CpuIoPei.inf
 
 !if $(CAPSULE_ENABLE) == TRUE
 INF  MdeModulePkg/Universal/CapsulePei/CapsulePei.inf
@@ -388,6 +389,8 @@ INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/MpCpu.inf
 INF $(PLATFORM_PACKAGE)/Metronome/Metronome.inf
 INF IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
+INF MdeModulePkg/Universal/LoadFileOnFv2/LoadFileOnFv2.inf
+INF MdeModulePkg/Universal/SmmCommunicationBufferDxe/SmmCommunicationBufferDxe.inf
 INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
 INF MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
 INF MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
@@ -515,7 +518,7 @@ INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET
 !endif
 INF UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
 INF MdeModulePkg/Universal/LockBox/SmmLockBox/SmmLockBox.inf
-INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PiSmmCommunicationSmm.inf
+INF UefiCpuPkg/PiSmmCommunication/PiSmmCommunicationSmm.inf
 INF $(PLATFORM_PACKAGE)/SmmSwDispatch2OnSmmSwDispatchThunk/SmmSwDispatch2OnSmmSwDispatchThunk.inf
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PowerManagement2.inf
 # INF Vlv2DeviceRefCodePkg/ValleyView2Soc/CPU/Dts/Smm/DigitalThermalSensor.inf
@@ -531,6 +534,9 @@ INF RuleOverride = ACPITABLE2 Vlv2DeviceRefCodePkg/ValleyView2Soc/CPU/PowerManag
 INF RuleOverride = ACPITABLE $(PLATFORM_RC_PACKAGE)/AcpiTablesPCAT/AcpiTables.inf
 
 INF $(PLATFORM_PACKAGE)/AcpiPlatform/AcpiPlatform.inf
+
+INF MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+INF MdeModulePkg/Universal/Acpi/SmmS3SaveState/SmmS3SaveState.inf
 
   #
   # PCI

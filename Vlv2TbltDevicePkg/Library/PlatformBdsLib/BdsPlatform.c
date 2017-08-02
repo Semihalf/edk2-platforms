@@ -182,6 +182,10 @@ InstallReadyToLock (
                     NULL
                     );
     ASSERT_EFI_ERROR (Status);
+    //
+    // Signal EndOfDxe PI Event
+    //
+    EfiEventGroupSignal (&gEfiEndOfDxeEventGroupGuid);
 
     Handle = NULL;
     Status = gBS->InstallProtocolInterface (

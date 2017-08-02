@@ -127,6 +127,8 @@
 !if $(RC_BINARY_RELEASE) == TRUE
   PchPlatformLib|Vlv2TbltDevicePkg/Library/PchPlatformLib/PchPlatformLib.inf
 !endif
+  PciSegmentLib|MdePkg/Library/BasePciSegmentLibPci/BasePciSegmentLibPci.inf
+  FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
   #
   # UEFI & PI
   #
@@ -570,6 +572,7 @@
 !endif
   gEfiMdeModulePkgTokenSpaceGuid.PcdFrameworkCompatibilitySupport|TRUE
   gEfiCpuTokenSpaceGuid.PcdCpuSmmEnableBspElection|FALSE
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmEnableBspElection|FALSE
 !if $(DATAHUB_STATUS_CODE_ENABLE) == TRUE
   gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdStatusCodeUseDataHub|TRUE
 !else
@@ -600,10 +603,10 @@
 
 
   ## This PCD specifies whether PS2 keyboard does a extended verification during start.
-  gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdPs2KbdExtendedVerification|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPs2KbdExtendedVerification|FALSE
 
   ## This PCD specifies whether PS2 mouse does a extended verification during start.
-  gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdPs2MouseExtendedVerification|FALSE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdPs2MouseExtendedVerification|FALSE
 
 !if $(VARIABLE_INFO_ENABLE) == TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdVariableCollectStatistics|TRUE
@@ -612,6 +615,7 @@
 !endif
 
   gEfiCpuTokenSpaceGuid.PcdCpuSmmBlockStartupThisAp|TRUE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdHiiOsRuntimeSupport|FALSE
 
 [PcdsFixedAtBuild.common]
 !if $(MINNOW2_FSP_BUILD) == TRUE
@@ -692,6 +696,7 @@
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x07
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialUseHardwareFlowControl|FALSE
 !endif
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmApSyncTimeout|1000
 
 [PcdsFixedAtBuild.X64]
 gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
@@ -712,7 +717,7 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
 
   ## This PCD specifies whether to use the optimized timing for best PS2 detection performance.
   #  Note this PCD could be set to TRUE for best boot performance and set to FALSE for best device compatibility.
-  gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdFastPS2Detection|TRUE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFastPS2Detection|TRUE
 
   #######################################################################################################
   #
@@ -909,6 +914,7 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
   gEfiVLVTokenSpaceGuid.PcdCpuLockBoxDataAddress|0
   gEfiVLVTokenSpaceGuid.PcdCpuSmramCpuDataAddress|0
   gEfiVLVTokenSpaceGuid.PcdCpuLockBoxSize|0
+  gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|FALSE
 
 [Components.IA32]
 
@@ -1031,7 +1037,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   UefiCpuPkg/Universal/Acpi/S3Resume2Pei/S3Resume2Pei.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/MpS3.inf
   EdkCompatibilityPkg/Compatibility/AcpiVariableHobOnSmramReserveHobThunk/AcpiVariableHobOnSmramReserveHobThunk.inf
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/PiSmmCommunicationPei.inf
+  UefiCpuPkg/PiSmmCommunication/PiSmmCommunicationPei.inf
 !if $(CAPSULE_ENABLE) == TRUE
   MdeModulePkg/Universal/CapsulePei/CapsulePei.inf
 !endif
@@ -1174,6 +1180,9 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
       TrEEPhysicalPresenceLib|$(PLATFORM_PACKAGE)/Library/DxeTrEEPhysicalPresenceLibNull/DxeTrEEPhysicalPresenceLibNull.inf
     !endif  
   }
+  
+  MdeModulePkg/Universal/LoadFileOnFv2/LoadFileOnFv2.inf
+  MdeModulePkg/Universal/SmmCommunicationBufferDxe/SmmCommunicationBufferDxe.inf
 
   $(PLATFORM_PACKAGE)/UiApp/UiApp.inf
 
@@ -1370,7 +1379,8 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
 !endif
   UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
   MdeModulePkg/Universal/LockBox/SmmLockBox/SmmLockBox.inf
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PiSmmCommunicationSmm.inf
+  UefiCpuPkg/CpuS3DataDxe/CpuS3DataDxe.inf
+  UefiCpuPkg/PiSmmCommunication/PiSmmCommunicationSmm.inf
   $(PLATFORM_PACKAGE)/SmmSwDispatch2OnSmmSwDispatchThunk/SmmSwDispatch2OnSmmSwDispatchThunk.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PowerManagement2.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/DigitalThermalSensor.inf
@@ -1386,6 +1396,8 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     <LibraryClasses>
       PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   }
+  MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
+  MdeModulePkg/Universal/Acpi/SmmS3SaveState/SmmS3SaveState.inf
 
   $(PLATFORM_PACKAGE)/BootScriptSaveDxe/BootScriptSaveDxe.inf
   IntelFrameworkModulePkg/Universal/Acpi/AcpiSupportDxe/AcpiSupportDxe.inf
