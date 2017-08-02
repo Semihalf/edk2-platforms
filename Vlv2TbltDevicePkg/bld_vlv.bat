@@ -1,7 +1,7 @@
 @REM @file
 @REM   Windows batch file to build BIOS ROM
 @REM
-@REM Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+@REM Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
 @REM This program and the accompanying materials
 @REM are licensed and made available under the terms and conditions of the BSD License
 @REM which accompanies this distribution.  The full text of the license may be found at
@@ -16,6 +16,8 @@ setlocal EnableDelayedExpansion EnableExtensions
 echo.
 echo %date%  %time%
 echo.
+cd ..
+
 
 ::**********************************************************************
 :: Initial Setup
@@ -27,27 +29,33 @@ set "Build_Flags= "
 set exitCode=0
 set Arch=X64
 set Source=0
+set CORE_PATH=%WORKSPACE%\edk2
+set PLATFORM_PATH=%WORKSPACE%\edk2-platforms
+set EDK_TOOLS_BIN=%WORKSPACE%\edk2-BaseTools-win32
+set PACKAGES_PATH=%WORKSPACE%\edk2-platforms;%WORKSPACE%\edk2
+cd ./edk2
 
 :: Clean up previous build files.
-if exist %WORKSPACE%\edk2.log del %WORKSPACE%\edk2.log
-if exist %WORKSPACE%\unitool.log del %WORKSPACE%\unitool.log
-if exist %WORKSPACE%\Conf\target.txt del %WORKSPACE%\Conf\target.txt
-if exist %WORKSPACE%\Conf\tools_def.txt del %WORKSPACE%\Conf\tools_def.txt
-if exist %WORKSPACE%\Conf\build_rule.txt del %WORKSPACE%\Conf\build_rule.txt
-if exist %WORKSPACE%\Conf\FrameworkDatabase.db del %WORKSPACE%\Conf\FrameworkDatabase.db
+if exist %CORE_PATH%\edk2.log del %CORE_PATH%\edk2.log
+if exist %CORE_PATH%\unitool.log del %CORE_PATH%\unitool.log
+if exist %CORE_PATH%\Conf\target.txt del %CORE_PATH%\Conf\target.txt
+if exist %CORE_PATH%\Conf\tools_def.txt del %CORE_PATH%\Conf\tools_def.txt
+if exist %CORE_PATH%\Conf\build_rule.txt del %CORE_PATH%\Conf\build_rule.txt
+if exist %CORE_PATH%\Conf\FrameworkDatabase.db del %CORE_PATH%\Conf\FrameworkDatabase.db
 if exist conf\.cache rmdir /q/s conf\.cache
 
 :: Setup EDK environment. Edksetup puts new copies of target.txt, tools_def.txt, build_rule.txt in WorkSpace\Conf
 :: Also run edksetup as soon as possible to avoid it from changing environment variables we're overriding
-call edksetup.bat > nul
+call %CORE_PATH%\edksetup.bat > nul
 @echo off
 
 :: Define platform specific environment variables.
-set PLATFORM_PACKAGE=Vlv2TbltDevicePkg
-set config_file=.\%PLATFORM_PACKAGE%\PlatformPkgConfig.dsc
-set auto_config_inc=.\%PLATFORM_PACKAGE%\AutoPlatformCFG.txt
+set PLATFORM_NAME=Vlv2TbltDevicePkg
+set PLATFORM_PACKAGE=%PLATFORM_PATH%\Vlv2TbltDevicePkg
+set config_file=%PLATFORM_PACKAGE%\PlatformPkgConfig.dsc
+set auto_config_inc=%PLATFORM_PACKAGE%\AutoPlatformCFG.txt
 
-set EDK_SOURCE=%WORKSPACE%\EdkCompatibilityPkg
+set EDK_SOURCE=%CORE_PATH%\EdkCompatibilityPkg
 
 ::create new AutoPlatformCFG.txt file
 copy /y nul %auto_config_inc% >nul
@@ -163,7 +171,7 @@ if defined VS90COMNTOOLS (
 )
 
 echo Ensuring correct build directory is present for GenBiosId...
-set BUILD_PATH=Build\%PLATFORM_PACKAGE%\%TARGET%_%TOOL_CHAIN_TAG%
+set BUILD_PATH=Build\%PLATFORM_NAME%\%TARGET%_%TOOL_CHAIN_TAG%
 
 echo Modifing Conf files for this build...
 :: Remove lines with these tags from target.txt
@@ -192,11 +200,11 @@ move /Y Conf\target.txt.tmp Conf\target.txt >nul
 
 echo Creating BiosId...
 pushd %PLATFORM_PACKAGE%
-if not exist ..\%BUILD_PATH%\IA32  mkdir ..\%BUILD_PATH%\IA32
-  GenBiosId.exe -i ..\Conf\BiosId.env -o ..\%BUILD_PATH%\IA32\BiosId.bin -ob ..\Conf\BiosId.bat
+if not exist %WORKSPACE%\%BUILD_PATH%\IA32  mkdir %WORKSPACE%\%BUILD_PATH%\IA32
+  GenBiosId.exe -i %CORE_PATH%\Conf\BiosId.env -o %WORKSPACE%\%BUILD_PATH%\IA32\BiosId.bin -ob %CORE_PATH%\Conf\BiosId.bat
 if "%Arch%"=="X64" (
-   if not exist ..\%BUILD_PATH%\X64  mkdir ..\%BUILD_PATH%\X64
-   GenBiosId.exe -i ..\Conf\BiosId.env -o ..\%BUILD_PATH%\X64\BiosId.bin -ob ..\Conf\BiosId.bat
+   if not exist %WORKSPACE%\%BUILD_PATH%\X64  mkdir %WORKSPACE%\%BUILD_PATH%\X64
+   GenBiosId.exe -i %CORE_PATH%\Conf\BiosId.env -o %WORKSPACE%\%BUILD_PATH%\X64\BiosId.bin -ob %CORE_PATH%\Conf\BiosId.bat
 )
 popd
 
@@ -217,11 +225,10 @@ echo Running fce...
 
 pushd %PLATFORM_PACKAGE%
 :: Extract Hii data from build and store in HiiDefaultData.txt
-fce read -i ..\%BUILD_PATH%\FV\Vlv.fd > ..\%BUILD_PATH%\FV\HiiDefaultData.txt
+fce read -i %WORKSPACE%\%BUILD_PATH%\FV\Vlv.fd > %WORKSPACE%\%BUILD_PATH%\FV\HiiDefaultData.txt
 
 :: save changes to VlvXXX.fd
-fce update -i ..\%BUILD_PATH%\FV\Vlv.fd -s ..\%BUILD_PATH%\FV\HiiDefaultData.txt -o ..\%BUILD_PATH%\FV\Vlv%Arch%.fd
-
+fce update -i %WORKSPACE%\%BUILD_PATH%\FV\Vlv.fd -s %WORKSPACE%\%BUILD_PATH%\FV\HiiDefaultData.txt -o %WORKSPACE%\%BUILD_PATH%\FV\Vlv%Arch%.fd
 popd
 
 if %ERRORLEVEL% NEQ 0 goto BldFail
@@ -233,7 +240,7 @@ for /f "tokens=1,3" %%i in (ver_strings) do set %%i=%%j
 del /f/q ver_strings >nul
 
 set BIOS_Name=%BOARD_ID%_%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%.ROM
-copy /y/b %BUILD_PATH%\FV\Vlv%Arch%.fd  %WORKSPACE%\%BIOS_Name% >nul
+copy /y/b %WORKSPACE%\%BUILD_PATH%\FV\Vlv%Arch%.fd  %PLATFORM_PATH%\%BIOS_Name% >nul
 
 echo.
 echo Build location:     %BUILD_PATH%

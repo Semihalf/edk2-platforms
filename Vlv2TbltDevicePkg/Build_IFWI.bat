@@ -1,7 +1,7 @@
 @REM @file
 @REM   Windows batch file to build BIOS ROM
 @REM
-@REM Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+@REM Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
 @REM This program and the accompanying materials
 @REM are licensed and made available under the terms and conditions of the BSD License
 @REM which accompanies this distribution.  The full text of the license may be found at
@@ -121,11 +121,11 @@ if %ERRORLEVEL% NEQ 0 (
 echo.
 echo Finished Building BIOS.
 @REM Set BIOS_ID environment variable here.
-call Conf\BiosId.bat
+call ..\edk2\Conf\BiosId.bat
 echo BIOS_ID=%BIOS_ID%
 
 :: Set the Board_Id, Build_Type, Version_Major, and Version_Minor environment variables
-find /v "#" Conf\BiosId.env > ver_strings
+find /v "#" ..\edk2\Conf\BiosId.env > ver_strings
 for /f "tokens=1,3" %%i in (ver_strings) do set %%i=%%j
 del /f/q ver_strings >nul
 set BIOS_Name=%BOARD_ID%_%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%.ROM
