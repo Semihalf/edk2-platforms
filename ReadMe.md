@@ -39,7 +39,7 @@ FSP repository
 ### Build
 
 1. Open command window, goto the workspace dir, e.g. c:\Kabylake.
-2. Type "cd KabylakeOpenBoardPkg\KabylakeRvp3".
+2. Type "cd edk2-platforms\Platform\Intel\KabylakeOpenBoardPkg\KabylakeRvp3".
 3. Type "GitEdk2MinKabylake.bat" to setup GIT environment.
 4. Type "prep" and make prebuild finish for debug build, "prep r" for rlease build.
 5. Type "bld" to build kabylake BIOS image.
