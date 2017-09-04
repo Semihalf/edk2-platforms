@@ -524,7 +524,7 @@ GetPlugInPciVgaDevicePath (
     Status = gBS->HandleProtocol (
                     HandleBuffer[Index],
                     &gEfiPciIoProtocolGuid,
-                    (VOID**)&PciIo
+                    (VOID **) &PciIo
                     );
     if (!EFI_ERROR (Status)) {
 
@@ -533,9 +533,9 @@ GetPlugInPciVgaDevicePath (
       //
       Status = PciIo->Pci.Read (
                         PciIo,
-                        EfiPciIoWidthUint32,
+                        EfiPciIoWidthUint8,
                         0,
-                        sizeof (Pci) / sizeof (UINT32),
+                        sizeof (Pci),
                         &Pci
                         );
       if (EFI_ERROR (Status)) {
@@ -562,7 +562,7 @@ GetPlugInPciVgaDevicePath (
       gBS->HandleProtocol (
              HandleBuffer[Index],
              &gEfiDevicePathProtocolGuid,
-             (VOID**)&DevicePath
+             (VOID **) &DevicePath
              );
 
       Index1 = 0;

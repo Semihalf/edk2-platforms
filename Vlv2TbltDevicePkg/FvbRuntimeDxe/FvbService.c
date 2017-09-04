@@ -4,7 +4,7 @@
   Firmware volume block driver for FWH or SPI device.
   It depends on which Flash Device Library to be linked with this driver.
 
-Copyright (c) 2006  - 2014, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006  - 2017, Intel Corporation. All rights reserved.<BR>
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -1010,8 +1010,7 @@ FvbInitialize (
   EFI_BOOT_MODE                         BootMode;
   UINT32                                PlatformFvBaseAddress[3];
   UINT32                                PlatformFvBaseAddressCount;
-  UINT32                                PlatformFvLockList[2];
-  UINT32                                PlatformFvLockListCount;
+
   //
   // This platform driver knows there are 3 FVs on
   // FD, which are FvRecovery, FvMain and FvNvStorage.
@@ -1029,13 +1028,6 @@ FvbInitialize (
     PlatformFvBaseAddress[1]   = PcdGet32 (PcdFlashNvStorageVariableBase);
     PlatformFvBaseAddress[2]   = PcdGet32 (PcdFlashFvRecoveryBase);
   }
-
-  //
-  // List of FVs that should be write protected on normal boots.
-  //
-  PlatformFvLockListCount = 2;
-  PlatformFvLockList[0]   = PcdGet32 (PcdFlashFvMainBase);
-  PlatformFvLockList[1]   = PcdGet32 (PcdFlashFvRecoveryBase);
 
   //
   // Calculate the total size for all firmware volume block instances.

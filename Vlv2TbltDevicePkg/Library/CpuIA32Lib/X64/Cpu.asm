@@ -9,7 +9,7 @@ TITLE   Cpu.asm: Assembly code for the x64 resources
 ; license agreement
 ;
 ;
-; Copyright (c)  1999  - 2014, Intel Corporation. All rights reserved
+; Copyright (c)  1999  - 2017, Intel Corporation. All rights reserved
 ;                                                                                  
 ; This program and the accompanying materials are licensed and made available under
 ; the terms and conditions of the BSD License that accompanies this distribution.  
@@ -31,7 +31,7 @@ TITLE   Cpu.asm: Assembly code for the x64 resources
 ;*
 ;------------------------------------------------------------------------------
 
-text    SEGMENT
+.code
 
 
 ;------------------------------------------------------------------------------

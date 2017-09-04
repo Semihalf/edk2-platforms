@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004  - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2017, Intel Corporation. All rights reserved.<BR>
                                                                                    
 
   This program and the accompanying materials are licensed and made available under
@@ -35,7 +35,7 @@ Abstract:
 
 #include <PiDxe.h>
 #include <Protocol/TcgService.h>
-#include <Protocol/FirmwareVolume.h>
+#include <Protocol/FirmwareVolume2.h>
 #include "AcpiPlatform.h"
 #include "AcpiPlatformHooks.h"
 #include "AcpiPlatformHooksLib.h"
@@ -156,7 +156,7 @@ LocateSupportProtocol (
     //
     // See if it has the ACPI storage file.
     //
-    Status = ((EFI_FIRMWARE_VOLUME_PROTOCOL *) (*Instance))->ReadFile (
+    Status = ((EFI_FIRMWARE_VOLUME2_PROTOCOL *) (*Instance))->ReadFile (
                                                               *Instance,
                                                               &gEfiAcpiTableStorageGuid,
                                                               NULL,
@@ -775,12 +775,12 @@ AcpiPlatformEntryPoint (
   EFI_STATUS                    Status;
   EFI_STATUS                    AcpiStatus;
   EFI_ACPI_SUPPORT_PROTOCOL     *AcpiSupport;
-  EFI_FIRMWARE_VOLUME_PROTOCOL  *FwVol;
+  EFI_FIRMWARE_VOLUME2_PROTOCOL *FwVol;
   INTN                          Instance;
   EFI_ACPI_COMMON_HEADER        *CurrentTable;
   UINTN                         TableHandle;
   UINT32                        FvStatus;
-  UINT32                        Size;
+  UINTN                         Size;
   EFI_EVENT                     Event;
   EFI_ACPI_TABLE_VERSION        TableVersion;
   UINTN                         VarSize;
@@ -848,7 +848,7 @@ AcpiPlatformEntryPoint (
   //
   // Locate the firmware volume protocol.
   //
-  Status = LocateSupportProtocol (&gEfiFirmwareVolumeProtocolGuid, (VOID **) &FwVol, 1);
+  Status = LocateSupportProtocol (&gEfiFirmwareVolume2ProtocolGuid, (VOID **) &FwVol, 1);
   ASSERT_EFI_ERROR (Status);
 
   //

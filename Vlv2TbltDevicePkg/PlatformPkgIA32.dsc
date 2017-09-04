@@ -161,6 +161,7 @@
 !endif
   S3IoLib|MdePkg/Library/BaseS3IoLib/BaseS3IoLib.inf
   S3PciLib|MdePkg/Library/BaseS3PciLib/BaseS3PciLib.inf
+  SmmCpuFeaturesLib|UefiCpuPkg/Library/SmmCpuFeaturesLib/SmmCpuFeaturesLib.inf
 
   #
   # Generic Modules
@@ -413,6 +414,7 @@
   LockBoxLib|MdeModulePkg/Library/SmmLockBoxLib/SmmLockBoxSmmLib.inf
   PerformanceLib|MdePkg/Library/BasePerformanceLibNull/BasePerformanceLibNull.inf
   SmmMemLib|MdePkg/Library/SmmMemLib/SmmMemLib.inf
+  SmmCpuPlatformHookLib|UefiCpuPkg/Library/SmmCpuPlatformHookLibNull/SmmCpuPlatformHookLibNull.inf
 
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/SmmCryptLib.inf
   !if $(TARGET) != RELEASE
@@ -614,7 +616,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdVariableCollectStatistics|FALSE
 !endif
 
-  gEfiCpuTokenSpaceGuid.PcdCpuSmmBlockStartupThisAp|TRUE
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmBlockStartupThisAp|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdHiiOsRuntimeSupport|FALSE
 
 [PcdsFixedAtBuild.common]
@@ -687,7 +689,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdLoadModuleAtFixAddressEnable|$(TOP_MEMORY_ADDRESS)
   gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserSubtitleTextColor|0x0
   gEfiMdeModulePkgTokenSpaceGuid.PcdBrowserFieldTextColor|0x01
-  gEfiCpuTokenSpaceGuid.PcdCpuIEDEnabled|TRUE
+  gEfiCpuTokenSpaceGuid.PcdCpuIEDEnabled|FALSE
   gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdBiosVideoCheckVbeEnable|TRUE
   gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdBiosVideoCheckVgaEnable|TRUE
 
@@ -914,7 +916,7 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
   gEfiVLVTokenSpaceGuid.PcdCpuLockBoxDataAddress|0
   gEfiVLVTokenSpaceGuid.PcdCpuSmramCpuDataAddress|0
   gEfiVLVTokenSpaceGuid.PcdCpuLockBoxSize|0
-  gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|FALSE
+  gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|TRUE
 
 [Components.IA32]
 
@@ -1368,15 +1370,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   #
   MdeModulePkg/Core/PiSmmCore/PiSmmIpl.inf
   MdeModulePkg/Core/PiSmmCore/PiSmmCore.inf
-!if $(SOURCE_DEBUG_ENABLE) == TRUE
-!if $(SMM_SOURCE_DEBUG_ENABLE) == FALSE  
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)RELEASE/$(DXE_ARCHITECTURE)/PiSmmCpuDxeSmm.inf
-!else
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PiSmmCpuDxeSmm.inf
-!endif  
-!else
-   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PiSmmCpuDxeSmm.inf
-!endif
+  UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
   UefiCpuPkg/CpuIo2Smm/CpuIo2Smm.inf
   MdeModulePkg/Universal/LockBox/SmmLockBox/SmmLockBox.inf
   UefiCpuPkg/CpuS3DataDxe/CpuS3DataDxe.inf
@@ -1426,10 +1420,12 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   IntelFrameworkModulePkg/Bus/Isa/Ps2MouseDxe/Ps2MouseDxe.inf
   IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
 #
-# SDIO
+# eMMC/SD Card
 #
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/MmcHost.inf
-  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/MmcMediaDevice.inf
+  MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/SdMmcPciHcDxe.inf
+  MdeModulePkg/Bus/Sd/EmmcDxe/EmmcDxe.inf
+  MdeModulePkg/Bus/Sd/SdDxe/SdDxe.inf  
+  
 !if $(ACPI50_ENABLE) == TRUE
   MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf {
     <LibraryClasses>

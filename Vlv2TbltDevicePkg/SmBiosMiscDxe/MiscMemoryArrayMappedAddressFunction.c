@@ -67,7 +67,6 @@ MISC_SMBIOS_TABLE_FUNCTION (MiscMemoryArrayMappedAddress)
   UINT64                                   TotalMemorySizeInKB;
   UINT8                                    Dimm;
   EFI_SMBIOS_HANDLE                        SmbiosHandle;
-  EFI_MEMORY_ARRAY_START_ADDRESS_DATA      *ForType19InputData;
   SMBIOS_TABLE_TYPE19                      *SmbiosRecord;
   MEM_INFO_PROTOCOL                        *MemInfoHob;
   UINT16                                   Type16Handle = 0;
@@ -80,7 +79,6 @@ MISC_SMBIOS_TABLE_FUNCTION (MiscMemoryArrayMappedAddress)
   if (RecordData == NULL) {
     return EFI_INVALID_PARAMETER;
   }
-  ForType19InputData        = (EFI_MEMORY_ARRAY_START_ADDRESS_DATA *)RecordData;
 
   //
   // Two zeros following the last string.
