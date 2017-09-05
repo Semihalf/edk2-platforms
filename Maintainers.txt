@@ -1,0 +1,10 @@
+MINNOWBOARD MAX/TURBOT PLATFORM Maintainers
+==================
+
+Vlv2DeviceRefCodePkg
+  David Wei <david.wei@intel.com>
+  Mang Guo <mang.guo@intel.com>
+
+Vlv2TbltDevicePkg
+  David Wei <david.wei@intel.com>
+  Mang Guo <mang.guo@intel.com>
