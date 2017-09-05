@@ -19,40 +19,47 @@ function Usage() {
   exit 0
 }
 
-
+cd ..
 echo -e $(date)
 ##**********************************************************************
 ## Initial Setup
 ##**********************************************************************
-#WORKSPACE=$(pwd)
+export WORKSPACE=$(pwd)
 #build_threads=($NUMBER_OF_PROCESSORS)+1
 Build_Flags=
 exitCode=0
 Arch=X64
 SpiLock=0
 
+export CORE_PATH=$WORKSPACE/edk2
+export PLATFORM_PATH=$WORKSPACE/edk2-platforms
+export SILICON_PATH=$WORKSPACE/silicon
+export EDK_TOOLS_BIN=$WORKSPACE/edk2-BaseTools-win32
+export PACKAGES_PATH=$WORKSPACE:$PLATFORM_PATH:$SILICON_PATH:$CORE_PATH
+cd ./edk2
+
 ## Clean up previous build files.
-if [ -e $(pwd)/EDK2.log ]; then
-  rm $(pwd)/EDK2.log
+if [ -e $CORE_PATH/EDK2.log ]; then
+  rm $CORE_PATH/EDK2.log
 fi
 
-if [ -e $(pwd)/Unitool.log ]; then
-  rm $(pwd)/Unitool.log
+if [ -e $CORE_PATH/Unitool.log ]; then
+  rm $CORE_PATH/Unitool.log
 fi
 
-if [ -e $(pwd)/Conf/target.txt ]; then
-  rm $(pwd)/Conf/target.txt
+if [ -e $CORE_PATH/Conf/target.txt ]; then
+  rm $CORE_PATH/Conf/target.txt
 fi
 
-if [ -e $(pwd)/Conf/BiosId.env ]; then
-  rm $(pwd)/Conf/BiosId.env
+if [ -e $CORE_PATH/Conf/BiosId.env ]; then
+  rm $CORE_PATH/Conf/BiosId.env
 fi
 
-if [ -e $(pwd)/Conf/tools_def.txt ]; then
-  rm $(pwd)/Conf/tools_def.txt
+if [ -e $CORE_PATH/Conf/tools_def.txt ]; then
+  rm $CORE_PATH/Conf/tools_def.txt
 fi
 
-if [ -e $(pwd)/Conf/build_rule.txt ]; then
+if [ -e $CORE_PATH/Conf/build_rule.txt ]; then
   rm $(pwd)/Conf/build_rule.txt
 fi
 
@@ -63,12 +70,13 @@ fi
 make -C BaseTools
 
 ## Define platform specific environment variables.
-PLATFORM_PACKAGE=Vlv2TbltDevicePkg
-config_file=$WORKSPACE/$PLATFORM_PACKAGE/PlatformPkgConfig.dsc
-auto_config_inc=$WORKSPACE/$PLATFORM_PACKAGE/AutoPlatformCFG.txt
+PLATFORM_NAME=Vlv2TbltDevicePkg
+PLATFORM_PACKAGE=$PLATFORM_PATH/Vlv2TbltDevicePkg
+config_file=$PLATFORM_PACKAGE/PlatformPkgConfig.dsc
+auto_config_inc=$PLATFORM_PACKAGE/AutoPlatformCFG.txt
 
 ## default ECP (override with /ECP flag)
-EDK_SOURCE=$WORKSPACE/EdkCompatibilityPkg
+EDK_SOURCE=$CORE_PATH/EdkCompatibilityPkg
 
 ## create new AutoPlatformCFG.txt file
 if [ -f "$auto_config_inc" ]; then
@@ -196,25 +204,25 @@ fi
 ##**********************************************************************
 echo Skip "Running UniTool..."
 echo "Make GenBiosId Tool..."
-BUILD_PATH=Build/$PLATFORM_PACKAGE/"$TARGET"_"$TOOL_CHAIN_TAG"
-if [ ! -d "$BUILD_PATH/$Arch" ]; then
-  mkdir -p $BUILD_PATH/$Arch
+BUILD_PATH=Build/$PLATFORM_NAME/"$TARGET"_"$TOOL_CHAIN_TAG"
+if [ ! -d "$WORKSPACE/$BUILD_PATH/$Arch" ]; then
+  mkdir -p $WORKSPACE/$BUILD_PATH/$Arch
 fi
-if [ -e "$BUILD_PATH/$Arch/BiosId.bin" ]; then
-  rm -f $BUILD_PATH/$Arch/BiosId.bin
+if [ -e "$WORKSPACE/$BUILD_PATH/$Arch/BiosId.bin" ]; then
+  rm -f $WORKSPACE/$BUILD_PATH/$Arch/BiosId.bin
 fi
 
 
-./$PLATFORM_PACKAGE/GenBiosId -i Conf/BiosId.env -o $BUILD_PATH/$Arch/BiosId.bin
+$PLATFORM_PACKAGE/GenBiosId -i $CORE_PATH/Conf/BiosId.env -o $WORKSPACE/$BUILD_PATH/$Arch/BiosId.bin
 
 
 echo "Invoking EDK2 build..."
 build
 
 if [ $SpiLock == "1" ]; then
-  IFWI_HEADER_FILE=./$PLATFORM_PACKAGE/Stitch/IFWIHeader/IFWI_HEADER_SPILOCK.bin
+  IFWI_HEADER_FILE=$PLATFORM_PACKAGE/Stitch/IFWIHeader/IFWI_HEADER_SPILOCK.bin
 else
-  IFWI_HEADER_FILE=./$PLATFORM_PACKAGE/Stitch/IFWIHeader/IFWI_HEADER.bin
+  IFWI_HEADER_FILE=$PLATFORM_PACKAGE/Stitch/IFWIHeader/IFWI_HEADER.bin
 fi
 
 echo $IFWI_HEADER_FILE
@@ -233,9 +241,9 @@ VERSION_MINOR=$(grep '^VERSION_MINOR' Conf/BiosId.env | cut -d ' ' -f 3 | cut -c
 BOARD_ID=$(grep '^BOARD_ID' Conf/BiosId.env | cut -d ' ' -f 3 | cut -c 1-7)
 BIOS_Name="$BOARD_ID"_"$Arch"_"$BUILD_TYPE"_"$VERSION_MAJOR"_"$VERSION_MINOR".ROM
 BIOS_ID="$BOARD_ID"_"$Arch"_"$BUILD_TYPE"_"$VERSION_MAJOR"_"$VERSION_MINOR"_GCC.bin
-cp -f $BUILD_PATH/FV/VLV.fd  $WORKSPACE/$BIOS_Name
+cp -f $WORKSPACE/$BUILD_PATH/FV/VLV.fd  $WORKSPACE/$BIOS_Name
 SEC_VERSION=1.0.2.1060v5
-cat $IFWI_HEADER_FILE ./Vlv2MiscBinariesPkg/SEC/$SEC_VERSION/VLV_SEC_REGION.bin ./Vlv2MiscBinariesPkg/SEC/$SEC_VERSION/Vacant.bin $BIOS_Name > ./$PLATFORM_PACKAGE/Stitch/$BIOS_ID
+cat $IFWI_HEADER_FILE $SILICON_PATH/Vlv2MiscBinariesPkg/SEC/$SEC_VERSION/VLV_SEC_REGION.bin $SILICON_PATH/Vlv2MiscBinariesPkg/SEC/$SEC_VERSION/Vacant.bin $WORKSPACE/$BIOS_Name > $PLATFORM_PACKAGE/Stitch/$BIOS_ID
 
 
 echo Skip "Running BIOS_Signing ..."
