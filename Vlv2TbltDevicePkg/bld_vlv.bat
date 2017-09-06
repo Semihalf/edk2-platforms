@@ -32,7 +32,7 @@ set Source=0
 set CORE_PATH=%WORKSPACE%\edk2
 set PLATFORM_PATH=%WORKSPACE%\edk2-platforms
 set EDK_TOOLS_BIN=%WORKSPACE%\edk2-BaseTools-win32
-set PACKAGES_PATH=%WORKSPACE%\edk2-platforms;%WORKSPACE%\edk2
+set PACKAGES_PATH=%WORKSPACE%\edk2-platforms;%WORKSPACE%\silicon;%WORKSPACE%\edk2
 cd ./edk2
 
 :: Clean up previous build files.
