@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004  - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2017, Intel Corporation. All rights reserved.<BR>
                                                                                    
 
   This program and the accompanying materials are licensed and made available under
@@ -442,13 +442,13 @@ SpiBiosProtectionFunction(
   UINTN                             BiosFlaLimit1;  
   
 
-  BiosFlaLower0 = PcdGet32(PcdFlashMicroCodeAddress)-PcdGet32(PcdFlashAreaBaseAddress);
+  BiosFlaLower0 = PcdGet32(PcdFlashMicroCodeAddress)-PcdGet32(PcdBiosImageBase);
   BiosFlaLimit0 = PcdGet32(PcdFlashMicroCodeSize)-1;  
   #ifdef MINNOW2_FSP_BUILD
-  BiosFlaLower1 = PcdGet32(PcdFlashFvFspBase)-PcdGet32(PcdFlashAreaBaseAddress);
+  BiosFlaLower1 = PcdGet32(PcdFlashFvFspBase)-PcdGet32(PcdBiosImageBase);
   BiosFlaLimit1 = (PcdGet32(PcdFlashFvRecoveryBase)-PcdGet32(PcdFlashFvFspBase)+PcdGet32(PcdFlashFvRecoverySize))-1;
   #else
-  BiosFlaLower1 = PcdGet32(PcdFlashFvMainBase)-PcdGet32(PcdFlashAreaBaseAddress);
+  BiosFlaLower1 = PcdGet32(PcdFlashFvMainBase)-PcdGet32(PcdBiosImageBase);
   BiosFlaLimit1 = (PcdGet32(PcdFlashFvRecoveryBase)-PcdGet32(PcdFlashFvMainBase)+PcdGet32(PcdFlashFvRecoverySize))-1;
   #endif
 

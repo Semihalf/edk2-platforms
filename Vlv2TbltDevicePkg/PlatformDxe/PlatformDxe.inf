@@ -135,7 +135,7 @@
 [Pcd.common]
   gPlatformModuleTokenSpaceGuid.PcdPBTNDisableInterval
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
-  gPlatformModuleTokenSpaceGuid.PcdFlashAreaBaseAddress
+  gPlatformModuleTokenSpaceGuid.PcdBiosImageBase
   gPlatformModuleTokenSpaceGuid.PcdFlashMicroCodeAddress
   gPlatformModuleTokenSpaceGuid.PcdFlashMicroCodeSize
   gEfiMdeModulePkgTokenSpaceGuid.PcdFastPS2Detection

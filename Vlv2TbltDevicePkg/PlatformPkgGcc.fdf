@@ -70,8 +70,8 @@ DEFINE FLASH_REGION_FV_RECOVERY_SIZE                          = 0x00070000
 #
 ################################################################################
 [FD.Vlv]
-BaseAddress   = $(FLASH_BASE)|gPlatformModuleTokenSpaceGuid.PcdFlashAreaBaseAddress #The base address of the 3Mb FLASH Device.
-Size          = $(FLASH_SIZE)|gPlatformModuleTokenSpaceGuid.PcdFlashAreaSize        #The flash size in bytes of the 3Mb FLASH Device.
+BaseAddress   = $(FLASH_BASE)|gPlatformModuleTokenSpaceGuid.PcdBiosImageBase #The base address of the 3Mb FLASH Device.
+Size          = $(FLASH_SIZE)|gPlatformModuleTokenSpaceGuid.PcdBiosImageSize        #The flash size in bytes of the 3Mb FLASH Device.
 ErasePolarity = 1
 BlockSize     = $(FLASH_BLOCK_SIZE)          #The block size in bytes of the 3Mb FLASH Device.
 NumBlocks     = $(FLASH_NUM_BLOCKS)          #The number of blocks in 3Mb FLASH Device.
