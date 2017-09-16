@@ -1630,7 +1630,7 @@ EFIAPI
 PlatformBdsPolicyBehavior (
   IN OUT LIST_ENTRY                  *DriverOptionList,
   IN OUT LIST_ENTRY                  *BootOptionList,
-  IN PROCESS_CAPSULES                ProcessCapsules,
+  IN PROCESS_CAPSULES                BdsProcessCapsules,
   IN BASEM_MEMORY_TEST               BaseMemoryTest
   )
 {
@@ -1965,13 +1965,17 @@ PlatformBdsPolicyBehavior (
       PcdSetBool(PcdEsrtSyncFmp, FALSE);
     }
 
+    DEBUG((EFI_D_INFO, "ProcessCapsules Before EndOfDxe ......\n"));
+    Status = ProcessCapsules ();
+    DEBUG((EFI_D_INFO, "ProcessCapsules %r\n", Status));
+
+
     //
     // Close boot script and install ready to lock
     //
     InstallReadyToLock ();
 
 
-    PlatformBootManagerProcessCapsules();
 
     
     PlatformBdsLockNonUpdatableFlash ();

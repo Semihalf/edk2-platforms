@@ -2,7 +2,7 @@
 # Platform Package
 #
 # This package provides platform specific modules.
-# Copyright (c) 2009  - 2016, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2009  - 2017, Intel Corporation. All rights reserved.<BR>
 #                                                                                  
 # This program and the accompanying materials are licensed and made available under
 # the terms and conditions of the BSD License that accompanies this distribution.  
@@ -160,6 +160,28 @@
   gPlatformModuleTokenSpaceGuid.PcdBiosRomSize|0x00400000|UINT32|0x4000000C
   gPlatformModuleTokenSpaceGuid.PcdFlashMinEraseSize|0x1000|UINT32|0x70000007
 
+[PcdsPatchableInModule]
+  ## Provides the memory mapped base address of the BIOS Image Area.  This area
+  #  must be within the memory mapped region defined by the BIOS Flash Device
+  #  Base Address and the BIOS Flash Device Size.<BR><BR>
+  #  The address must be within the BIOS Flash Device address space.<BR>
+  #
+  # @Prompt BIOS Image Area Base Address
+  #
+  # @Expression 0x80000011 | gPlatformModuleTokenSpaceGuid.PcdBiosImageBase >= gPlatformModuleTokenSpaceGuid.PcdFlashAreaBaseAddress
+  # 
+  gPlatformModuleTokenSpaceGuid.PcdBiosImageBase|0xFF800000|UINT32|0x20000050
+  ## Provides the size of the BIOS Image Area.<BR><BR>
+  #  Valid size values must not exceed the BIOS Flash Device address space.<BR>
+  #
+  # @Prompt BIOS Image Area Size
+  #
+  # @Expression 0x80000012 | gPlatformModuleTokenSpaceGuid.PcdBiosImageSize <= gPlatformModuleTokenSpaceGuid.PcdFlashAreaSize
+  #
+  gPlatformModuleTokenSpaceGuid.PcdBiosImageSize|0x800000|UINT32|0x20000051
+  
+
+  
 [PcdsFeatureFlag]
   ## This PCD specifies whether StatusCode is reported via ISA Serial port.
   gEfiSerialPortTokenSpaceGuid.PcdStatusCodeUseIsaSerial|TRUE|BOOLEAN|0x00000020

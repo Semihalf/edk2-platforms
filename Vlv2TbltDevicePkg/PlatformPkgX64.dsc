@@ -185,10 +185,18 @@
 
   OemHookStatusCodeLib|MdeModulePkg/Library/OemHookStatusCodeLibNull/OemHookStatusCodeLibNull.inf
 
-!if $(ESRT_ENABLE) == TRUE
-  CapsuleLib|$(PLATFORM_PACKAGE)/Library/DxeEsrtCapsuleBsLib/DxeEsrtCapsuleBsLib.inf
+!if $(CAPSULE_ENABLE) == TRUE
+ CapsuleLib|IntelFrameworkModulePkg/Library/DxeCapsuleLib/DxeCapsuleLib.inf
 !else
-  CapsuleLib|IntelFrameworkModulePkg/Library/DxeCapsuleLib/DxeCapsuleLib.inf
+  CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
+!endif
+
+!if $(CAPSULE_GENERATE_ENABLE)
+  CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibFmp/DxeCapsuleLib.inf
+  EdkiiSystemCapsuleLib|SignedCapsulePkg/Library/EdkiiSystemCapsuleLib/EdkiiSystemCapsuleLib.inf
+  FmpAuthenticationLib|MdeModulePkg/Library/FmpAuthenticationLibNull/FmpAuthenticationLibNull.inf
+  IniParsingLib|SignedCapsulePkg/Library/IniParsingLib/IniParsingLib.inf
+  PlatformFlashAccessLib|Vlv2TbltDevicePkg/Feature/Capsule/Library/PlatformFlashAccessLib/PlatformFlashAccessLib.inf
 !endif
 
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
@@ -460,6 +468,10 @@
 
 !if $(SOURCE_DEBUG_ENABLE) == TRUE
   DebugAgentLib|SourceLevelDebugPkg/Library/DebugAgent/DxeDebugAgentLib.inf
+!endif
+
+!if $(CAPSULE_GENERATE_ENABLE)
+  CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibFmp/DxeRuntimeCapsuleLib.inf
 !endif
 
 [LibraryClasses.common.UEFI_DRIVER]
@@ -918,7 +930,22 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
   gEfiVLVTokenSpaceGuid.PcdCpuLockBoxSize|0
   gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|TRUE
 
+!if $(CAPSULE_GENERATE_ENABLE)
+  gEfiSignedCapsulePkgTokenSpaceGuid.PcdEdkiiSystemFirmwareImageDescriptor|{0x0}|VOID*|0x100
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSystemFmpCapsuleImageTypeIdGuid|{0x7b, 0x26, 0x96, 0x40, 0x0a, 0xda, 0xeb, 0x42, 0xb5, 0xeb, 0xfe, 0xf3, 0x1d, 0x20, 0x7c, 0xb4}
+  gEfiSignedCapsulePkgTokenSpaceGuid.PcdEdkiiSystemFirmwareFileGuid|{0x59, 0x3A, 0xD8, 0x14, 0x10, 0xA8, 0x56, 0x45, 0x81, 0x92, 0x1C, 0x0A, 0x59, 0x3C, 0x06, 0x5C}
+!endif
+  
+  
 [Components.IA32]
+
+!if $(CAPSULE_GENERATE_ENABLE)
+  # FMP image decriptor
+  Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf {
+    <LibraryClasses>
+      PcdLib|MdePkg/Library/PeiPcdLib/PeiPcdLib.inf
+  }
+!endif
 
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/SecCore.inf
 
@@ -1215,11 +1242,35 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
 !endif
    MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf {
     <LibraryClasses>
-      !if $(ESRT_ENABLE) == TRUE
-      CapsuleLib|$(PLATFORM_PACKAGE)/Library/DxeEsrtCapsuleRtLib/DxeEsrtCapsuleRtLib.inf
-      !endif
+      FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
   }
 
+!if $(CAPSULE_GENERATE_ENABLE)
+  MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
+
+  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf {
+    <LibraryClasses>
+      FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
+    !if $(TARGET) != RELEASE
+      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+    !endif
+  }
+
+  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf {
+    <LibraryClasses>
+      FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
+    !if $(TARGET) != RELEASE
+      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+    !endif
+  }
+
+  MdeModulePkg/Application/CapsuleApp/CapsuleApp.inf {
+    <LibraryClasses>
+      PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
+  }
+!endif
+  
+  
   MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
   PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
   MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
@@ -1577,7 +1628,6 @@ IntelFrameworkModulePkg/Universal/FirmwareVolume/FwVolDxe/FwVolDxe.inf
 !endif
 MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmmDxe.inf
 !if $(ESRT_ENABLE) == TRUE
-  MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
   $(PLATFORM_PACKAGE)/PlatformEsrt/PlatformEsrtDxe.inf
   $(PLATFORM_PACKAGE)/FmpSample/FmpSample.inf
 !endif

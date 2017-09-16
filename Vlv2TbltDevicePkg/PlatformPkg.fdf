@@ -333,6 +333,10 @@ INF IntelFspWrapperPkg/FspWrapperSecCore/FspWrapperSecCore.inf
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/SecCore.inf
 !endif
 
+!if $(CAPSULE_GENERATE_ENABLE)
+INF Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
+INF USE=IA32 Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptorTable.inf
+!endif
 INF MdeModulePkg/Core/Pei/PeiMain.inf
 !if $(MINNOW2_FSP_BUILD) == TRUE
 INF Vlv2TbltDevicePkg/FspSupport/BootModePei/BootModePei.inf
@@ -742,10 +746,14 @@ FILE FREEFORM = 878AC2CC-5343-46F2-B563-51F89DAF56BA {
   !endif
 !endif
 
-!if $(ESRT_ENABLE) == TRUE
-  INF  MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
-  INF  $(PLATFORM_PACKAGE)/PlatformEsrt/PlatformEsrtDxe.inf
-  INF  $(PLATFORM_PACKAGE)/FmpSample/FmpSample.inf
+!if $(CAPSULE_GENERATE_ENABLE)
+INF  MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
+INF  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf
+
+FILE FREEFORM = PCD(gEfiSignedCapsulePkgTokenSpaceGuid.PcdEdkiiRsa2048Sha256TestPublicKeyFileGuid) {
+     SECTION RAW = BaseTools/Source/Python/Rsa2048Sha256Sign/TestSigningPublicKey.bin
+     SECTION UI = "Rsa2048Sha256TestSigningPublicKey"
+     }
 !endif
 
 [FV.FVMAIN_COMPACT]
@@ -889,31 +897,75 @@ FILE FV_IMAGE = EDBEDF47-6EA3-4512-83C1-70F4769D4BDE {
        }
      }
 
-[Capsule.Capsule_Boot]
-!if $(ESRT_ENABLE) == TRUE
-CAPSULE_GUID      = 819b858e-c52c-402f-80e1-5b311b6c1959
-!else
-CAPSULE_GUID      = 3B6686BD-0D76-4030-B70E-B5519E2FC5A0 
+!if $(CAPSULE_GENERATE_ENABLE)
+[FV.CapsuleDispatchFv]
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+INF  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
+
+[FV.SystemFirmwareUpdateCargo]
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+FILE RAW = 14D83A59-A810-4556-8192-1C0A593C065C { # PcdEdkiiSystemFirmwareFileGuid
+    FD = Vlv
+  }
+
+FILE RAW = ce57b167-b0e4-41e8-a897-5f4feb781d40 { # gEdkiiSystemFmpCapsuleDriverFvFileGuid
+    FV = CapsuleDispatchFv
+  }
+
+FILE RAW = 812136D3-4D3A-433A-9418-29BB9BF78F6E { # gEdkiiSystemFmpCapsuleConfigFileGuid
+    Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareUpdateConfig/SystemFirmwareUpdateConfig.ini
+  }
+
+[FmpPayload.FmpPayloadSystemFirmwareRsa2048]
+IMAGE_HEADER_INIT_VERSION = 0x02
+IMAGE_TYPE_ID             = 4096267b-da0a-42eb-b5eb-fef31d207cb4 # PcdSystemFmpCapsuleImageTypeIdGuid
+IMAGE_INDEX               = 0x1
+HARDWARE_INSTANCE         = 0x0
+MONOTONIC_COUNT           = 0x2
+CERTIFICATE_GUID          = A7717414-C616-4977-9420-844712A735BF # RSA2048SHA256
+
+FV = SystemFirmwareUpdateCargo
+
+[Capsule.FVMAIN]
+CAPSULE_GUID                = 6dcbd5ed-e82d-4c44-bda1-7194199ad92a # gEfiFmpCapsuleGuid
+CAPSULE_FLAGS               = PersistAcrossReset,InitiateReset
+CAPSULE_HEADER_SIZE         = 0x20
+CAPSULE_HEADER_INIT_VERSION = 0x1
+
+FMP_PAYLOAD = FmpPayloadSystemFirmwareRsa2048
 !endif
-
-CAPSULE_FLAGS     = PersistAcrossReset, InitiateReset
-OEM_CAPSULE_FLAGS = 0x0001
-
-CAPSULE_HEADER_SIZE = 0x20
-
-FV = BiosUpdate
-
-[Capsule.Capsule_Reset]
-!if $(ESRT_ENABLE) == TRUE
-CAPSULE_GUID      = 819b858e-c52c-402f-80e1-5b311b6c1959
-!else
-CAPSULE_GUID      = 3B6686BD-0D76-4030-B70E-B5519E2FC5A0 
-!endif
-
-CAPSULE_FLAGS = PersistAcrossReset
-CAPSULE_HEADER_SIZE = 0x20
-
-FV = BiosUpdate
 
 ################################################################################
 #
@@ -1144,3 +1196,19 @@ FV = BiosUpdate
     RAW ASL   Optional            |.aml
   }
 
+[Rule.Common.PEIM.FMP_IMAGE_DESC]
+
+  FILE PEIM = $(NAMED_GUID) {
+     RAW BIN                  |.acpi
+
+     PEI_DEPEX PEI_DEPEX Optional        $(INF_OUTPUT)/$(MODULE_NAME).depex
+     PE32      PE32                      $(INF_OUTPUT)/$(MODULE_NAME).efi
+     UI       STRING="$(MODULE_NAME)" Optional
+     VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
+  }
+
+[Rule.Common.USER_DEFINED.BINARY]
+  FILE FREEFORM = $(NAMED_GUID) {
+     UI  STRING="$(MODULE_NAME)" Optional
+     RAW BIN |.bin
+     }
