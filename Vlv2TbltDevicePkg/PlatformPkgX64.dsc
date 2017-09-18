@@ -1251,17 +1251,13 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf {
     <LibraryClasses>
       FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
-    !if $(TARGET) != RELEASE
-      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-    !endif
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
   SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf {
     <LibraryClasses>
       FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
-    !if $(TARGET) != RELEASE
-      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-    !endif
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
   MdeModulePkg/Application/CapsuleApp/CapsuleApp.inf {
