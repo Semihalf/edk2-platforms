@@ -857,14 +857,6 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
   gEfiMdePkgTokenSpaceGuid.PcdHardwareErrorRecordLevel|L"HwErrRecSupport"|gEfiGlobalVariableGuid|0x0|1 # Variable: L"HwErrRecSupport"
   gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdBootState|L"BootState"|gEfiBootStateGuid|0x0|TRUE
   
-  #
-  #  Indicator to sync ESRT repository from FMP instance. Set to TRUE on first boot
-  #
-!if $(ESRT_ENABLE) == TRUE
-  gPlatformModuleTokenSpaceGuid.PcdEsrtSyncFmp|L"EsrtSyncFmp"|gPlatformModuleTokenSpaceGuid|0x0|TRUE|NV,BS
-!else
-  gPlatformModuleTokenSpaceGuid.PcdEsrtSyncFmp|L"EsrtSyncFmp"|gPlatformModuleTokenSpaceGuid|0x0|FALSE|NV,BS
-!endif
 
 [PcdsDynamicDefault.common.DEFAULT]
   gEfiMdeModulePkgTokenSpaceGuid.PcdS3BootScriptTablePrivateDataPtr|0x0
@@ -1249,19 +1241,14 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf {
     <LibraryClasses>
       FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
-    !if $(TARGET) != RELEASE
-      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-    !endif
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
   SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf {
     <LibraryClasses>
 
       FmpAuthenticationLib|SecurityPkg/Library/FmpAuthenticationLibRsa2048Sha256/FmpAuthenticationLibRsa2048Sha256.inf
-
-    !if $(TARGET) != RELEASE
-      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-    !endif
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
   MdeModulePkg/Application/CapsuleApp/CapsuleApp.inf {
@@ -1614,22 +1601,8 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
 # capsule related drivers
 #
 IntelFrameworkModulePkg/Universal/FirmwareVolume/FwVolDxe/FwVolDxe.inf
-!if $(ESRT_ENABLE) == TRUE
-  $(PLATFORM_PACKAGE)/UpdateDriverDxe/UpdateDriverDxe.inf{
-     !if $(TARGET) == DEBUG
-    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
-	  SerialPortLib|$(PLATFORM_PACKAGE)/Library/SerialPortLib/SerialPortLib.inf
-    !endif
-  }
-!else
-  IntelFrameworkModulePkg/Universal/FirmwareVolume/UpdateDriverDxe/UpdateDriverDxe.inf
-!endif
+
 MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmmDxe.inf
-!if $(ESRT_ENABLE) == TRUE
-  $(PLATFORM_PACKAGE)/PlatformEsrt/PlatformEsrtDxe.inf
-  $(PLATFORM_PACKAGE)/FmpSample/FmpSample.inf
-!endif
 
   Vlv2TbltDevicePkg/Application/FirmwareUpdate/FirmwareUpdate.inf
   Vlv2TbltDevicePkg/Application/SsdtUpdate/SsdtUpdate.inf

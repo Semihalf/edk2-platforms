@@ -15,21 +15,20 @@
 [Defines]
   INF_VERSION                    = 0x00010005
   BASE_NAME                      = SystemFirmwareDescriptor
-  FILE_GUID                      = A3E13E7F-9FD9-4057-84FA-37423C789612
+  FILE_GUID                      = 90B2B846-CA6D-4D6E-A8D3-C140A8E110AC
   MODULE_TYPE                    = PEIM
   VERSION_STRING                 = 1.0
   ENTRY_POINT                    = SystemFirmwareDescriptorPeimEntry
 
 [Sources]
   SystemFirmwareDescriptorPei.c
+  SystemFirmwareDescriptor.aslc
 
 [Packages]
   MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
   SignedCapsulePkg/SignedCapsulePkg.dec
   Vlv2TbltDevicePkg/PlatformPkg.dec
-
-[Guids]
-  gEdkiiSystemFirmwareImageDescriptorFileGuid
 
 [LibraryClasses]
   PcdLib

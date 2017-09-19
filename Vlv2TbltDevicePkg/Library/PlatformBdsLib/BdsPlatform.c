@@ -2083,6 +2083,9 @@ FULL_CONFIGURATION:
    #ifdef FTPM_ENABLE
    TrEEPhysicalPresenceLibProcessRequest(NULL);
    #endif
+    if (EsrtManagement != NULL) {
+      EsrtManagement->SyncEsrtFmp();
+    }
     //
     // Close boot script and install ready to lock
     //

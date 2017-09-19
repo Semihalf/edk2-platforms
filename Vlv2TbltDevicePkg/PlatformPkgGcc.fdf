@@ -290,10 +290,6 @@ INF IntelFspWrapperPkg/FspWrapperSecCore/FspWrapperSecCore.inf
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/SecCore.inf
 !endif
 
-!if $(CAPSULE_GENERATE_ENABLE)
-INF Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
-INF USE=IA32 Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptorTable.inf
-!endif
 INF MdeModulePkg/Core/Pei/PeiMain.inf
 !if $(MINNOW2_FSP_BUILD) == TRUE
 INF Vlv2TbltDevicePkg/FspSupport/BootModePei/BootModePei.inf
@@ -332,6 +328,10 @@ INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/MemoryInit.inf
 !endif
 
+!if $(CAPSULE_GENERATE_ENABLE)
+  # FMP image decriptor
+INF RuleOverride = FMP_IMAGE_DESC Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
+!endif
 
 [FV.FVMAIN]
 BlockSize          = $(FLASH_BLOCK_SIZE)
@@ -772,86 +772,6 @@ READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
 
-[FV.Bios_Update_Data]
-BlockSize          = $(FLASH_BLOCK_SIZE)
-FvAlignment        = 16
-ERASE_POLARITY     = 1
-MEMORY_MAPPED      = TRUE
-STICKY_WRITE       = TRUE
-LOCK_CAP           = TRUE
-LOCK_STATUS        = TRUE
-WRITE_DISABLED_CAP = TRUE
-WRITE_ENABLED_CAP  = TRUE
-WRITE_STATUS       = TRUE
-WRITE_LOCK_CAP     = TRUE
-WRITE_LOCK_STATUS  = TRUE
-READ_DISABLED_CAP  = TRUE
-READ_ENABLED_CAP   = TRUE
-READ_STATUS        = TRUE
-READ_LOCK_CAP      = TRUE
-READ_LOCK_STATUS   = TRUE
-
-FILE FV_IMAGE = 4A538818-5AE0-4eb2-B2EB-488B23657022 {
-       SECTION FV_IMAGE = FVMAIN_COMPACT
-     }
-
-[FV.BiosUpdateCargo]
-BlockSize          = $(FLASH_BLOCK_SIZE)
-FvAlignment        = 16
-ERASE_POLARITY     = 1
-MEMORY_MAPPED      = TRUE
-STICKY_WRITE       = TRUE
-LOCK_CAP           = TRUE
-LOCK_STATUS        = TRUE
-WRITE_DISABLED_CAP = TRUE
-WRITE_ENABLED_CAP  = TRUE
-WRITE_STATUS       = TRUE
-WRITE_LOCK_CAP     = TRUE
-WRITE_LOCK_STATUS  = TRUE
-READ_DISABLED_CAP  = TRUE
-READ_ENABLED_CAP   = TRUE
-READ_STATUS        = TRUE
-READ_LOCK_CAP      = TRUE
-READ_LOCK_STATUS   = TRUE
-
-!if $(ESRT_ENABLE) == TRUE
-  INF   $(PLATFORM_PACKAGE)/UpdateDriverDxe/UpdateDriverDxe.inf
-!else
-  INF  IntelFrameworkModulePkg/Universal/FirmwareVolume/UpdateDriverDxe/UpdateDriverDxe.inf
-!endif
-FILE RAW = 283FA2EE-532C-484d-9383-9F93B36F0B7E {
-       FV = Bios_Update_Data
-     }
-FILE RAW = 98B8D59B-E8BA-48EE-98DD-C295392F1EDB {
-   Vlv2TbltDevicePkg/BiosUpdateConfig/BiosUpdateConfig.ini
-   }
-
-
-[FV.BiosUpdate]
-BlockSize          = $(FLASH_BLOCK_SIZE)
-FvAlignment        = 16
-ERASE_POLARITY     = 1
-MEMORY_MAPPED      = TRUE
-STICKY_WRITE       = TRUE
-LOCK_CAP           = TRUE
-LOCK_STATUS        = TRUE
-WRITE_DISABLED_CAP = TRUE
-WRITE_ENABLED_CAP  = TRUE
-WRITE_STATUS       = TRUE
-WRITE_LOCK_CAP     = TRUE
-WRITE_LOCK_STATUS  = TRUE
-READ_DISABLED_CAP  = TRUE
-READ_ENABLED_CAP   = TRUE
-READ_STATUS        = TRUE
-READ_LOCK_CAP      = TRUE
-READ_LOCK_STATUS   = TRUE
-
-FILE FV_IMAGE = EDBEDF47-6EA3-4512-83C1-70F4769D4BDE {
-       SECTION GUIDED {
-          SECTION FV_IMAGE = BiosUpdateCargo
-       }
-     }
-
 !if $(CAPSULE_GENERATE_ENABLE)
 [FV.CapsuleDispatchFv]
 FvAlignment        = 16
@@ -1165,9 +1085,3 @@ FMP_PAYLOAD = FmpPayloadSystemFirmwareRsa2048
      UI       STRING="$(MODULE_NAME)" Optional
      VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }
-
-[Rule.Common.USER_DEFINED.BINARY]
-  FILE FREEFORM = $(NAMED_GUID) {
-     UI  STRING="$(MODULE_NAME)" Optional
-     RAW BIN |.bin
-     }

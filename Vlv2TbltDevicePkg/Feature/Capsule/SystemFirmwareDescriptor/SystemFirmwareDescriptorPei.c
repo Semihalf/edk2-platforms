@@ -19,8 +19,6 @@
 #include <Protocol/FirmwareManagement.h>
 #include <Guid/EdkiiSystemFmpCapsule.h>
 
-
-
 /**
   Entrypoint for SystemFirmwareDescriptor PEIM.
 
@@ -32,7 +30,7 @@
 EFI_STATUS
 EFIAPI
 SystemFirmwareDescriptorPeimEntry (
-  IN EFI_PEI_FILE_HANDLE     PeiFileHandle,
+  IN EFI_PEI_FILE_HANDLE     FileHandle,
   IN CONST EFI_PEI_SERVICES  **PeiServices
   )
 {
@@ -41,34 +39,22 @@ SystemFirmwareDescriptorPeimEntry (
   UINTN                                   Size;
   UINTN                                   Index;
   UINT32                                  AuthenticationStatus;
-  EFI_PEI_FV_HANDLE                       VolumeHandle;
-  EFI_PEI_FILE_HANDLE                     FileHandle;
 
+  //
+  // Search RAW section.
+  //
   Index = 0;
   while (TRUE) {
-    Status = PeiServicesFfsFindNextVolume (Index++, &VolumeHandle);
-    if (EFI_ERROR (Status)) {
-      return Status;
+    Status = PeiServicesFfsFindSectionData3(EFI_SECTION_RAW, Index, FileHandle, (VOID **)&Descriptor, &AuthenticationStatus);
+    if (EFI_ERROR(Status)) {
+      // Should not happen, must something wrong in FDF.
+      ASSERT(FALSE);
+      return EFI_NOT_FOUND;
     }
-    Status = PeiServicesFfsFindFileByName (&gEdkiiSystemFirmwareImageDescriptorFileGuid, VolumeHandle, &FileHandle);
-    if (!EFI_ERROR (Status)) {
-      //
-      // Search RAW section.
-      //
-      Index = 0;
-      while (TRUE) {
-        Status = PeiServicesFfsFindSectionData3(EFI_SECTION_RAW, Index++, FileHandle, (VOID **)&Descriptor, &AuthenticationStatus);
-        if (EFI_ERROR(Status)) {
-          // Should not happen, must something wrong in FDF.
-          ASSERT(FALSE);
-          return EFI_NOT_FOUND;
-        }
-        if (Descriptor->Signature == EDKII_SYSTEM_FIRMWARE_IMAGE_DESCRIPTOR_SIGNATURE) {
-          break;
-        }
-      }
+    if (Descriptor->Signature == EDKII_SYSTEM_FIRMWARE_IMAGE_DESCRIPTOR_SIGNATURE) {
       break;
     }
+    Index++;
   }
 
   DEBUG((DEBUG_INFO, "EDKII_SYSTEM_FIRMWARE_IMAGE_DESCRIPTOR size - 0x%x\n", Descriptor->Length));
