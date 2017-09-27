@@ -638,7 +638,7 @@ FILE DRIVER = 961578FE-B6B7-44c3-AF35-6BC705CD2B1F {
 #
 FILE APPLICATION = PCD(gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdShellFile) {
 #    SECTION PE32 = EdkShellBinPkg/FullShell/$(EDK_DXE_ARCHITECTURE)/Shell_Full.efi
-   SECTION PE32 = EdkShellBinPkg/MinimumShell/$(EDK_DXE_ARCHITECTURE)/Shell.efi
+    SECTION PE32 = ShellBinPkg/UefiShell/$(EDK_DXE_ARCHITECTURE)/Shell.efi
   }
 
 
