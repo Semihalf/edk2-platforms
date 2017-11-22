@@ -135,20 +135,20 @@ if /i "%~2" == "RELEASE" (
 :: Additional EDK Build Setup/Configuration
 ::**********************************************************************
 echo.
-echo Setting the Build environment for VS2008/VS2010/VS2012/VS2013...
-if defined VS90COMNTOOLS (
-   if not defined VSINSTALLDIR call "%VS90COMNTOOLS%\vsvars32.bat"
-   if /I "%VS90COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\" (
-      set TOOL_CHAIN_TAG=VS2008
-   ) else (
-      set TOOL_CHAIN_TAG=VS2008x86
-   )
- ) else if defined VS100COMNTOOLS (
-  if not defined VSINSTALLDIR call "%VS100COMNTOOLS%\vsvars32.bat"
-  if /I "%VS100COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\" (
-    set TOOL_CHAIN_TAG=VS2010
+echo Setting the Build environment for VS2015/VS2013/VS2012/VS2010/VS2008...
+if defined VS140COMNTOOLS (
+  if not defined VSINSTALLDIR call "%VS140COMNTOOLS%\vsvars32.bat"
+  if /I "%VS140COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 14.0\Common7\Tools\" (
+    set TOOL_CHAIN_TAG=VS2015
   ) else (
-    set TOOL_CHAIN_TAG=VS2010x86
+    set TOOL_CHAIN_TAG=VS2015x86
+  ) 
+) else if defined VS120COMNTOOLS (
+  if not defined VSINSTALLDIR call "%VS120COMNTOOLS%\vsvars32.bat"
+  if /I "%VS120COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 12.0\Common7\Tools\" (
+    set TOOL_CHAIN_TAG=VS2013
+  ) else (
+    set TOOL_CHAIN_TAG=VS2013x86
   )
 ) else if defined VS110COMNTOOLS (
   if not defined VSINSTALLDIR call "%VS110COMNTOOLS%\vsvars32.bat"
@@ -157,15 +157,22 @@ if defined VS90COMNTOOLS (
   ) else (
     set TOOL_CHAIN_TAG=VS2012x86
   )
-) else if defined VS120COMNTOOLS (
-  if not defined VSINSTALLDIR call "%VS120COMNTOOLS%\vsvars32.bat"
-  if /I "%VS120COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 12.0\Common7\Tools\" (
-    set TOOL_CHAIN_TAG=VS2013
+) else if defined VS100COMNTOOLS (
+  if not defined VSINSTALLDIR call "%VS100COMNTOOLS%\vsvars32.bat"
+  if /I "%VS100COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\" (
+    set TOOL_CHAIN_TAG=VS2010
   ) else (
-    set TOOL_CHAIN_TAG=VS2013x86
+    set TOOL_CHAIN_TAG=VS2010x86
   )
+) else if defined VS90COMNTOOLS (
+   if not defined VSINSTALLDIR call "%VS90COMNTOOLS%\vsvars32.bat"
+   if /I "%VS90COMNTOOLS%" == "C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\" (
+      set TOOL_CHAIN_TAG=VS2008
+   ) else (
+      set TOOL_CHAIN_TAG=VS2008x86
+   )
 ) else (
-  echo  --ERROR: VS2008/VS2010/VS2012/VS2013 not installed correctly. VS90COMNTOOLS/VS100COMNTOOLS/VS110COMNTOOLS/VS120COMNTOOLS not defined ^^!
+  echo  --ERROR: VS2015/VS2013/VS2012/VS2010/VS2008 not installed correctly. VS140COMNTOOLS/VS120COMNTOOLS/VS110COMNTOOLS/VS100COMNTOOLS/VS90COMNTOOLS not defined ^^!
   echo.
   goto :BldFail
 )

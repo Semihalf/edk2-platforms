@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004  - 2014, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2017, Intel Corporation. All rights reserved.<BR>
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -1186,7 +1186,7 @@ UpdatePlatformInformation (
   EFI_STATUS               Status;
   UINT8                    CpuFlavor=0;
   EFI_PEI_HOB_POINTERS     GuidHob;
-  EFI_PLATFORM_INFO_HOB    *mPlatformInfo=NULL;
+  EFI_PLATFORM_INFO_HOB    *PlatformInfo=NULL;
   UINTN                    NumHandles;
   EFI_HANDLE                        *HandleBuffer;
   UINTN                             Index;
@@ -1205,7 +1205,7 @@ UpdatePlatformInformation (
   GuidHob.Raw = GetHobList ();
   if (GuidHob.Raw != NULL) {
     if ((GuidHob.Raw = GetNextGuidHob (&gEfiPlatformInfoGuid, GuidHob.Raw)) != NULL) {
-      mPlatformInfo = GET_GUID_HOB_DATA (GuidHob.Guid);
+      PlatformInfo = GET_GUID_HOB_DATA (GuidHob.Guid);
     }
   }
 
@@ -1274,41 +1274,41 @@ UpdatePlatformInformation (
   }
   HiiSetString(mHiiHandle,STRING_TOKEN(STR_CPU_FLAVOR_VALUE), Buffer, NULL);
 
-  if ( NULL != mPlatformInfo) {
+  if ( NULL != PlatformInfo) {
     //
     //BoardId
     //
-    switch(mPlatformInfo->BoardId){
+    switch(PlatformInfo->BoardId){
       case 0x2:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE RVP(%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE RVP(%02x)", PlatformInfo->BoardId);
         break;
 
       case 0x4:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE FFRD(%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE FFRD(%02x)", PlatformInfo->BoardId);
         break;
 
       case 0x5:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY ROCK RVP DDR3L (%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY ROCK RVP DDR3L (%02x)", PlatformInfo->BoardId);
         break;
 
       case 0x20:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAYLEY BAY (%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAYLEY BAY (%02x)", PlatformInfo->BoardId);
         break;
 
       case 0x30:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAKER SPORT (%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAKER SPORT (%02x)", PlatformInfo->BoardId);
         break;
 
       case 0x0:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"ALPINE VALLEY (%x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"ALPINE VALLEY (%x)", PlatformInfo->BoardId);
         break;
 
       case 0x3:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE FFD8 (%x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"BAY LAKE FFD8 (%x)", PlatformInfo->BoardId);
         break;
 
       default:
-        UnicodeSPrint (Buffer, sizeof (Buffer), L"Unknown BOARD (%02x)", mPlatformInfo->BoardId);
+        UnicodeSPrint (Buffer, sizeof (Buffer), L"Unknown BOARD (%02x)", PlatformInfo->BoardId);
         break;
     }
     HiiSetString(mHiiHandle,STRING_TOKEN(STR_BOARD_ID_VALUE), Buffer, NULL);
@@ -1318,11 +1318,11 @@ UpdatePlatformInformation (
     // Get Board FAB ID Info from protocol, update into the NVS area.
     // bit0~bit3 are for Fab ID, 0x0F means unknow FAB.
     //
-    if(mPlatformInfo->BoardRev == 0x0F) {
+    if(PlatformInfo->BoardRev == 0x0F) {
       UnicodeSPrint (Buffer, sizeof (Buffer), L"%s", L"Unknown FAB");
       HiiSetString(mHiiHandle,STRING_TOKEN(STR_FAB_ID_VALUE), Buffer, NULL);
     } else {
-      UnicodeSPrint (Buffer, sizeof (Buffer), L"%2x", mPlatformInfo->BoardRev);
+      UnicodeSPrint (Buffer, sizeof (Buffer), L"%2x", PlatformInfo->BoardRev);
       HiiSetString(mHiiHandle,STRING_TOKEN(STR_FAB_ID_VALUE), Buffer, NULL);
     }
   }

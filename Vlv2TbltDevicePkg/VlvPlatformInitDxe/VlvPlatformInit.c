@@ -1,7 +1,7 @@
 
 /*++
 
-Copyright (c)  1999  - 2014, Intel Corporation. All rights reserved
+Copyright (c)  1999  - 2017, Intel Corporation. All rights reserved
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -147,7 +147,7 @@ PostPmInitCallBack (
 EFI_STATUS
 IgdPmHook (
   IN EFI_HANDLE                      ImageHandle,
-  IN DXE_VLV_PLATFORM_POLICY_PROTOCOL *DxePlatformSaPolicy
+  IN DXE_VLV_PLATFORM_POLICY_PROTOCOL *mDxePlatformSaPolicy
   )
 {
 

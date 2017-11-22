@@ -1,6 +1,6 @@
 /*++
 
-Copyright (c) 2006  - 2014, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006  - 2017, Intel Corporation. All rights reserved.<BR>
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -29,9 +29,9 @@ Abstract:
 #include <Guid/DataHubRecords.h>
 
 
-extern  SMBIOS_TABLE_TYPE7            *SmbiosRecordL1;
-extern  SMBIOS_TABLE_TYPE7            *SmbiosRecordL2;
-extern  SMBIOS_TABLE_TYPE7            *SmbiosRecordL3;
+extern  SMBIOS_TABLE_TYPE7            *mSmbiosRecordL1;
+extern  SMBIOS_TABLE_TYPE7            *mSmbiosRecordL2;
+extern  SMBIOS_TABLE_TYPE7            *mSmbiosRecordL3;
 
 
 UINT32
