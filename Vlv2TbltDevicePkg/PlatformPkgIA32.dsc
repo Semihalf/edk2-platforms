@@ -1169,6 +1169,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   MdeModulePkg/Universal/ReportStatusCodeRouter/Smm/ReportStatusCodeRouterSmm.inf
   MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf{
     <LibraryClasses>
+      NULL|SecurityPkg/Library/DxeImageAuthenticationStatusLib/DxeImageAuthenticationStatusLib.inf
 !if $(SECURE_BOOT_ENABLE) == TRUE
       NULL|SecurityPkg/Library/DxeImageVerificationLib/DxeImageVerificationLib.inf
 !endif
