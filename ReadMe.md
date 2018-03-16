@@ -1,7 +1,8 @@
-# **EDK II Minimized firmware for Intel(R)Kabylake platforms**
+# **EDK II Minimized firmware for Intel(R) platforms**
 
 ##Features
 The Minimized Kabylake provides the minimal feature of the Kabylake BIOS.
+The Minimized Purley provides the minimal feature of the Purley BIOS.
 
 ## **Windows Build Instructions**
 
@@ -38,16 +39,30 @@ FSP repository
 
 ### Build
 
+For MinKabylake
 1. Open command window, goto the workspace dir, e.g. c:\Kabylake.
 2. Type "cd edk2-platforms\Platform\Intel\KabylakeOpenBoardPkg\KabylakeRvp3".
 3. Type "GitEdk2MinKabylake.bat" to setup GIT environment.
 4. Type "prep" and make prebuild finish for debug build, "prep r" for rlease build.
 5. Type "bld" to build kabylake BIOS image.
 
+For MinPurley
+1. Open command window, goto the workspace dir, e.g. c:\Purley.
+2. Type "cd edk2-platforms\Platform\Intel\PurleyOpenBoardPkg\BoardMtOlympus".
+3. Type "GitEdk2MinMtOlympus.bat" to setup GIT environment.
+4. Type "bld" to build Purley BIOS image, "bld release" for release build.
+
 The user can run FITC tool to build full image for flash (BIOS + ME + DESC). The user can also burn the BIOS image to highest part of flash region directly.
 
-##Known limitations
+### Known limitations
+
+For MinKabylake
 1. This firmware project has only been validated on the Intel KabylakeRVP3 board.
 2. This firmware project has only been validated booting to Microsoft Windows 10 x64 with AHCI mode and Integrated Graphic Device.
+3. This firmware project has only been validated using the Microsoft Visual Studio 2015 compiler.
+
+For MinPurley
+1. This firmware project has only been validated on the Microsoft MtOlympus board.
+2. This firmware project has only been validated booting to Microsoft Windows Server 2016 with NVME on M.2 slot.
 3. This firmware project has only been validated using the Microsoft Visual Studio 2015 compiler.
 
