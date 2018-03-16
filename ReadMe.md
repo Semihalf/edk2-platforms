@@ -1,8 +1,8 @@
 # **EDK II Minimized firmware for Intel(R) platforms**
 
-##Features
-The Minimized Kabylake provides the minimal feature of the Kabylake BIOS.
-The Minimized Purley provides the minimal feature of the Purley BIOS.
+## Features
+* The Minimized Kabylake provides the minimal feature of the Kabylake BIOS.
+* The Minimized Purley provides the minimal feature of the Purley BIOS.
 
 ## **Windows Build Instructions**
 
