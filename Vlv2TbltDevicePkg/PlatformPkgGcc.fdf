@@ -1,7 +1,7 @@
 #/** @file
 # FDF file of Platform.
 #
-# Copyright (c) 2008  - 2017, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2008  - 2018, Intel Corporation. All rights reserved.<BR>
 #                                                                                  
 # This program and the accompanying materials are licensed and made available under
 # the terms and conditions of the BSD License that accompanies this distribution.  
@@ -328,7 +328,7 @@ INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/MemoryInit.inf
 !endif
 
-!if $(CAPSULE_GENERATE_ENABLE)
+!if $(CAPSULE_ENABLE)
   # FMP image decriptor
 INF RuleOverride = FMP_IMAGE_DESC Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
 !endif
@@ -699,10 +699,14 @@ FILE FREEFORM = 878AC2CC-5343-46F2-B563-51F89DAF56BA {
   !endif
 !endif
 
-!if $(CAPSULE_GENERATE_ENABLE)
+!if $(CAPSULE_ENABLE)
 INF  MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
+!endif
+!if $(CAPSULE_ENABLE)
 INF  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf
+!endif
 
+!if $(CAPSULE_ENABLE)
 FILE FREEFORM = PCD(gEfiSignedCapsulePkgTokenSpaceGuid.PcdEdkiiRsa2048Sha256TestPublicKeyFileGuid) {
      SECTION RAW = BaseTools/Source/Python/Rsa2048Sha256Sign/TestSigningPublicKey.bin
      SECTION UI = "Rsa2048Sha256TestSigningPublicKey"
@@ -772,7 +776,7 @@ READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
 
-!if $(CAPSULE_GENERATE_ENABLE)
+!if $(CAPSULE_ENABLE)
 [FV.CapsuleDispatchFv]
 FvAlignment        = 16
 ERASE_POLARITY     = 1
@@ -793,53 +797,7 @@ READ_LOCK_STATUS   = TRUE
 
 INF  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
 
-[FV.SystemFirmwareUpdateCargo]
-FvAlignment        = 16
-ERASE_POLARITY     = 1
-MEMORY_MAPPED      = TRUE
-STICKY_WRITE       = TRUE
-LOCK_CAP           = TRUE
-LOCK_STATUS        = TRUE
-WRITE_DISABLED_CAP = TRUE
-WRITE_ENABLED_CAP  = TRUE
-WRITE_STATUS       = TRUE
-WRITE_LOCK_CAP     = TRUE
-WRITE_LOCK_STATUS  = TRUE
-READ_DISABLED_CAP  = TRUE
-READ_ENABLED_CAP   = TRUE
-READ_STATUS        = TRUE
-READ_LOCK_CAP      = TRUE
-READ_LOCK_STATUS   = TRUE
 
-FILE RAW = 14D83A59-A810-4556-8192-1C0A593C065C { # PcdEdkiiSystemFirmwareFileGuid
-    FD = Vlv
-  }
-
-FILE RAW = ce57b167-b0e4-41e8-a897-5f4feb781d40 { # gEdkiiSystemFmpCapsuleDriverFvFileGuid
-    FV = CapsuleDispatchFv
-  }
-
-FILE RAW = 812136D3-4D3A-433A-9418-29BB9BF78F6E { # gEdkiiSystemFmpCapsuleConfigFileGuid
-    Vlv2TbltDevicePkg/Feature/Capsule/SystemFirmwareUpdateConfig/SystemFirmwareUpdateConfig.ini
-  }
-
-[FmpPayload.FmpPayloadSystemFirmwareRsa2048]
-IMAGE_HEADER_INIT_VERSION = 0x02
-IMAGE_TYPE_ID             = 4096267b-da0a-42eb-b5eb-fef31d207cb4 # PcdSystemFmpCapsuleImageTypeIdGuid
-IMAGE_INDEX               = 0x1
-HARDWARE_INSTANCE         = 0x0
-MONOTONIC_COUNT           = 0x2
-CERTIFICATE_GUID          = A7717414-C616-4977-9420-844712A735BF # RSA2048SHA256
-
-FV = SystemFirmwareUpdateCargo
-
-[Capsule.FVMAIN]
-CAPSULE_GUID                = 6dcbd5ed-e82d-4c44-bda1-7194199ad92a # gEfiFmpCapsuleGuid
-CAPSULE_FLAGS               = PersistAcrossReset,InitiateReset
-CAPSULE_HEADER_SIZE         = 0x20
-CAPSULE_HEADER_INIT_VERSION = 0x1
-
-FMP_PAYLOAD = FmpPayloadSystemFirmwareRsa2048
 !endif
 
 ################################################################################
@@ -1077,12 +1035,10 @@ FMP_PAYLOAD = FmpPayloadSystemFirmwareRsa2048
   }
 
 [Rule.Common.PEIM.FMP_IMAGE_DESC]
-
   FILE PEIM = $(NAMED_GUID) {
      RAW BIN                  |.acpi
-
      PEI_DEPEX PEI_DEPEX Optional        $(INF_OUTPUT)/$(MODULE_NAME).depex
-     PE32      PE32                      $(INF_OUTPUT)/$(MODULE_NAME).efi
+     PE32      PE32    Align=4K          $(INF_OUTPUT)/$(MODULE_NAME).efi
      UI       STRING="$(MODULE_NAME)" Optional
      VERSION  STRING="$(INF_VERSION)" Optional BUILD_NUM=$(BUILD_NUMBER)
   }

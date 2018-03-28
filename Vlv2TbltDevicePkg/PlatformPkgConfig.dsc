@@ -1,7 +1,7 @@
 #/** @file
 # platform configuration file.
 #
-# Copyright (c) 2012  - 2017, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2012  - 2018, Intel Corporation. All rights reserved.<BR>
 #                                                                                  
 # This program and the accompanying materials are licensed and made available under
 # the terms and conditions of the BSD License that accompanies this distribution.  
@@ -93,4 +93,3 @@ DEFINE ESRT_ENABLE       = TRUE
 #
  DEFINE SOURCE_DEBUG_ENABLE     = FALSE
 
-DEFINE CAPSULE_GENERATE_ENABLE = TRUE
