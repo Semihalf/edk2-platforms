@@ -25,9 +25,6 @@
 edk2 repository
 	``git clone https://github.com/tianocore/edk2.git``
 
-edk2-BaseTools-win32 repository
-	``git clone https://github.com/tianocore/edk2-BaseTools-win32.git``
-
 edk2-platforms repository
 	``git clone https://github.com/tianocore/edk2-platforms.git -b devel-MinPlatform``
 
