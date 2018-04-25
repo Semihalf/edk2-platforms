@@ -2,7 +2,7 @@
   Pei Core Firmware File System service routines.
   
 Copyright (c) 2015 HP Development Company, L.P.
-Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 This program and the accompanying materials                          
 are licensed and made available under the terms and conditions of the BSD License         
 which accompanies this distribution.  The full text of the license may be found at        
@@ -523,8 +523,10 @@ PeiInitializeFv (
   // Post a call-back for the FvInfoPPI and FvInfo2PPI services to expose
   // additional Fvs to PeiCore.
   //
-  Status = PeiServicesNotifyPpi (mNotifyOnFvInfoList);
-  ASSERT_EFI_ERROR (Status);
+  // bugbug: Platform workaround
+  //
+  //Status = PeiServicesNotifyPpi (mNotifyOnFvInfoList);
+  //ASSERT_EFI_ERROR (Status);
 
 }
   
@@ -559,6 +561,11 @@ FirmwareVolmeInfoPpiNotifyCallback (
   VOID                                  *DepexData;
   BOOLEAN                               IsFvInfo2;
   UINTN                                 CurFvCount;
+  EFI_FV_INFO                           FvInfo;
+  EFI_FV_INFO                           TempFvInfo;
+  BOOLEAN                               CheckFvName;
+  UINTN                                 Index;
+  EFI_PEI_FV_HANDLE                     OrgFvHandle;
 
   Status       = EFI_SUCCESS;
   PrivateData  = PEI_CORE_INSTANCE_FROM_PS_THIS (PeiServices);
@@ -614,6 +621,12 @@ FirmwareVolmeInfoPpiNotifyCallback (
     //
     // Check whether the FV has already been processed.
     //
+    CheckFvName = TRUE;
+    FvPpi->GetVolumeInfo (FvPpi, FvHandle, &FvInfo);
+    if (CompareGuid (&FvInfo.FvName, &gZeroGuid)) {
+      CheckFvName = FALSE;
+    }
+
     for (FvIndex = 0; FvIndex < PrivateData->FvCount; FvIndex ++) {
       if (PrivateData->Fv[FvIndex].FvHandle == FvHandle) {
         if (IsFvInfo2 && (FvInfo2Ppi.AuthenticationStatus != PrivateData->Fv[FvIndex].AuthenticationStatus)) {
@@ -622,6 +635,34 @@ FirmwareVolmeInfoPpiNotifyCallback (
         }
         DEBUG ((EFI_D_INFO, "The Fv %p has already been processed!\n", FvInfo2Ppi.FvInfo));
         return EFI_SUCCESS;
+      }
+      //
+      // bugbug: Platform workaround
+      //
+      if (CheckFvName) {
+        PrivateData->Fv[FvIndex].FvPpi->GetVolumeInfo (PrivateData->Fv[FvIndex].FvPpi, PrivateData->Fv[FvIndex].FvHandle, &TempFvInfo);
+        if (CompareGuid (&FvInfo.FvName, &TempFvInfo.FvName)) {
+          //
+          // They are same. Switch its data from original Handle to new Handle.
+          //
+          OrgFvHandle = PrivateData->Fv[FvIndex].FvHandle;
+          PrivateData->Fv[FvIndex].FvHandle = FvHandle;
+          PrivateData->Fv[FvIndex].FvHeader = (EFI_FIRMWARE_VOLUME_HEADER *) FvInfo2Ppi.FvInfo;
+          PrivateData->Fv[FvIndex].FvPpi = FvPpi;
+          if (PrivateData->Fv[FvIndex].ScanFv) {
+            for (Index = 0; Index < FixedPcdGet32 (PcdPeiCoreMaxPeimPerFv) && (PrivateData->Fv[FvIndex].FvFileHandles[Index] != NULL); Index ++) {
+              PrivateData->Fv[FvIndex].FvFileHandles[Index] = (EFI_PEI_FILE_HANDLE *) (VOID *) ((UINTN) (VOID *) PrivateData->Fv[FvIndex].FvFileHandles[Index] - (UINTN) (VOID *) OrgFvHandle + (UINTN) (VOID *) FvHandle);
+            }
+            if (PrivateData->CurrentPeimFvCount == FvIndex) {
+              PrivateData->CurrentFileHandle =(EFI_PEI_FILE_HANDLE *) (VOID *) ((UINTN) (VOID *) PrivateData->CurrentFileHandle - (UINTN) (VOID *) OrgFvHandle + (UINTN) (VOID *) FvHandle);
+              for (Index = 0; Index < FixedPcdGet32 (PcdPeiCoreMaxPeimPerFv) && (PrivateData->CurrentFvFileHandles[Index] != NULL); Index ++) {
+                PrivateData->CurrentFvFileHandles[Index] = (EFI_PEI_FILE_HANDLE *) (VOID *) ((UINTN) (VOID *) PrivateData->CurrentFvFileHandles[Index] - (UINTN) (VOID *) OrgFvHandle + (UINTN) (VOID *) FvHandle);
+              }
+            }
+          }
+          DEBUG ((EFI_D_INFO, "The Fv has been migrated from %p to %p!\n", OrgFvHandle, FvHandle));
+          return EFI_SUCCESS;
+        }
       }
     }
 
@@ -2158,6 +2199,15 @@ PeiReinitializeFv (
   EFI_PEI_PPI_DESCRIPTOR  *OldDescriptor;
   UINTN                   Index;
   EFI_STATUS              Status;
+
+  //
+  // Post a call-back for the FvInfoPPI and FvInfo2PPI services to expose
+  // additional Fvs to PeiCore.
+  //
+  // bugbug: Platform Workaround
+  //
+  Status = PeiServicesNotifyPpi (mNotifyOnFvInfoList);
+  ASSERT_EFI_ERROR (Status);
 
   //
   // Locate old build-in Ffs2 EFI_PEI_FIRMWARE_VOLUME_PPI which

@@ -1,7 +1,7 @@
 /** @file 
   All Pcd Ppi services are implemented here.
   
-Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 (C) Copyright 2016 Hewlett Packard Enterprise Development LP<BR>
 This program and the accompanying materials
 are licensed and made available under the terms and conditions of the BSD License
@@ -344,30 +344,55 @@ PcdPeimInit (
   )
 {
   EFI_STATUS Status;
+  EFI_PEI_PPI_DESCRIPTOR  *PeiPpiDescriptor;
 
   BuildPcdDatabase (FileHandle);
 
   //
-  // Install PCD_PPI and EFI_PEI_PCD_PPI.
+  // Add shadow callback and PostMem logic so we can reinstall the Ppis before CAR is removed.
   //
-  Status = PeiServicesInstallPpi (&mPpiList[0]);
-  ASSERT_EFI_ERROR (Status);
-
+  // bugbug: Platform workaround
   //
-  // Install GET_PCD_INFO_PPI and EFI_GET_PCD_INFO_PPI.
-  //
-  Status = PeiServicesInstallPpi (&mPpiList2[0]);
-  ASSERT_EFI_ERROR (Status);
+  Status = (*PeiServices)->RegisterForShadow (FileHandle);
+  if (Status == EFI_ALREADY_STARTED) {
+    Status = PeiServicesLocatePpi (
+               &gPcdPpiGuid,        // GUID
+               0,                   // INSTANCE
+               &PeiPpiDescriptor,   // EFI_PEI_PPI_DESCRIPTOR
+               NULL                 // PPI
+               );
+    if (Status == EFI_SUCCESS) {
+      Status = PeiServicesReInstallPpi (PeiPpiDescriptor, &mPpiList[0]);
+    }
+    Status = PeiServicesLocatePpi (
+               &gEfiPeiPcdPpiGuid,  // GUID
+               0,                   // INSTANCE
+               &PeiPpiDescriptor,   // EFI_PEI_PPI_DESCRIPTOR
+               NULL                 // PPI
+               );
+    if (Status == EFI_SUCCESS) {
+      Status = PeiServicesReInstallPpi (PeiPpiDescriptor, &mPpiList[1]);
+    }
+  
+    Status = PeiServicesNotifyPpi (&mEndOfPeiSignalPpiNotifyList[0]);
+    ASSERT_EFI_ERROR (Status);
 
-  Status = PeiServicesNotifyPpi (&mEndOfPeiSignalPpiNotifyList[0]);
-  ASSERT_EFI_ERROR (Status);
-
-  Status = PeiRegisterCallBackOnSet (
-             &gEfiMdeModulePkgTokenSpaceGuid,
-             PcdToken(PcdSetNvStoreDefaultId),
-             PcdSetNvStoreDefaultIdCallBack
-             );
-  ASSERT_EFI_ERROR (Status);
+    //
+    // Install GET_PCD_INFO_PPI and EFI_GET_PCD_INFO_PPI.
+    //
+    Status = PeiServicesInstallPpi (&mPpiList2[0]);
+    ASSERT_EFI_ERROR (Status);
+  } else {
+    Status = PeiServicesInstallPpi (&mPpiList[0]);
+    ASSERT_EFI_ERROR (Status);
+  
+    Status = PeiRegisterCallBackOnSet (
+               &gEfiMdeModulePkgTokenSpaceGuid,
+               PcdToken(PcdSetNvStoreDefaultId),
+               PcdSetNvStoreDefaultIdCallBack
+               );
+    ASSERT_EFI_ERROR (Status);
+  }
 
   return Status;
 }

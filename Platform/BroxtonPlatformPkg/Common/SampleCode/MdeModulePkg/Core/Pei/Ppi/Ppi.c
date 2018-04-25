@@ -1,7 +1,7 @@
 /** @file
   EFI PEI Core PPI services
   
-Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 This program and the accompanying materials
 are licensed and made available under the terms and conditions of the BSD License
 which accompanies this distribution.  The full text of the license may be found at
@@ -749,8 +749,10 @@ ProcessPpiListFromSec (
       //
       // It is a notification PPI.
       //
-      Status = InternalPeiNotifyPpi (PeiServices, (CONST EFI_PEI_NOTIFY_DESCRIPTOR *) PpiList, TRUE);
-      ASSERT_EFI_ERROR (Status);
+      // bugbug: Platform workaround
+      //
+      //Status = InternalPeiNotifyPpi (PeiServices, (CONST EFI_PEI_NOTIFY_DESCRIPTOR *) PpiList, TRUE);
+      //ASSERT_EFI_ERROR (Status);
     } else {
       //
       // It is a normal PPI.
