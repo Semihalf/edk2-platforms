@@ -8,9 +8,8 @@ copy /y nul Stitching.log >nul
 
 :: Set tool env
 set WORKSPACE=%CD%
-set CORE_TOOLS_PATH=%WORKSPACE%\..\..\..\..\..\BaseTools\Bin\Win32
 if %WORKSPACE:~-1%==\ set WORKSPACE=%WORKSPACE:~0,-1%
-PATH=%PATH%;%WORKSPACE%\Tools;%WORKSPACE%\Tools\VLV_Merge_Tools;%WORKSPACE%\;%CORE_TOOLS_PATH%
+PATH=%PATH%;%WORKSPACE%\Tools;%WORKSPACE%\Tools\VLV_Merge_Tools;%WORKSPACE%\;
 
 :: Set default Suffix as:  YYYY_MM_DD_HHMM
 set hour=%time: =0%

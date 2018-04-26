@@ -1,7 +1,7 @@
 /** @file
   Internal header file for TscTimerLib instances.
 
-  Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -16,7 +16,7 @@
 #ifndef _TSC_TIMER_LIB_INTERNAL_H_
 #define _TSC_TIMER_LIB_INTERNAL_H_
 
-#include <Ich/GenericIch.h>
+#include <GenericIch.h>
 #include <Library/TimerLib.h>
 #include <Library/BaseLib.h>
 #include <Library/IoLib.h>

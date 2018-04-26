@@ -168,9 +168,9 @@
   $(FLASH_REGION_VPD_OFFSET)|$(FLASH_REGION_VPD_SIZE)
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase|gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize
   !if $(SECURE_BOOT_ENABLE)
-      FILE = $(WORKSPACE)/Platform/$(PLATFORM_PACKAGE_COMMON)/Binaries/Prebuild/X64/VpdBlockSecBoot.bin
+      FILE = $(WORKSPACE)/edk2-platforms/Platform/$(PLATFORM_PACKAGE_COMMON)/Binaries/Prebuild/X64/VpdBlockSecBoot.bin
   !else
-      FILE = $(WORKSPACE)/Platform/$(PLATFORM_PACKAGE_COMMON)/Binaries/Prebuild/X64/VpdBlock.bin
+      FILE = $(WORKSPACE)/edk2-platforms/Platform/$(PLATFORM_PACKAGE_COMMON)/Binaries/Prebuild/X64/VpdBlock.bin
   !endif
 
   $(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_WORKING_OFFSET)|$(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_WORKING_SIZE)

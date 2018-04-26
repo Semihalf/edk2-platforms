@@ -12,7 +12,7 @@
 #  TSC reads are much more efficient and do not incur the overhead associated with a ring transition or
 #  access to a platform resource.
 #
-#  Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -43,7 +43,7 @@
 
 [Packages]
   MdePkg/MdePkg.dec
-  PerformancePkg/PerformancePkg.dec
+  BroxtonPlatformPkg/PlatformPkg.dec
   BroxtonSiPkg/BroxtonSiPkg.dec
 
 [LibraryClasses]
@@ -57,6 +57,6 @@
   gEfiTscFrequencyGuid                          ## PRODUCES ## HOB
 
 [Pcd.common]
-  gPerformancePkgTokenSpaceGuid.PcdPerfPkgAcpiIoPortBaseAddress     ## SOMETIMES_CONSUMES
+  gPlatformModuleTokenSpaceGuid.PcdPerfPkgAcpiIoPortBaseAddress     ## SOMETIMES_CONSUMES
   gEfiBxtTokenSpaceGuid.PcdScAcpiIoPortBaseAddress
 

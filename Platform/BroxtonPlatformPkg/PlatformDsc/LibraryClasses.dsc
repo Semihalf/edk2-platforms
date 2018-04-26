@@ -1,7 +1,7 @@
 ## @file
 #  Library classes Description.
 #
-#  Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -273,5 +273,5 @@
    BltLib|$(PLATFORM_PACKAGE_COMMON)/Library/FrameBufferBltLib/FrameBufferBltLib.inf
 
    UefiBootManagerLib | MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
-   PlatformBootManagerLib | Platform/BroxtonPlatformPkg/Common/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+   PlatformBootManagerLib | $(PLATFORM_PACKAGE_COMMON)/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
    BootLogoLib | MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf

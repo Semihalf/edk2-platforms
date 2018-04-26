@@ -109,6 +109,7 @@
   gHiiExportDatabaseGuid                      = { 0x1b838190, 0x4625, 0x4ead, { 0xab, 0xc9, 0xcd, 0x5e, 0x6a, 0xf1, 0x8f, 0xe0 }}
 
   gEfiHtBistHobGuid              = { 0xBE644001, 0xE7D4, 0x48B1, { 0xB0, 0x96, 0x8B, 0xA0, 0x47, 0xBC, 0x7A, 0xE7 }}
+  gEfiTscFrequencyGuid                = { 0xdba6a7e3, 0xbb57, 0x4be7, { 0x8a, 0xf8, 0xd5, 0x78, 0xdb, 0x7e, 0x56, 0x87 }}
 
 [Ppis]
   gDebugServicePpiGuid                    = { 0xb781df4c, 0xdc36, 0x4230, { 0xb5, 0x6d, 0xa0, 0x1,  0xb6, 0x8c, 0x15, 0xc7 } }
@@ -314,6 +315,7 @@
   gClientCommonModuleTokenSpaceGuid.PcdSmbiosDefaultSerialNumber|"To Be Filled By O.E.M."|VOID*|0x00000308
   gClientCommonModuleTokenSpaceGuid.PcdSmbiosDefaultAssetTag|"To Be Filled By O.E.M."|VOID*|0x00000309
   gClientCommonModuleTokenSpaceGuid.PcdSmbiosDefaultPartNumber|"To Be Filled By O.E.M."|VOID*|0x0000030A
+  gPlatformModuleTokenSpaceGuid.PcdPerfPkgAcpiIoPortBaseAddress|0x400|UINT16|1
 
 [PcdsPatchableInModule]
 

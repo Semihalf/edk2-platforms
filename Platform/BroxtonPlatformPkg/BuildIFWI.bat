@@ -10,14 +10,17 @@ set SkipUsageFlag=FALSE
 set FabId=B
 set BoardId=MN
 set buildthread=
+cd ..
 set WORKSPACE=%CD%
 if %WORKSPACE:~-1%==\ (
   set WORKSPACE=%WORKSPACE:~0,-1%
 )
-set CORE_PATH=%WORKSPACE%\Core
-set PLATFORM_PATH=Platform\BroxtonPlatformPkg
-set SILICON_PATH=Silicon\Src\BroxtonSoC
-set STITCH_PATH=%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch
+echo %WORKSPACE%
+set CORE_PATH=%WORKSPACE%\edk2
+set EDK_TOOLS_PATH=%CORE_PATH%\BaseTools
+set PLATFORM_PATH=edk2-platforms\Platform\BroxtonPlatformPkg
+set SILICON_PATH=edk2-platforms\Silicon\BroxtonSoC
+set STITCH_PATH=%PLATFORM_PATH%\Common\Tools\Stitch
 
 set Minnow_RVP=MINN
 
@@ -188,8 +191,8 @@ echo.
 echo BIOS ROM input:  %BIOS_Name%
 echo.
 pushd %STITCH_PATH%
-   echo  - call IFWIStitch_Simple.bat %STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
-   call %STITCH_PATH%\IFWIStitch_Simple.bat %STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
+   echo  - call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
+   call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
    @echo off
 popd
 if ErrorLevel 1 (

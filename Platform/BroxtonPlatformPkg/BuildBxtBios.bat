@@ -8,16 +8,12 @@ echo.
 ::**********************************************************************
 :: Initial Setup
 ::**********************************************************************
-set WORKSPACE=%CD%
-if %WORKSPACE:~-1%==\ (
-  set WORKSPACE=%WORKSPACE:~0,-1%
-)
-set CORE_PATH=%WORKSPACE%\Core
-set PLATFORM_PATH=Platform\BroxtonPlatformPkg
-set SILICON_PATH=Silicon\BroxtonSoC
+
+set CORE_PATH=%WORKSPACE%\edk2
+set PLATFORM_PATH=edk2-platforms\Platform\BroxtonPlatformPkg
+set SILICON_PATH=edk2-platforms\Silicon\BroxtonSoC
 set AslPath=%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Iasl\iasl.exe
-set PACKAGES_PATH=%CORE_PATH%;%WORKSPACE%\Silicon\;%WORKSPACE%\Platform;%WORKSPACE%\%PLATFORM_PATH%;%WORKSPACE%\%SILICON_PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common ;
-set EDK_TOOLS_BIN=%WORKSPACE%\BaseTools\Bin\Win32
+set PACKAGES_PATH=%CORE_PATH%;%WORKSPACE%\edk2-platforms;%WORKSPACE%\edk2-platforms\Silicon\;%WORKSPACE%\edk2-platforms\Platform;%WORKSPACE%\%PLATFORM_PATH%;%WORKSPACE%\%SILICON_PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common ;
 set /a build_threads=1
 set "Nasm_Flags=-D ARCH_IA32 -D DEBUG_PORT80"
 set "Build_Flags= "
@@ -44,13 +40,15 @@ if exist conf\.cache rmdir /q/s conf\.cache
 :: Override tools_def.txt
 echo Creating Conf folder and build config files...
 if not exist %WORKSPACE%\Conf md %WORKSPACE%\Conf
-copy /y %WORKSPACE%\BaseTools\Conf\*.template %WORKSPACE%\Conf\*.txt
 
 :: Setup EDK environment. Edksetup puts new copies of target.txt, tools_def.txt, build_rule.txt in WorkSpace\Conf
 :: Also run edksetup as soon as possible to avoid it from changing environment variables we're overriding
 set "VCINSTALLDIR="
-set EDK_TOOLS_PATH=%WORKSPACE%\BaseTools
-call edksetup.bat
+set PYTHON_HOME=C:\Python27
+@call %CORE_PATH%\edksetup.bat --nt32
+@if defined PYTHON_HOME (
+  @nmake -f %BASE_TOOLS_PATH%\Makefile
+)
 @echo off
 
 set Minnow_RVP=MINN
@@ -68,9 +66,7 @@ set FSP_WRAPPER=FALSE
 set EFI_SOURCE=%CD%
 set EDK_SOURCE=%CD%
 set PLATFORM_NAME=BxtPlatformPkg
-set PLATFORM_PACKAGE=%PLATFORM_PATH%\BxtPlatformPkg
-set PLATFORM_RC_PACKAGE=Silicon\BroxtonSoC\BroxtonSiPkg
-set COMMON_PLATFORM_PACKAGE=%PLATFORM_PATH%\BxtPlatformPkg
+set PLATFORM_RC_PACKAGE=%SILICON_PATH%\BroxtonSiPkg
 set FSP_BIN_PKG_NAME=BroxtonFspBinPkg
 set STITCH_PATH=%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch
 
@@ -449,7 +445,7 @@ echo *_VS2015x86_*_ASL_PATH = %AslPath% >> Conf\tools_def.txt
 
 echo.
 echo Invoking normal EDK2 build...
-build %Build_Flags%
+call build %Build_Flags%
 if ErrorLevel 1 goto BldFail
 
 set WORKSPACE=%SaveWorkSpace%
@@ -505,13 +501,13 @@ copy /y/b %BUILD_PATH%\FV\FvOBBY.fv  %Storage_Folder% >nul
 
 if /i "%FSP_WRAPPER%" == "TRUE" (
 ::  0xFEF7A000 = gIntelFsp2WrapperTokenSpaceGuid.PcdFlashFvFspBase = $(CAR_BASE_ADDRESS) + $(BLD_RAM_DATA_SIZE) + $(FSP_RAM_DATA_SIZE) + $(FSP_EMP_DATA_SIZE) + $(BLD_IBBM_SIZE)
-    pushd  %WORKSPACE%\Silicon\BroxtonSoC\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin
-    python %WORKSPACE%\Core\IntelFsp2Pkg\Tools\SplitFspBin.py rebase -f Fsp.fd -c m -b 0xFEF7A000 -o .\ -n ApolloLakeFsp.fd
-    python %WORKSPACE%\Core\IntelFsp2Pkg\Tools\SplitFspBin.py split -f ApolloLakeFsp.fd -o .\ -n FSP.Fv
+    pushd  %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin
+    python %CORE_PATH%\IntelFsp2Pkg\Tools\SplitFspBin.py rebase -f Fsp.fd -c m -b 0xFEF7A000 -o .\ -n ApolloLakeFsp.fd
+    python %CORE_PATH%\IntelFsp2Pkg\Tools\SplitFspBin.py split -f ApolloLakeFsp.fd -o .\ -n FSP.Fv
     popd
-    copy /y/b %WORKSPACE%\Silicon\BroxtonSoC\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_T.Fv %Storage_Folder%\FSP_T.Fv
-    copy /y/b %WORKSPACE%\Silicon\BroxtonSoC\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_M.Fv %Storage_Folder%\FSP_M.Fv
-    copy /y/b %WORKSPACE%\Silicon\BroxtonSoC\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_S.Fv %Storage_Folder%\FSP_S.Fv
+    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_T.Fv %Storage_Folder%\FSP_T.Fv
+    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_M.Fv %Storage_Folder%\FSP_M.Fv
+    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_S.Fv %Storage_Folder%\FSP_S.Fv
 )
 
 echo Get NvStorage Base and Size...
