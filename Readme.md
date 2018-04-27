@@ -87,9 +87,9 @@ contains the Dynamic Tables Framework.
 ### ACPICA iASL compiler
 The RAW table generator, used to process the DSDT/SSDT files depends on
 the iASL compiler to convert the DSDT/SSDT ASL files to a C array containing
-the hex AML code. The current implementation of the iASL compiler does not
-support generation of a C header file suitable for including from a C source
-file.
+the hex AML code. The "-tc" option of the iASL compiler has been enhanced to
+support generation of an AML hex file (C header) with a unique symbol name
+so that it is suitable for inclusion from a C source file.
 
 Related Links
 --------------
@@ -135,16 +135,23 @@ or
 
 Prerequisites
 -------------
-ACPICA iASL compiler with support for generating a C header file.
+ACPICA iASL compiler with the enhanced "-tc" option to support generation of
+AML hex (C header) files with unique symbol names.
 
-A patch ***'Modify hex AML C header file generation'***, to enable
-this support has been submitted to the ACPICA source repository.
-<https://lists.acpica.org/pipermail/devel/2018-March/001755.html>
+A patch *'[iASL: Enhance the -tc option (create AML hex file in C)](https://github.com/acpica/acpica/commit/f9a88a4c1cd020b6a5475d63b29626852a0b5f37)'*, dated 16 March 2018 (2018-03-16),
+to enable this support has been integrated to the ACPICA source repository.
+
+Ensure that the iASL compiler used for building *Dynamic Tables Framework* has this feature enabled.
+
+This feature was made available in the *ACPICA Compiler update
+[Version 20180508](https://www.acpica.org/node/156)*, dated 8 May 2018 (2018-05-08).
 
 Documentation
 -------------
-A description document is in preparation, and should be available in the
-near future.
+
+Refer to the following presentation from *UEFI Plugfest Seattle 2018*:
+
+[Dynamic Tables Framework: A Step Towards Automatic Generation of Advanced Configuration and Power Interface (ACPI) & System Management BIOS (SMBIOS) Tables – Sami Mujawar (Arm).](http://www.uefi.org/sites/default/files/resources/Arm_Dynamic%20Tables%20Framework%20A%20Step%20Towards%20Automatic%20Generation%20of%20Advanced%20Configuration%20and%20Power%20Interface%20%28ACPI%29%20%26%20System%20Management%20BIOS%20%28SMBIOS%29%20Tables%20_0.pdf)
 
 Miscellaneous
 -------------
