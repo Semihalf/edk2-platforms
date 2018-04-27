@@ -2,7 +2,7 @@
   Implement ReadOnly Variable Services required by PEIM and install
   PEI ReadOnly Varaiable2 PPI. These services operates the non volatile storage space.
 
-  Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -176,7 +176,7 @@ PeimInitializeVariableServices (
 
 **/
 VARIABLE_HEADER *
-GetStartPointer (
+PlatformGetStartPointer (
   IN VARIABLE_STORE_HEADER       *VarStoreHeader
   )
 {
@@ -196,7 +196,7 @@ GetStartPointer (
 
 **/
 VARIABLE_HEADER *
-GetEndPointer (
+PlatformGetEndPointer (
   IN VARIABLE_STORE_HEADER       *VarStoreHeader
   )
 {
@@ -217,7 +217,7 @@ GetEndPointer (
 
 **/
 BOOLEAN
-IsValidVariableHeader (
+PlatformIsValidVariableHeader (
   IN  VARIABLE_HEADER   *Variable
   )
 {
@@ -238,7 +238,7 @@ IsValidVariableHeader (
 
 **/
 UINTN
-GetVariableHeaderSize (
+PlatformGetVariableHeaderSize (
   IN  BOOLEAN       AuthFlag
   )
 {
@@ -264,7 +264,7 @@ GetVariableHeaderSize (
 
 **/
 UINTN
-NameSizeOfVariable (
+PlatformNameSizeOfVariable (
   IN  VARIABLE_HEADER   *Variable,
   IN  BOOLEAN           AuthFlag
   )
@@ -302,7 +302,7 @@ NameSizeOfVariable (
 
 **/
 UINTN
-DataSizeOfVariable (
+PlatformDataSizeOfVariable (
   IN  VARIABLE_HEADER   *Variable,
   IN  BOOLEAN           AuthFlag
   )
@@ -340,12 +340,12 @@ DataSizeOfVariable (
 
 **/
 CHAR16 *
-GetVariableNamePtr (
+PlatformGetVariableNamePtr (
   IN VARIABLE_HEADER    *Variable,
   IN BOOLEAN            AuthFlag
   )
 {
-  return (CHAR16 *) ((UINTN) Variable + GetVariableHeaderSize (AuthFlag));
+  return (CHAR16 *) ((UINTN) Variable + PlatformGetVariableHeaderSize (AuthFlag));
 }
 
 
@@ -359,7 +359,7 @@ GetVariableNamePtr (
 
 **/
 EFI_GUID *
-GetVendorGuidPtr (
+PlatformGetVendorGuidPtr (
   IN VARIABLE_HEADER    *Variable,
   IN BOOLEAN            AuthFlag
   )
@@ -386,7 +386,7 @@ GetVendorGuidPtr (
 
 **/
 UINT8 *
-GetVariableDataPtr (
+PlatformGetVariableDataPtr (
   IN  VARIABLE_HEADER   *Variable,
   IN  VARIABLE_HEADER   *VariableHeader,
   IN  BOOLEAN           AuthFlag
@@ -397,8 +397,8 @@ GetVariableDataPtr (
   //
   // Be careful about pad size for alignment
   //
-  Value =  (UINTN) GetVariableNamePtr (Variable, AuthFlag);
-  Value += NameSizeOfVariable (VariableHeader, AuthFlag);
+  Value =  (UINTN) PlatformGetVariableNamePtr (Variable, AuthFlag);
+  Value += PlatformNameSizeOfVariable (VariableHeader, AuthFlag);
   Value += GET_PAD_SIZE (NameSizeOfVariable (VariableHeader, AuthFlag));
 
   return (UINT8 *) Value;
@@ -416,7 +416,7 @@ GetVariableDataPtr (
 
 **/
 VARIABLE_HEADER *
-GetNextVariablePtr (
+PlatformGetNextVariablePtr (
   IN  VARIABLE_STORE_INFO   *StoreInfo,
   IN  VARIABLE_HEADER       *Variable,
   IN  VARIABLE_HEADER       *VariableHeader
@@ -424,8 +424,8 @@ GetNextVariablePtr (
 {
   UINTN                 Value;
 
-  Value =  (UINTN) GetVariableDataPtr (Variable, VariableHeader, StoreInfo->AuthFlag);
-  Value += DataSizeOfVariable (VariableHeader, StoreInfo->AuthFlag);
+  Value =  (UINTN) PlatformGetVariableDataPtr (Variable, VariableHeader, StoreInfo->AuthFlag);
+  Value += PlatformDataSizeOfVariable (VariableHeader, StoreInfo->AuthFlag);
   Value += GET_PAD_SIZE (DataSizeOfVariable (VariableHeader, StoreInfo->AuthFlag));
   //
   // Be careful about pad size for alignment
@@ -447,7 +447,7 @@ GetNextVariablePtr (
 
 **/
 VARIABLE_STORE_STATUS
-GetVariableStoreStatus (
+PlatformGetVariableStoreStatus (
   IN VARIABLE_STORE_HEADER *VarStoreHeader
   )
 {
@@ -489,7 +489,7 @@ GetVariableStoreStatus (
 
 **/
 BOOLEAN
-CompareVariableName (
+PlatformCompareVariableName (
   IN VARIABLE_STORE_INFO    *StoreInfo,
   IN CONST CHAR16           *Name1,
   IN CONST CHAR16           *Name2,
@@ -522,7 +522,7 @@ CompareVariableName (
 
 **/
 EFI_STATUS
-CompareWithValidVariable (
+PlatformCompareWithValidVariable (
   IN  VARIABLE_STORE_INFO           *StoreInfo,
   IN  VARIABLE_HEADER               *Variable,
   IN  VARIABLE_HEADER               *VariableHeader,
@@ -534,7 +534,7 @@ CompareWithValidVariable (
   VOID      *Point;
   EFI_GUID  *TempVendorGuid;
 
-  TempVendorGuid = GetVendorGuidPtr (VariableHeader, StoreInfo->AuthFlag);
+  TempVendorGuid = PlatformGetVendorGuidPtr (VariableHeader, StoreInfo->AuthFlag);
 
   if (VariableName[0] == 0) {
     PtrTrack->CurrPtr = Variable;
@@ -550,9 +550,9 @@ CompareWithValidVariable (
         (((INT32 *) VendorGuid)[2] == ((INT32 *) TempVendorGuid)[2]) &&
         (((INT32 *) VendorGuid)[3] == ((INT32 *) TempVendorGuid)[3])
         ) {
-      ASSERT (NameSizeOfVariable (VariableHeader, StoreInfo->AuthFlag) != 0);
-      Point = (VOID *) GetVariableNamePtr (Variable, StoreInfo->AuthFlag);
-      if (CompareVariableName (StoreInfo, VariableName, Point, NameSizeOfVariable (VariableHeader, StoreInfo->AuthFlag))) {
+      ASSERT (PlatformNameSizeOfVariable (VariableHeader, StoreInfo->AuthFlag) != 0);
+      Point = (VOID *) PlatformGetVariableNamePtr (Variable, StoreInfo->AuthFlag);
+      if (PlatformCompareVariableName (StoreInfo, VariableName, Point, PlatformNameSizeOfVariable (VariableHeader, StoreInfo->AuthFlag))) {
         PtrTrack->CurrPtr = Variable;
         return EFI_SUCCESS;
       }
@@ -623,7 +623,7 @@ GetHobVariableStore (
 
 **/
 BOOLEAN
-GetVariableHeader (
+PlatformGetVariableHeader (
   IN VARIABLE_STORE_INFO    *StoreInfo,
   IN VARIABLE_HEADER        *Variable,
   OUT VARIABLE_HEADER       **VariableHeader
@@ -639,14 +639,14 @@ GetVariableHeader (
   //
   *VariableHeader = Variable;
 
-  if (Variable >= GetEndPointer (StoreInfo->VariableStoreHeader)) {
+  if (Variable >= PlatformGetEndPointer (StoreInfo->VariableStoreHeader)) {
     //
     // Reach the end of variable store.
     //
     return FALSE;
   }
 
-  return IsValidVariableHeader (*VariableHeader);
+  return PlatformIsValidVariableHeader (*VariableHeader);
 }
 
 
@@ -707,16 +707,15 @@ FindVariableInHobsInternal (
     return EFI_INVALID_PARAMETER;
   }
 
-  if (GetVariableStoreStatus (VariableStoreHeader) != EfiValid) {
+  if (PlatformGetVariableStoreStatus (VariableStoreHeader) != EfiValid) {
     return EFI_UNSUPPORTED;
   }
 
   if (~VariableStoreHeader->Size == 0) {
     return EFI_NOT_FOUND;
   }
-
-  PtrTrack->StartPtr = GetStartPointer (VariableStoreHeader);
-  PtrTrack->EndPtr   = GetEndPointer   (VariableStoreHeader);
+  PtrTrack->StartPtr = PlatformGetStartPointer (VariableStoreHeader);
+  PtrTrack->EndPtr   = PlatformGetEndPointer   (VariableStoreHeader);
 
   InDeletedVariable = NULL;
 
@@ -733,9 +732,9 @@ FindVariableInHobsInternal (
   //
   // Find the variable by walking through the variable store
   //
-  while (GetVariableHeader (StoreInfo, Variable, &VariableHeader)) {
+  while (PlatformGetVariableHeader (StoreInfo, Variable, &VariableHeader)) {
     if (VariableHeader->State == VAR_ADDED || VariableHeader->State == (VAR_IN_DELETED_TRANSITION & VAR_ADDED)) {
-      if (CompareWithValidVariable (StoreInfo, Variable, VariableHeader, VariableName, VendorGuid, PtrTrack) == EFI_SUCCESS) {
+      if (PlatformCompareWithValidVariable (StoreInfo, Variable, VariableHeader, VariableName, VendorGuid, PtrTrack) == EFI_SUCCESS) {
         if (VariableHeader->State == (VAR_IN_DELETED_TRANSITION & VAR_ADDED)) {
           InDeletedVariable = PtrTrack->CurrPtr;
         } else {
@@ -743,7 +742,7 @@ FindVariableInHobsInternal (
         }
       }
     }
-    Variable = GetNextVariablePtr (StoreInfo, Variable, VariableHeader);
+    Variable = PlatformGetNextVariablePtr (StoreInfo, Variable, VariableHeader);
   }
   PtrTrack->CurrPtr = InDeletedVariable;
 
@@ -861,12 +860,12 @@ GetHobVariable (
         return Status;
       }
 
-      GetVariableHeader (&HobStoreInfo, HobVariable.CurrPtr, &HobVariableHeader);
+      PlatformGetVariableHeader (&HobStoreInfo, HobVariable.CurrPtr, &HobVariableHeader);
 
       //
       // Get data size
       //
-      HobVariableDataSize = DataSizeOfVariable (HobVariableHeader, HobStoreInfo.AuthFlag);
+      HobVariableDataSize = PlatformDataSizeOfVariable (HobVariableHeader, HobStoreInfo.AuthFlag);
       if (*DataSize >= HobVariableDataSize) {
         DEBUG ((EFI_D_INFO, "Temp Debug: Data buffer passed for variable data is large enough\n"));
         if (Data == NULL) {
@@ -874,7 +873,7 @@ GetHobVariable (
           return EFI_INVALID_PARAMETER;
         }
 
-        GetVariableNameOrData (&HobStoreInfo, GetVariableDataPtr (HobVariable.CurrPtr, HobVariableHeader, HobStoreInfo.AuthFlag), HobVariableDataSize, Data);
+        GetVariableNameOrData (&HobStoreInfo, PlatformGetVariableDataPtr (HobVariable.CurrPtr, HobVariableHeader, HobStoreInfo.AuthFlag), HobVariableDataSize, Data);
 
         if (Attributes != NULL) {
           *Attributes = HobVariableHeader->Attributes;
@@ -1057,8 +1056,8 @@ PeiGetHobNextVariableName (
     //
     // If variable name is not NULL, get next variable
     //
-    GetVariableHeader (&StoreInfo, Variable.CurrPtr, &VariableHeader);
-    Variable.CurrPtr = GetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
+    PlatformGetVariableHeader (&StoreInfo, Variable.CurrPtr, &VariableHeader);
+    Variable.CurrPtr = PlatformGetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
   }
 
   VariableStoreHeader[VariableHobTypeDefault] = GetHobVariableStore (VariableHobTypeDefault, &StoreInfoForDefault);
@@ -1068,12 +1067,12 @@ PeiGetHobNextVariableName (
     //
     // Switch from HOB to Non-Volatile.
     //
-    while (!GetVariableHeader (&StoreInfo, Variable.CurrPtr, &VariableHeader)) {
+    while (!PlatformGetVariableHeader (&StoreInfo, Variable.CurrPtr, &VariableHeader)) {
       //
       // Find current storage index
       //
       for (Type = (VARIABLE_HOB_TYPE) 0; Type < VariableHobTypeMax; Type++) {
-        if ((VariableStoreHeader[Type] != NULL) && (Variable.StartPtr == GetStartPointer (VariableStoreHeader[Type]))) {
+        if ((VariableStoreHeader[Type] != NULL) && (Variable.StartPtr == PlatformGetStartPointer (VariableStoreHeader[Type]))) {
           break;
         }
       }
@@ -1094,8 +1093,8 @@ PeiGetHobNextVariableName (
       if (Type == VariableHobTypeMax) {
         return EFI_NOT_FOUND;
       }
-      Variable.StartPtr = GetStartPointer (VariableStoreHeader[Type]);
-      Variable.EndPtr   = GetEndPointer   (VariableStoreHeader[Type]);
+      Variable.StartPtr = PlatformGetStartPointer (VariableStoreHeader[Type]);
+      Variable.EndPtr   = PlatformGetEndPointer   (VariableStoreHeader[Type]);
       Variable.CurrPtr  = Variable.StartPtr;
       GetHobVariableStore (Type, &StoreInfo);
     }
@@ -1109,12 +1108,12 @@ PeiGetHobNextVariableName (
         //
         Status = FindVariableInHobsInternal (
                    &StoreInfo,
-                   GetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag),
-                   GetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag),
+                   PlatformGetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag),
+                   PlatformGetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag),
                    &VariablePtrTrack
                    );
         if (!EFI_ERROR (Status) && VariablePtrTrack.CurrPtr != Variable.CurrPtr) {
-          Variable.CurrPtr = GetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
+          Variable.CurrPtr = PlatformGetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
           continue;
         }
       }
@@ -1123,27 +1122,27 @@ PeiGetHobNextVariableName (
       // Don't return cache HOB variable when default HOB overrides it
       //
       if ((VariableStoreHeader[VariableHobTypeDefault] != NULL) && (VariableStoreHeader[VariableHobTypeCache] != NULL) &&
-          (Variable.StartPtr == GetStartPointer (VariableStoreHeader[VariableHobTypeCache]))
+          (Variable.StartPtr == PlatformGetStartPointer (VariableStoreHeader[VariableHobTypeCache]))
          ) {
         Status = FindVariableInHobsInternal (
                    &StoreInfoForDefault,
-                   GetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag),
-                   GetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag),
+                   PlatformGetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag),
+                   PlatformGetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag),
                    &VariableInDefaultHob
                    );
         if (!EFI_ERROR (Status)) {
-          Variable.CurrPtr = GetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
+          Variable.CurrPtr = PlatformGetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
           continue;
         }
       }
 
-      VarNameSize = NameSizeOfVariable (VariableHeader, StoreInfo.AuthFlag);
+      VarNameSize = PlatformNameSizeOfVariable (VariableHeader, StoreInfo.AuthFlag);
       ASSERT (VarNameSize != 0);
 
       if (VarNameSize <= *VariableNameSize) {
-        GetVariableNameOrData (&StoreInfo, (UINT8 *) GetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag), VarNameSize, (UINT8 *) VariableName);
+        GetVariableNameOrData (&StoreInfo, (UINT8 *) PlatformGetVariableNamePtr (Variable.CurrPtr, StoreInfo.AuthFlag), VarNameSize, (UINT8 *) VariableName);
 
-        CopyMem (VariableGuid, GetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag), sizeof (EFI_GUID));
+        CopyMem (VariableGuid, PlatformGetVendorGuidPtr (VariableHeader, StoreInfo.AuthFlag), sizeof (EFI_GUID));
 
         Status = EFI_SUCCESS;
       } else {
@@ -1156,7 +1155,7 @@ PeiGetHobNextVariableName (
       //
       return Status;
     } else {
-      Variable.CurrPtr = GetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
+      Variable.CurrPtr = PlatformGetNextVariablePtr (&StoreInfo, Variable.CurrPtr, VariableHeader);
     }
   }
 }

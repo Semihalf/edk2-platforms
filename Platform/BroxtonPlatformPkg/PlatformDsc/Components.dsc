@@ -47,6 +47,7 @@
       CpuExceptionHandlerLib|UefiCpuPkg/Library/CpuExceptionHandlerLib/DxeCpuExceptionHandlerLib.inf
       SynchronizationLib|MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf
       MpInitLib|UefiCpuPkg/Library/MpInitLib/DxeMpInitLib.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   
   UefiCpuPkg/CpuS3DataDxe/CpuS3DataDxe.inf
@@ -76,11 +77,15 @@
 
     !if $(SMM_VARIABLE_ENABLE)
       $(PLATFORM_SI_PACKAGE)/VariableStorage/Dxe/CseVariableStorageSmmRuntimeDxe/CseVariableStorageSmmRuntimeDxe.inf {
+        <LibraryClasses>
+           DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
         <PcdsPatchableInModule>
           gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000103
       }
     !else
       $(PLATFORM_SI_PACKAGE)/VariableStorage/Dxe/CseVariableStorageSmmRuntimeDxe/CseVariableStorageRuntimeDxe.inf {
+        <LibraryClasses>
+          DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
         <PcdsPatchableInModule>
           gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000103
       }
@@ -116,12 +121,16 @@
       NULL|SecurityPkg/Library/Tpm2DeviceLibDTpm/Tpm2InstanceLibDTpm.inf
       NULL|$(PLATFORM_PACKAGE_COMMON)/Library/Tpm2DeviceLibPtp/Tpm2InstanceLibPtt.inf
   }
-  MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+  MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+    }
   MdeModulePkg/Application/UiApp/UiApp.inf {
     <LibraryClasses>
       NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
   $(PLATFORM_PACKAGE_COMMON)/SampleCode/IntelFsp2WrapperPkg/FspNotifyDxe/FspNotifyDxe.inf
@@ -274,6 +283,7 @@
   SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf {
     <LibraryClasses>
       PlatformSecureLib|SecurityPkg/Library/PlatformSecureLibNull/PlatformSecureLibNull.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 !endif
 
@@ -383,7 +393,10 @@
      NetworkPkg/Mtftp6Dxe/Mtftp6Dxe.inf
   !endif
   !if $(NETWORK_IP6_ENABLE) == TRUE
-     $(PLATFORM_PACKAGE_COMMON)/SampleCode/NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
+     $(PLATFORM_PACKAGE_COMMON)/SampleCode/NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf {
+        <LibraryClasses>
+          DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+    }
   !else
      MdeModulePkg/Universal/Network/UefiPxeBcDxe/UefiPxeBcDxe.inf {
        <LibraryClasses>
@@ -417,10 +430,12 @@
     MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableDxe/FirmwarePerformanceDxe.inf {
       <LibraryClasses>
       TimerLib|$(PLATFORM_PACKAGE_COMMON)/Library/PlatformTscTimerLib/DxeTscTimerLib.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
     }
     MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf {
       <LibraryClasses>
       TimerLib|$(PLATFORM_PACKAGE_COMMON)/Library/PlatformTscTimerLib/DxeTscTimerLib.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
     }
   !endif
 
@@ -444,6 +459,8 @@
         gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x27
     }
     MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf {
+      <LibraryClasses>
+        DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
       <PcdsPatchableInModule>
         gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000046 #0x80000007
       <PcdsFixedAtBuild>
@@ -460,7 +477,10 @@
   MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
   IntelFrameworkModulePkg/Universal/Console/VgaClassDxe/VgaClassDxe.inf
   $(PLATFORM_PACKAGE_COMMON)/SampleCode/MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
-  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
+  MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  }
 
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf {
     <LibraryClasses>

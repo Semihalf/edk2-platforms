@@ -1,7 +1,7 @@
 /** @file
   Master header file for SecCore.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -106,7 +106,7 @@ ProcessLibraryConstructorList (
 **/
 EFI_STATUS
 EFIAPI
-FspSiliconInitDoneGetFspHobList (
+SecMainFspSiliconInitDoneGetFspHobList (
   IN  CONST EFI_PEI_SERVICES         **PeiServices,
   IN  FSP_SILICON_INIT_DONE_PPI      *This,
   OUT VOID                           **FspHobList

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 # This program and the accompanying materials
 # are licensed and made available under the terms and conditions of the BSD License
 # which accompanies this distribution.  The full text of the license may be found at
@@ -108,12 +108,13 @@ fi
 echo $Build_Flags
 echo $Target_Flag
 
+cd ..
 export WORKSPACE=`pwd`
-export PACKAGES_PATH=$WORKSPACE:$WORKSPACE/Core:$WORKSPACE/Silicon/:$WORKSPACE/Platform:$WORKSPACE/Platform/BroxtonPlatformPkg:$WORKSPACE/Silicon/BroxtonSoC:$WORKSPACE/Platform/BroxtonPlatformPkg/Common
+export CORE_PATH=$WORKSPACE/edk2
+export PACKAGES_PATH=$WORKSPACE:$WORKSPACE/edk2:$WORKSPACE/edk2-platforms/:$WORKSPACE/edk2-platforms/Platform:$WORKSPACE/edk2-platforms/Platform/BroxtonPlatformPkg:$WORKSPACE/edk2-platforms/Silicon/BroxtonSoC:$WORKSPACE/edk2-platforms/Silicon:$WORKSPACE/edk2-platforms/Platform/BroxtonPlatformPkg/Common
 
-. edksetup.sh BaseTools
+make -C $CORE_PATH/BaseTools
+source $CORE_PATH/edksetup.sh BaseTools
 
-make -C BaseTools
-
-bash ./Platform/BroxtonPlatformPkg/BuildIFWI.sh $Build_Flags Broxton $Target_Flag
+bash ./edk2-platforms/Platform/BroxtonPlatformPkg/BuildIFWI.sh $Build_Flags Broxton $Target_Flag
 

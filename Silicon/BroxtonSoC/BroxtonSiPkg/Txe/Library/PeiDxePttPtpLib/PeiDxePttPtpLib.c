@@ -1,7 +1,7 @@
 /** @file
   Implements Platform Trust Technology (FTPM) PTP (Platform TPM Profile) Device Library.
 
-  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -54,65 +54,7 @@ PttHciPrintBuffer (
 }
 #endif // EFI_DEBUG
 
-UINT32 *
-EFIAPI
-MmioReadBuffer32 (
-  IN  UINTN       StartAddress,
-  IN  UINTN       Length,
-  OUT UINT32      *Buffer
-  )
-{
-  UINT32    *ReturnBuffer;
 
-  ASSERT ((StartAddress & (sizeof (UINT32) - 1)) == 0);
-
-  ASSERT ((Length - 1) <=  (MAX_ADDRESS - StartAddress));
-  ASSERT ((Length - 1) <=  (MAX_ADDRESS - (UINTN) Buffer));
-
-  ASSERT ((Length & (sizeof (UINT32) - 1)) == 0);
-  ASSERT (((UINTN) Buffer & (sizeof (UINT32) - 1)) == 0);
-
-  ReturnBuffer = Buffer;
-
-  while (Length != 0) {
-    *(Buffer++) = MmioRead32 (StartAddress);
-
-    StartAddress += sizeof (UINT32);
-    Length -= sizeof (UINT32);
-  }
-
-  return ReturnBuffer;
-}
-
-UINT32 *
-EFIAPI
-MmioWriteBuffer32 (
-  IN  UINTN        StartAddress,
-  IN  UINTN        Length,
-  IN  CONST UINT32 *Buffer
-  )
-{
-  UINT32    *ReturnBuffer;
-
-  ASSERT ((StartAddress & (sizeof (UINT32) - 1)) == 0);
-
-  ASSERT ((Length - 1) <=  (MAX_ADDRESS - StartAddress));
-  ASSERT ((Length - 1) <=  (MAX_ADDRESS - (UINTN) Buffer));
-
-  ASSERT ((Length & (sizeof (UINT32) - 1)) == 0);
-  ASSERT (((UINTN) Buffer & (sizeof (UINT32) - 1)) == 0);
-
-  ReturnBuffer = (UINT32 *) Buffer;
-
-  while (Length != 0) {
-    MmioWrite32 (StartAddress, *(Buffer++));
-
-    StartAddress += sizeof (UINT32);
-    Length -= sizeof (UINT32);
-  }
-
-  return ReturnBuffer;
-}
 
 EFI_STATUS
 EFIAPI

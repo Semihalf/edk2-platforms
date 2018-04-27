@@ -2,7 +2,7 @@
 #  This is the code that goes from real-mode to protected mode.
 #  It consumes the reset vector, calls TempRamInit API from FSP binary.
 #
-#  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -23,7 +23,7 @@ ASM_GLOBAL ASM_PFX(_TEXT_REALMODE)
 ASM_PFX(_TEXT_REALMODE):
 #----------------------------------------------------------------------------
 #
-# Procedure:    _ModuleEntryPoint
+# Procedure:    _SecEntryModuleEntryPoint
 #
 # Input:        None
 #
@@ -51,8 +51,8 @@ ASM_PFX(_TEXT_REALMODE):
 #----------------------------------------------------------------------------
 
 .align 4
-ASM_GLOBAL ASM_PFX(_ModuleEntryPoint)
-ASM_PFX(_ModuleEntryPoint):
+ASM_GLOBAL ASM_PFX(_SecEntryModuleEntryPoint)
+ASM_PFX(_SecEntryModuleEntryPoint):
   fninit                                # clear any pending Floating point exceptions
   #
   # Store the BIST value in mm0

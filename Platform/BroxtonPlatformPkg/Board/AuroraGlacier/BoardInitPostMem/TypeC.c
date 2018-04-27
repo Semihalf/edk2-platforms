@@ -31,7 +31,7 @@ static MUX_PROGRAMMING_TABLE mAuroraMuxTable[] = {
 };
 
 VOID
-PrintChar (
+AgPrintChar (
   IN UINTN     DebugMask,
   IN UINTN     Count,
   IN CHAR16   *Char
@@ -47,7 +47,7 @@ PrintChar (
 #define DIVIDING_LINE "+----------------------------------------------------+------------------+\n"
 
 VOID
-DumpParagraph (
+AgDumpParagraph (
   IN   UINTN   DebugMask,
   IN   VOID   *Ptr,
   IN   UINTN   Count
@@ -88,12 +88,12 @@ DumpParagraph (
     //
     // Print header
     //
-    PrintChar (DebugMask, PlaceHolders + 5, L" ");
+    AgPrintChar (DebugMask, PlaceHolders + 5, L" ");
     DEBUG ((DebugMask, DIVIDING_LINE));
-    PrintChar (DebugMask, PlaceHolders + 5, L" ");
+    AgPrintChar (DebugMask, PlaceHolders + 5, L" ");
     DEBUG ((DebugMask, "| x0 x1 x2 x3  x4 x5 x6 x7  x8 x9 xA xB  xC xD xE xF |      String      |\n"));
     DEBUG ((DebugMask, " +"));
-    PrintChar (DebugMask, PlaceHolders + 3, L"-");
+    AgPrintChar (DebugMask, PlaceHolders + 3, L"-");
     DEBUG ((DebugMask, DIVIDING_LINE));
     //
     // Print data
@@ -105,7 +105,7 @@ DumpParagraph (
       if (Index % 0x10 == 0x00) {
         if ((Index > 0) && ((Index / 0x10) % 0x04 == 0x00) && (Paragraphs > 6)) {
           DEBUG ((DebugMask, " +"));
-          PrintChar (DebugMask, PlaceHolders + 3, L"-");
+          AgPrintChar (DebugMask, PlaceHolders + 3, L"-");
           DEBUG ((DebugMask, DIVIDING_LINE));
         }
         DEBUG ((DebugMask, " | %0*xx | ", PlaceHolders, (Index / 0x10)));
@@ -144,14 +144,14 @@ DumpParagraph (
     // Print footer
     //
     DEBUG ((DebugMask, " +"));
-    PrintChar (DebugMask, PlaceHolders + 3, L"-");
+    AgPrintChar (DebugMask, PlaceHolders + 3, L"-");
     DEBUG ((DebugMask, DIVIDING_LINE));
   }
 }
 
 EFI_STATUS
 EFIAPI
-ReadMux (
+AgReadMux (
   IN   UINT8    SlaveAddress,
   IN   UINT8    Offset,
   OUT  UINT8   *Data
@@ -171,7 +171,7 @@ ReadMux (
 
 EFI_STATUS
 EFIAPI
-WriteMux (
+AgWriteMux (
   IN   UINT8    SlaveAddress,
   IN   UINT8    Offset,
   OUT  UINT8   *Data
@@ -189,7 +189,7 @@ WriteMux (
 }
 
 VOID
-DumpMux (
+AgDumpMux (
   VOID
   )
 {
@@ -206,11 +206,11 @@ DumpMux (
   DEBUG ((DEBUG_INFO, "\n%a(#%d) - Dump the PS8750 I2C data\n", __FUNCTION__, __LINE__));
   for (SlaveAddress = 0x08; SlaveAddress <= 0x0E; SlaveAddress++) {
     for (Offset = 0x00; Offset <= 0xFF; Offset++) {
-      Status = ReadMux (SlaveAddress, (UINT8) Offset, &Data[Offset]);
+      Status = AgReadMux (SlaveAddress, (UINT8) Offset, &Data[Offset]);
       if (EFI_ERROR (Status)) Data[Offset] = 0xFF;
     }
     DEBUG ((DEBUG_INFO, "\nSlaveAddress = 0x%02x\n", (SlaveAddress << 1)));
-    DumpParagraph (DEBUG_INFO, Data, 256);
+   AgDumpParagraph (DEBUG_INFO, Data, 256);
   }
   DEBUG ((DEBUG_INFO, "\n"));
   padConfg0.padCnf0 = GpioPadRead (NW_GPIO_199 + BXT_GPIO_PAD_CONF0_OFFSET);
@@ -220,7 +220,7 @@ DumpMux (
 
 EFI_STATUS
 EFIAPI
-SetupTypecMuxAux (
+AgSetupTypecMuxAux (
   VOID
   )
 {
@@ -237,16 +237,16 @@ SetupTypecMuxAux (
   //
   Ptr = (UINT8 *) &MuxData;
   for (index = 0; index < (sizeof (mAuroraMuxTable) / sizeof (mAuroraMuxTable[0])); index++) {
-    Status = ReadMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
+    Status = AgReadMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
     DEBUG ((DEBUG_INFO, "%a(#%d) - %.*a [0x%02x:0x%02x] = 0x%02x (%r)\n", __FUNCTION__, __LINE__, MUX_TABLE_STRING_LENGTH, mAuroraMuxTable[index].String, (mAuroraMuxTable[index].Address << 1), mAuroraMuxTable[index].Register, Data8, Status));
     Ptr[index] = Data8;
     if ((mAuroraMuxTable[index].Data != MUX_TABLE_NULL) && (!EFI_ERROR (Status))) {
       Data8 = (UINT8) (mAuroraMuxTable[index].Data & 0x00FF);
-      Status = WriteMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
+      Status = AgWriteMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
       if (EFI_ERROR (Status)) {
         DEBUG ((DEBUG_ERROR, "%a(#%d) - ERROR: ByteWriteI2C returned %r for %a = 0x%02x\n", __FUNCTION__, __LINE__, Status, mAuroraMuxTable[index].String, Data8));
       } else {
-        Status = ReadMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
+        Status = AgReadMux (mAuroraMuxTable[index].Address, mAuroraMuxTable[index].Register, &Data8);
         DEBUG ((DEBUG_INFO, "%a(#%d) - %.*a [0x%02x:0x%02x] = 0x%02x (%r)\n", __FUNCTION__, __LINE__, MUX_TABLE_STRING_LENGTH, mAuroraMuxTable[index].String, (mAuroraMuxTable[index].Address << 1), mAuroraMuxTable[index].Register, Data8, Status));
         Ptr[index] = Data8;
       }
@@ -272,7 +272,7 @@ SetupTypecMuxAux (
       // We need to assert the MUX HPD
       //
       Data8  = MuxData.HpdAssert | BIT7;
-      Status = WriteMux (A_STATUS,  R_MUX_HPD_ASSERT, &Data8);
+      Status = AgWriteMux (A_STATUS,  R_MUX_HPD_ASSERT, &Data8);
 
       //
       // Display HPD

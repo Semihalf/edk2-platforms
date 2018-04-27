@@ -1,7 +1,7 @@
 /** @file
   Framework PEIM to SeCUma.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -510,38 +510,7 @@ HideHeci23 (
 }
 
 
-/**
-  Check it's SPI boot path or not.
 
-  @retval  TRUE                 SPI Boot path
-  @retval  FALSE                Not SPI boot path
-
-**/
-BOOLEAN
-IsSpiBoot (
-  VOID
-  )
-{
-  VOID                                  *HobList;
-  MBP_CURRENT_BOOT_MEDIA                *BootMediaData;
-
-  DEBUG ((EFI_D_INFO, "IsSpiBoot Start!\n"));
-
-  HobList = GetFirstGuidHob (&gEfiBootMediaHobGuid);
-  if (HobList != NULL) {
-    DEBUG ((EFI_D_INFO, "IsSpiBoot HobList != NULL\n"));
-    BootMediaData = GET_GUID_HOB_DATA (HobList);
-    if (BootMediaData->PhysicalData == BOOT_FROM_SPI) {
-      DEBUG ((EFI_D_INFO, "BootMediaData->PhysicalData ==  IsSpiBoot\n"));
-      return TRUE;
-    } else {
-      DEBUG ((EFI_D_INFO, "Not boot from SPI\n"));
-      return FALSE;
-    }
-  }
-
-  return FALSE;
-}
 
 
 /**

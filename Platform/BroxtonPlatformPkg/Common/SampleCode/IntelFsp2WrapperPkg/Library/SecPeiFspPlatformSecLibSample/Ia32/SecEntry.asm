@@ -2,7 +2,7 @@
 ;  This is the code that goes from real-mode to protected mode.
 ;  It consumes the reset vector, calls TempRamInit API from FSP binary.
 ;
-;  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+;  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 ;
 ;  This program and the accompanying materials
 ;  are licensed and made available under the terms and conditions of the BSD License
@@ -32,7 +32,7 @@ _TEXT_REALMODE      SEGMENT PARA PUBLIC USE16 'CODE'
 
 ;----------------------------------------------------------------------------
 ;
-; Procedure:    _ModuleEntryPoint
+; Procedure:    _SecEntryModuleEntryPoint
 ;
 ; Input:        None
 ;
@@ -60,7 +60,7 @@ _TEXT_REALMODE      SEGMENT PARA PUBLIC USE16 'CODE'
 ;----------------------------------------------------------------------------
 
 align 4
-_ModuleEntryPoint PROC NEAR C PUBLIC
+_SecEntryModuleEntryPoint PROC NEAR C PUBLIC
   fninit                                ; clear any pending Floating point exceptions
   ;
   ; Store the BIST value in mm0
@@ -111,7 +111,7 @@ _ModuleEntryPoint PROC NEAR C PUBLIC
   mov esi, offset ProtectedModeEntryLinearAddress
   jmp     fword ptr cs:[si]
 
-_ModuleEntryPoint   ENDP
+_SecEntryModuleEntryPoint   ENDP
 _TEXT_REALMODE      ENDS
 
 _TEXT_PROTECTED_MODE      SEGMENT PARA PUBLIC USE32 'CODE'

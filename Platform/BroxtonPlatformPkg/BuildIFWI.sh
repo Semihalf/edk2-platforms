@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 # This program and the accompanying materials
 # are licensed and made available under the terms and conditions of the BSD License
 # which accompanies this distribution.  The full text of the license may be found at
@@ -115,7 +115,7 @@ fi
 ## Build BIOS
 echo "======================================================================"
 echo "Build_IFWI:  Calling BIOS build Script..."
-bash Platform/BroxtonPlatformPkg/BuildBxtBios.sh $Build_Flags $Platform_Type $Build_Target
+bash edk2-platforms/Platform/BroxtonPlatformPkg/BuildBxtBios.sh $Build_Flags $Platform_Type $Build_Target
 
 echo
 echo Finished Building Process.

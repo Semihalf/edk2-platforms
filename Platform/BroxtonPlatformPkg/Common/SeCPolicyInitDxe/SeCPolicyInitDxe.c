@@ -1,7 +1,7 @@
 /** @file
   SEC policy initialization.
 
-  Copyright (c) 2008 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -24,7 +24,7 @@
 //
 UINT8 mTsDimmSmbusAddress[] = {0x30, 0x34};
 
-DXE_SEC_POLICY_PROTOCOL  mDxePlatformSeCPolicy = { 0 };
+DXE_SEC_POLICY_PROTOCOL  mDxePlatformSeCPolicyProtocol = { 0 };
 
 SEC_OPERATION_PROTOCOL   mSeCOperationProtocol = {
   GetPlatformSeCInfo,
@@ -72,8 +72,8 @@ SeCPlatformPolicyEntryPoint (
 
   DEBUG ((EFI_D_INFO, "SeCPlatformPolicyEntryPoint ++ \n"));
 
-  mDxePlatformSeCPolicy.SeCConfig.TrConfig = AllocateZeroPool (sizeof (TR_CONFIG));
-  if (mDxePlatformSeCPolicy.SeCConfig.TrConfig == NULL) {
+  mDxePlatformSeCPolicyProtocol.SeCConfig.TrConfig = AllocateZeroPool (sizeof (TR_CONFIG));
+  if (mDxePlatformSeCPolicyProtocol.SeCConfig.TrConfig == NULL) {
     return EFI_OUT_OF_RESOURCES;
   }
 
@@ -88,21 +88,21 @@ SeCPlatformPolicyEntryPoint (
   //
   // ME DXE Policy Init
   //
-  mDxePlatformSeCPolicy.Revision = DXE_PLATFORM_SEC_POLICY_PROTOCOL_REVISION_7;
+  mDxePlatformSeCPolicyProtocol.Revision = DXE_PLATFORM_SEC_POLICY_PROTOCOL_REVISION_7;
 
   //
   // Initialzie the Me Configuration
   //
-  mDxePlatformSeCPolicy.SeCConfig.EndOfPostEnabled        = 1;
-  mDxePlatformSeCPolicy.SeCConfig.HeciCommunication       = 1;
-  mDxePlatformSeCPolicy.SeCConfig.SeCFwDownGrade          = 0;
-  mDxePlatformSeCPolicy.SeCConfig.SeCLocalFwUpdEnabled    = 0;
-  mDxePlatformSeCPolicy.SeCConfig.TrConfig->DimmNumber    = 2;
-  mDxePlatformSeCPolicy.SeCConfig.TrConfig->TrEnabled     = 0;
-  mDxePlatformSeCPolicy.SeCConfig.SeCFwImageType          = INTEL_SEC_1_5MB_FW;
-  mDxePlatformSeCPolicy.SeCConfig.PlatformBrand           = INTEL_STAND_MANAGEABILITY_BRAND;
-  mDxePlatformSeCPolicy.SeCReportError                    = ShowSeCReportError;
-  mDxePlatformSeCPolicy.SeCConfig.ITouchEnabled           = FALSE;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.EndOfPostEnabled        = 1;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.HeciCommunication       = 1;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.SeCFwDownGrade          = 0;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.SeCLocalFwUpdEnabled    = 0;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.TrConfig->DimmNumber    = 2;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.TrConfig->TrEnabled     = 0;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.SeCFwImageType          = INTEL_SEC_1_5MB_FW;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.PlatformBrand           = INTEL_STAND_MANAGEABILITY_BRAND;
+  mDxePlatformSeCPolicyProtocol.SeCReportError                    = ShowSeCReportError;
+  mDxePlatformSeCPolicyProtocol.SeCConfig.ITouchEnabled           = FALSE;
 
   VarSize = sizeof (SYSTEM_CONFIGURATION);
   Status = gRT->GetVariable (
@@ -114,9 +114,9 @@ SeCPlatformPolicyEntryPoint (
                   );
 
   if (!EFI_ERROR (Status)) {
-    mDxePlatformSeCPolicy.SeCConfig.EndOfPostEnabled = SystemConfiguration.SeCEOPEnable;
+    mDxePlatformSeCPolicyProtocol.SeCConfig.EndOfPostEnabled = SystemConfiguration.SeCEOPEnable;
     if (SystemConfiguration.VirtualKbEnable == TOUCH_INTEGRATED) {
-      mDxePlatformSeCPolicy.SeCConfig.ITouchEnabled=TRUE;
+      mDxePlatformSeCPolicyProtocol.SeCConfig.ITouchEnabled=TRUE;
     }
   }
 
@@ -126,7 +126,7 @@ SeCPlatformPolicyEntryPoint (
   Status = gBS->InstallMultipleProtocolInterfaces (
                   &ImageHandle,
                   &gDxePlatformSeCPolicyGuid,
-                  &mDxePlatformSeCPolicy,
+                  &mDxePlatformSeCPolicyProtocol,
                   &gEfiSeCOperationProtocolGuid,
                   &mSeCOperationProtocol,
                   NULL
@@ -748,7 +748,7 @@ SeCPolicyReadyToBootEvent (
   }
 
   if ((SeCMode == SEC_MODE_NORMAL) && (SEC_STATUS_SEC_STATE_ONLY (SeCStatus) == SEC_READY)) {
-    if (mDxePlatformSeCPolicy.SeCConfig.EndOfPostEnabled == 1) {
+    if (mDxePlatformSeCPolicyProtocol.SeCConfig.EndOfPostEnabled == 1) {
       mSeCInfo.SeCEOPDone = 1;
     }
   }

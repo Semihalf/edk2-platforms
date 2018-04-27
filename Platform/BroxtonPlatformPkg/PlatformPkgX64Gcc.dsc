@@ -1,7 +1,7 @@
 ## @file
 #  Platform description.
 #
-#  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -58,7 +58,7 @@
   #
   # RC Package
   #
-  !include $(WORKSPACE)/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgCommonLib.dsc
+  !include $(WORKSPACE)/edk2-platforms/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgCommonLib.dsc
   #
   # Platform
   #
@@ -80,7 +80,7 @@
   #
   # RC Package
   #
-  !include $(WORKSPACE)/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgPeiLib.dsc
+  !include $(WORKSPACE)/edk2-platforms/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgPeiLib.dsc
 
   !include PlatformDsc/LibraryClasses.IA32.PEI.dsc
 
@@ -104,7 +104,7 @@
   #
   # RC Package
   #
-  !include $(WORKSPACE)/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgDxeLib.dsc
+  !include $(WORKSPACE)/edk2-platforms/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgDxeLib.dsc
 
 [LibraryClasses.Common.DXE_DRIVER]
   !include PlatformDsc/LibraryClasses.DxeDriver.dsc
@@ -150,11 +150,11 @@
   !include PlatformDsc/PcdsDynamicDefault.Default.dsc
 
 [Components.IA32]
-  !include $(WORKSPACE)/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgPei.dsc
+  !include $(WORKSPACE)/edk2-platforms/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgPei.dsc
   !include PlatformDsc/Components.IA32.dsc
 
 [Components.X64]
-  !include $(WORKSPACE)/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgDxe.dsc
+  !include $(WORKSPACE)/edk2-platforms/Silicon/$(PLATFORM_SI_PACKAGE)/SiPkgDxe.dsc
   !include PlatformDsc/Components.dsc
   $(PLATFORM_SI_PACKAGE)/SouthCluster/ScInit/Dxe/ScInitDxe.inf
 
