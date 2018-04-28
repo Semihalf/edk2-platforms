@@ -1,0 +1,10 @@
+MINNOWBOARD 3 PLATFORM Maintainers
+==================
+
+Platform
+  David Wei <david.wei@intel.com>
+  Mang Guo <mang.guo@intel.com>
+
+Silicon
+  David Wei <david.wei@intel.com>
+  Mang Guo <mang.guo@intel.com>
