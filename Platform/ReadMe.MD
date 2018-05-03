@@ -92,14 +92,14 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
 1. Open command window, goto the workspace dir, e.g. c:\MyWorkspace.
 2. Type "cd edk2-platforms".
 3. Build
-
+   ```
       Examples:      
        To build release version 32-bit BIOS for Minnowboard 3 FAB B with VS2013,
          BuildBIOS.bat /vs13 /B /IA32 Broxton Release
             
        To build release version 64-bit BIOS for Minnowboard 3 FAB B with VS2013,
          BuildBIOS.bat /vs13 /B /x64 Broxton Release
-
+   ```
 ## **Linux Build Instructions**
 
 ### Pre-requisites
@@ -120,8 +120,10 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
 
 1. Open a command prompt, goto the platform package "MyWorkspace/edk2-platforms".
 2. Build
+   ```
    - Type "./BuildBIOS.sh /B Broxton Release" to build a release version.
    - Type "./BuildBIOS.sh /B Broxton Debug" to build a debug version.
+   ```
    
 ## **Related Materials**
 
