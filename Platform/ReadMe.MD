@@ -1,23 +1,18 @@
-﻿# ﻿Intel Atom(R) Processor E3900 Series Platforms
+﻿﻿# UEFI Firmware Project for Intel Atom(R) Processor E3900 Series platforms
 
-This codebase is designed for Intel Atom(R) Processor E3900 Series platforms
-(https://www.intel.com/content/www/us/en/embedded/products/apollo-lake/overview.html) (formerly Apollo Lake).
+This codebase is designed for Intel Atom(R) Processor E3900 Series platforms (formerly Apollo Lake). https://www.intel.com/content/www/us/en/embedded/products/apollo-lake/overview.html
 
-## **Download the sources**
+## Download Official Releases
 
-### Download official released sources:
+Please refer to the release notes to download official releases (source code and binary images). Information is available at https://firmware.intel.com/projects/minnowboard3
 
- Please refer to the release notes to download official released sources.
+## Download the Latest Source Code
 
- Get release notes from https://firmware.intel.com/projects/minnowboard3
-
-### Download the latest sources:
-
-(Official releases sources is recommanded as it is passed stability testing)
+Official source releases are recommended since they have passed stability testing. Use the directions below to download the latest code.
 ```
 1. Create a new directory for use as your WORKSPACE (e.g. "C:\MyWorkspace").
 
-2. Download below repository and required files to this WORKSPACE:
+2. Download the following repositories and required files to the WORKSPACE:
 
 edk2 repository
     git clone -b vUDK2018 https://github.com/tianocore/edk2.git
@@ -37,11 +32,13 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
    Download PREBOOT.EXE Version 21.1 from the "Intel® Ethernet Connections 
    Boot Utility, Preboot Images, and EFI Drivers" page.
      https://downloadcenter.intel.com/download/19186/Intel-Ethernet-Connections-Boot-Utility-Preboot-Images-and-EFI-Drivers
+
    Windows user:
    a. Install PREBOOT.EXE into the default folder (C:\Intel21.1).
    b. Copy the UEFI x64 PCI-E gigabit driver (C:\Intel21.1\APPS\EFI\EFIx64\E7320X3.EFI) 
       to the platform package directory below, create the folder if it does not exist:
       "C:\MyWorkspace\edk2-platforms\Platform\BroxtonPlatformPkg\Common\Binaries\UNDI\I210PcieUndiDxe"
+
    Linux user:
    a. Use command "unzip PREBOOT.EXE" to extract UEFI x64 PCI-E gigabit driver 
       (preboot/APPS/EFI/EFIx64/E7320X3.EFI)
@@ -61,7 +58,7 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
    (e.g. "C:\MyWorkspace\edk2-platforms\Core\CryptoPkg\Library\OpensslLib\OpenSSL-HOWTO.txt")
    to install the OpenSSL* source code and enable the CryptoPkg module.   
 
-5. Download MinnowBoard 3 Binary Object Modules
+5. Download Platform Binary Object Modules
    a. Download the "MinnowBoard_v3-0.69-Binary.Objects.zip" from the project page:
       https://firmware.intel.com/projects/minnowboard3
 
@@ -74,7 +71,7 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
 
 ### Pre-requisites
 
-* Microsoft Visual Studio.
+* Microsoft Visual Studio
   - Install C compiler (Visual Studio .NET* VS2013/VS2015) on the build machine.
 * ASL compiler: Available from http://www.acpica.org
   - Unzip and copy ```iasl.exe``` into ```C:\MyWorkspace\edk2-platforms\Platform\BroxtonPlatformPkg\Common\Tools\Iasl```.
@@ -104,9 +101,9 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
 
 ### Pre-requisites
 
-* Linux System Configuration.
-  - Ubuntu 16.04 64 bit
-  - GCC version 5 or above
+* Linux System Configuration
+  - Ubuntu 16.04 64-bit
+  - GCC version 5
 * Use below command to install required packages:
     ```
       # sudo apt-get update
@@ -126,14 +123,8 @@ Intel(R) Firmware Support Package(Intel(R) FSP)
    ```
    
 ## **Related Materials**
-
-### Projects Supported by this codebase
-
-   (1) MinnowBoard 3 open hardware project:
   
-   http://minnowboard.org/ -- Platform Information.
+   http://minnowboard.org/ -- Open Source Hardware Project
 
    https://firmware.intel.com/projects/minnowboard3 -- Release notes, pre-built release/debug binaries, build instructions, and binary objects required to compile firmware.
-
-
 
