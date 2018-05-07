@@ -111,6 +111,7 @@ echo $Target_Flag
 cd ..
 export WORKSPACE=`pwd`
 export CORE_PATH=$WORKSPACE/edk2
+export CONF_PATH=$WORKSPACE/Conf
 export PACKAGES_PATH=$WORKSPACE:$WORKSPACE/edk2:$WORKSPACE/edk2-platforms/:$WORKSPACE/edk2-platforms/Platform:$WORKSPACE/edk2-platforms/Platform/BroxtonPlatformPkg:$WORKSPACE/edk2-platforms/Silicon/BroxtonSoC:$WORKSPACE/edk2-platforms/Silicon:$WORKSPACE/edk2-platforms/Platform/BroxtonPlatformPkg/Common
 
 make -C $CORE_PATH/BaseTools
