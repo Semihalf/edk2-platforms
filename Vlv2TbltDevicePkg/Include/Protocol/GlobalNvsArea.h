@@ -1,6 +1,6 @@
 /*++
 
-  Copyright (c) 2004  - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2018, Intel Corporation. All rights reserved.<BR>
                                                                                    
 
   This program and the accompanying materials are licensed and made available under
@@ -473,6 +473,7 @@ typedef struct {
   UINT8       MicrosoftIoT;                      // (794)JP1 pins are for Microsoft IoT project.
   UINT8       RtcBattery;                        // (795) The Flag of RTC Battery Present.
   UINT8       LpeAudioReportedByDSDT;            // (796)
+  UINT8       Uart1Pnp0501Com;                   // (797) Report UART 1 as PNP0501 COM.
 } EFI_GLOBAL_NVS_AREA;
 #pragma pack ()
 
