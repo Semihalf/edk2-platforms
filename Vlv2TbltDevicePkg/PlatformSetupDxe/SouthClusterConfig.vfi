@@ -1,15 +1,24 @@
 //
 //
-// Copyright (c) 2004  - 2016, Intel Corporation. All rights reserved.<BR>
-//                                                                                  
-// This program and the accompanying materials are licensed and made available under
-// the terms and conditions of the BSD License that accompanies this distribution.  
-// The full text of the license may be found at                                     
-// http://opensource.org/licenses/bsd-license.php.                                  
-//                                                                                  
-// THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,            
-// WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.    
-//                                                                                  
+// Copyright (c) 2004  - 2018, Intel Corporation. All rights reserved.<BR>
+//                                                                                  
+
+// This program and the accompanying materials are licensed and made available under
+
+// the terms and conditions of the BSD License that accompanies this distribution.  
+
+// The full text of the license may be found at                                     
+
+// http://opensource.org/licenses/bsd-license.php.                                  
+
+//                                                                                  
+
+// THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,            
+
+// WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.    
+
+//                                                                                  
+
 //
 //
 //
@@ -574,6 +583,15 @@ endif;     // grayoutif NOT ideqval Setup.LpssSdcardEnabled == 0x1;
     help        = STRING_TOKEN(STR_LPSS_HSUART1_HELP_ENBDT_DEV_LIST),
     option text = STRING_TOKEN(STR_DISABLE), value=0, flags=0 |DEFAULT | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE), value=1, flags= MANUFACTURING  | RESET_REQUIRED;
+  endoneof;
+  endif;
+  
+  grayoutif ideqval Setup.LpssHsuart0Enabled == 0x00;
+  oneof varid   = Setup.Uart1Pnp0501Com,
+    prompt      = STRING_TOKEN(STR_LPSS_HSUART1_PNP0501_PROMPT),
+    help        = STRING_TOKEN(STR_LPSS_HSUART1_PNP0501_HELP_ENBDT_DEV_LIST),
+    option text = STRING_TOKEN(STR_DISABLE), value=0, flags=0 |DEFAULT | RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_ENABLE), value=1, flags= MANUFACTURING | RESET_REQUIRED;
   endoneof;
   endif;
 

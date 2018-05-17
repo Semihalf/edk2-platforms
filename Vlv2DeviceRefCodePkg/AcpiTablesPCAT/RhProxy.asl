@@ -1,7 +1,7 @@
 /** @file
   SSDT for RhProxy Driver.
 
-Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2015-2018, Intel Corporation. All rights reserved.<BR>
 This program and the accompanying materials
 are licensed and made available under the terms and conditions of the BSD License
 which accompanies this distribution.  The full text of the license may be found at
@@ -14,6 +14,9 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 DefinitionBlock ("RHPX.aml", "SSDT", 1, "MSFT", "RHPROXY", 1)
 {
+
+    External(\U1CM, IntObj)
+
     Scope (\_SB)
     {
         //
@@ -139,8 +142,8 @@ DefinitionBlock ("RHPX.aml", "SSDT", 1, "MSFT", "RHPROXY", 1)
                 // Index 23
                 GpioInt(Edge, ActiveBoth, SharedAndWake, PullNone, 0,"\\_SB.GPO0",) {54}
             })
-    
-            Name(_DSD, Package() 
+
+            Name(DSD0, Package() 
             {
                 ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
                 Package() 
@@ -161,6 +164,40 @@ DefinitionBlock ("RHPX.aml", "SSDT", 1, "MSFT", "RHPROXY", 1)
                     Package(2) { "bus-UART-UART1", Package() { 9 }},
                 }
             })
+
+            Name(DSD1, Package() 
+            {
+                ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+                Package() 
+                {
+                    // SPI Mapping
+                    Package(2) { "bus-SPI-SPI0", Package() { 0 }},
+
+                    // TODO: Intel will need to provide the right value for SPI0 properties
+                    Package(2) { "SPI0-MinClockInHz", 100000 },
+                    Package(2) { "SPI0-MaxClockInHz", 15000000 },
+                    // SupportedDataBitLengths takes a list of support data bit length
+                    // Example : Package(2) { "SPI0-SupportedDataBitLengths", Package() { 8, 7, 16 }},
+                    Package(2) { "SPI0-SupportedDataBitLengths", Package() { 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }},
+                    // I2C Mapping
+                    Package(2) { "bus-I2C-I2C5", Package() { 1 }},
+                    // UART Mapping
+                    Package(2) { "bus-UART-UART2", Package() { 2 }},
+                    // UART 1 is not reported in this device, but is reported as a seprate COM device.
+                    //Package(2) { "bus-UART-UART1", Package() { 9 }},
+                }
+            })
+
+            Method(_DSD, 0, Serialized) {
+              //
+              // DSD0 contains UART1, while DSD1 does not.
+              //
+              If(LEqual(U1CM, One)) {
+                Return (DSD1)
+              } Else {
+                Return (DSD0) 
+              }
+            }
         }
     }
 }

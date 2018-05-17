@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004  - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2018, Intel Corporation. All rights reserved.<BR>
                                                                                    
 
   This program and the accompanying materials are licensed and made available under
@@ -1142,7 +1142,12 @@ AcpiPlatformEntryPoint (
     mGlobalNvsArea.Area->MicrosoftIoT = GLOBAL_NVS_DEVICE_DISABLE;
     DEBUG ((EFI_D_ERROR, "JP1 is not set to be MSFT IOT configuration.\n"));
   }
-  
+
+  //
+  // Report UART1 as PNP0501 COM.
+  //
+  mGlobalNvsArea.Area->Uart1Pnp0501Com = mSystemConfiguration.Uart1Pnp0501Com;
+
   //
   // SIO related option.
   //
