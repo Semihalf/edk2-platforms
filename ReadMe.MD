@@ -14,10 +14,6 @@ The maintainers are listed in [Maintainers.txt](Maintainers.txt).
 
 * [devel-IntelAtomProcessorE3900](Platform/ReadMe.MD) -- Instructions
 
-### Projects Supported by this codebase
+* http://minnowboard.org/ -- Platform Information.
 
-  (1) MinnowBoard 3 open hardware project:
-
-   * http://minnowboard.org/ -- Platform Information.
-
-   * https://firmware.intel.com/projects/minnowboard3 -- Release notes, pre-built release/debug binaries, build instructions, and binary objects required to compile firmware.
+* https://firmware.intel.com/projects/IntelAtomProcessorE3900  -- Release notes, pre-built release/debug binaries, build instructions, and binary objects required to compile firmware.
