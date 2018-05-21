@@ -1,7 +1,7 @@
 
 /*++
 
-Copyright (c)  1999  - 2017, Intel Corporation. All rights reserved
+Copyright (c)  1999  - 2018, Intel Corporation. All rights reserved
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -86,9 +86,10 @@ PostPmInitCallBack (
   UINT32      HiGTBaseAddress;
 
   //
-  // Enable Bus Master, I/O and Memory access on 0:2:0
+  // Enable I/O and Memory access on 0:2:0.
+  // It's up to GOP driver to enable Bus Master of IGD.
   //
-  PciOr8 (PCI_LIB_ADDRESS(0, IGD_DEV, 0,IGD_R_CMD), (BIT2 | BIT1));
+  PciOr8 (PCI_LIB_ADDRESS(0, IGD_DEV, 0,IGD_R_CMD), (BIT1));
 
   //
   // only 32bit read/write is legal for device 0:2:0
@@ -171,9 +172,10 @@ IgdPmHook (
     ASSERT (gDS!=NULL);
 
     //
-    // Enable Bus Master, I/O and Memory access on 0:2:0
+    // Enable I/O and Memory access on 0:2:0.
+    // It's up to GOP driver to enable Bus Master of IGD.
     //
-    PciOr8(PCI_LIB_ADDRESS(0, IGD_DEV, 0, IGD_R_CMD), (BIT2 | BIT1 | BIT0));
+    PciOr8(PCI_LIB_ADDRESS(0, IGD_DEV, 0, IGD_R_CMD), (BIT1 | BIT0));
 
     //
     // Means Allocate 4MB for GTTMADDR

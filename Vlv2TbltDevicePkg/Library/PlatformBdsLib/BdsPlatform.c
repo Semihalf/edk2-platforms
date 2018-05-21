@@ -1,6 +1,6 @@
 /** @file
 
-  Copyright (c) 2004  - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2004  - 2018, Intel Corporation. All rights reserved.<BR>
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -37,7 +37,7 @@ Abstract:
 #include <PchRegs/PchRegsPcu.h>
 #include <Library/S3BootScriptLib.h>
 #include "PchAccess.h"
-#include "PchRegs/PchRegsSata.h"
+#include "PchRegs.h"
 #include <Library/SerialPortLib.h>
 #include <Library/DebugLib.h>
 
@@ -142,6 +142,15 @@ DisableAhciCtlr (
   }
 }
 
+/**
+  Issues EndOfDxe event, installs gExitPmAuthProtocolGuid, and issues SMM lock envent. Bus Master DMA mus
+  not be enabled before SMM lock.
+
+  @param VOID
+
+  @retval  None.
+
+**/
 VOID
 InstallReadyToLock (
   VOID
@@ -151,7 +160,56 @@ InstallReadyToLock (
   EFI_HANDLE                Handle;
   EFI_SMM_ACCESS2_PROTOCOL  *SmmAccess;
   EFI_ACPI_S3_SAVE_PROTOCOL *AcpiS3Save;
+  UINTN                      PciDeviceConfigAdd;
+  UINT16                     VendorID;
+  UINT16                     CommandReg;
+  UINT8                      DevIndex;
+  UINT8                      FunIndex;
 
+  // 
+  // Check Buster Master Enable bit of PCI devices,including PCIe root ports, on bus 0.
+  //
+  DEBUG ((DEBUG_ERROR, "BDS: Check Bus Master Enable of PCI devices before SMRAM lock: \n"));
+  
+  for (DevIndex = 0; DevIndex <= 31; DevIndex ++) {
+    
+    for (FunIndex = 0; FunIndex <= 7; FunIndex++) {
+
+      if ((DevIndex == 0x00) && (FunIndex == 0x00)) {
+        continue; // Skip Root Bridge
+      }
+
+      if ((DevIndex == 0x1A) && (FunIndex == 0x00)) {
+        continue; // Skip TXE
+      }
+
+      if ((DevIndex == PCI_DEVICE_NUMBER_PCH_LPC) && (FunIndex == PCI_FUNCTION_NUMBER_PCH_LPC)) {
+        continue; // Skip LPC Bridge
+      }
+
+            
+      PciDeviceConfigAdd  = MmPciAddress (0, 0, DevIndex, FunIndex, 0);
+      VendorID  = MmioRead16 (PciDeviceConfigAdd + PCI_DEVICE_ID_OFFSET);
+      //
+      // Check if PCI device is present.
+      //
+      if (VendorID == 0xffff) {
+        continue;
+      }
+
+      CommandReg   = MmioRead16 (PciDeviceConfigAdd + PCI_COMMAND_OFFSET);
+      DEBUG ((DEBUG_ERROR, "PCI Device 0x%x  Function 0x%x, Command Register Value = %x \n", \
+             (UINT32)DevIndex, (UINT32)FunIndex, (UINT32)CommandReg));
+      //
+      // Report error if Bus Master has been enabled.
+      //
+      if (((CommandReg & BIT2) == BIT2)) {
+          DEBUG ((DEBUG_ERROR, "Error: Bus Master is enabled before SMRAM lock!\n"));
+          ASSERT_EFI_ERROR(FALSE);
+      }
+    }
+  }
+  
   //
   // Install DxeSmmReadyToLock protocol prior to the processing of boot options
   //
@@ -1790,6 +1848,18 @@ PlatformBdsPolicyBehavior (
   switch (BootMode) {
 
   case BOOT_WITH_MINIMAL_CONFIGURATION:
+
+    #ifdef TPM_ENABLED
+    TcgPhysicalPresenceLibProcessRequest();
+    #endif
+    #ifdef FTPM_ENABLE
+    TrEEPhysicalPresenceLibProcessRequest(NULL);
+    #endif
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
+    
     PlatformBdsInitHotKeyEvent ();
     PlatformBdsConnectSimpleConsole (gPlatformSimpleConsole);
 
@@ -1870,16 +1940,6 @@ PlatformBdsPolicyBehavior (
     }
 
 
-    #ifdef TPM_ENABLED
-    TcgPhysicalPresenceLibProcessRequest();
-    #endif
-    #ifdef FTPM_ENABLE
-    TrEEPhysicalPresenceLibProcessRequest(NULL);
-    #endif
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
 
     //
     // Give one chance to enter the setup if we 
@@ -1889,6 +1949,11 @@ PlatformBdsPolicyBehavior (
     break;
 
   case BOOT_ASSUMING_NO_CONFIGURATION_CHANGES:
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
 
     //
     // In no-configuration boot mode, we can connect the
@@ -1918,11 +1983,6 @@ PlatformBdsPolicyBehavior (
     }
 
     //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
-
-    //
     // Notes: current time out = 0 can not enter the
     // front page
     //
@@ -1935,6 +1995,15 @@ PlatformBdsPolicyBehavior (
     break;
 
   case BOOT_ON_FLASH_UPDATE:
+
+    DEBUG((EFI_D_INFO, "ProcessCapsules Before EndOfDxe ......\n"));
+    Status = ProcessCapsules ();
+    DEBUG((EFI_D_INFO, "ProcessCapsules %r\n", Status));
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
 
     //
     // Boot with the specific configuration
@@ -1965,24 +2034,18 @@ PlatformBdsPolicyBehavior (
       PcdSetBool(PcdEsrtSyncFmp, FALSE);
     }
 
-    DEBUG((EFI_D_INFO, "ProcessCapsules Before EndOfDxe ......\n"));
-    Status = ProcessCapsules ();
-    DEBUG((EFI_D_INFO, "ProcessCapsules %r\n", Status));
 
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
-
-
-
-    
     PlatformBdsLockNonUpdatableFlash ();
     
     break;
 
   case BOOT_IN_RECOVERY_MODE:
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
 
     //
     // In recovery mode, just connect platform console
@@ -2007,11 +2070,6 @@ PlatformBdsPolicyBehavior (
     }
 
     //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
-
-    //
     // In recovery boot mode, we still enter to the
     // frong page now
     //
@@ -2024,6 +2082,18 @@ FULL_CONFIGURATION:
   case BOOT_WITH_DEFAULT_SETTINGS:
   default:
 
+    #ifdef TPM_ENABLED
+    TcgPhysicalPresenceLibProcessRequest();
+    #endif
+    #ifdef FTPM_ENABLE
+    TrEEPhysicalPresenceLibProcessRequest(NULL);
+    #endif
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
+     
     //
     // Connect platform console
     //
@@ -2077,19 +2147,7 @@ FULL_CONFIGURATION:
         PlatformBdsConnectSequence ();
       }
     }
-   #ifdef TPM_ENABLED
-   TcgPhysicalPresenceLibProcessRequest();
-   #endif
-   #ifdef FTPM_ENABLE
-   TrEEPhysicalPresenceLibProcessRequest(NULL);
-   #endif
-    if (EsrtManagement != NULL) {
-      EsrtManagement->SyncEsrtFmp();
-    }
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
+
 
     //
     // Here we have enough time to do the enumeration of boot device
