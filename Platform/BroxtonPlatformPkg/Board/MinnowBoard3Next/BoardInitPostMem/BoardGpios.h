@@ -63,19 +63,19 @@ BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_N[] =
   //
   //                  Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,  Wake_Enabled ,Term_H_L,Inverted, GPI_ROUT, IOSstae, IOSTerm,     MMIO_Offset  , Community
   //
-  BXT_GPIO_PAD_CONF(L"GPIO_0",                   M0   ,    GPO   , GPIO_D,  HI    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0000, NORTH), // GP_DDC_EN
+  BXT_GPIO_PAD_CONF(L"GPIO_0",                   M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0000, NORTH), // GP_DDC_EN
   BXT_GPIO_PAD_CONF(L"GPIO_1",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0008, NORTH), // NC
   BXT_GPIO_PAD_CONF(L"GPIO_2",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0010, NORTH), // GPIO9
-  BXT_GPIO_PAD_CONF(L"GPIO_3",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0018, NORTH), // GPIO10
+  BXT_GPIO_PAD_CONF(L"GPIO_3",                   M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0018, NORTH), // GPIO10
   BXT_GPIO_PAD_CONF(L"GPIO_4",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0020, NORTH), // GPIO11
   BXT_GPIO_PAD_CONF(L"GPIO_5",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE , Inverted,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0028, NORTH), // BC_SCI_1V8#
   BXT_GPIO_PAD_CONF(L"GPIO_6",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE , Inverted,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0030, NORTH), // LID#
-  BXT_GPIO_PAD_CONF(L"GPIO_7",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE , Inverted,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0038, NORTH), // SLEEP#
-  BXT_GPIO_PAD_CONF(L"GPIO_8",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0040, NORTH), // NC
-  BXT_GPIO_PAD_CONF(L"GPIO_9",                   M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0048, NORTH), // NC
-  BXT_GPIO_PAD_CONF(L"GPIO_10",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0050, NORTH), // NC
-  BXT_GPIO_PAD_CONF(L"GPIO_11",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0058, NORTH), // NC
-  BXT_GPIO_PAD_CONF(L"GPIO_12",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0060, NORTH), // NC
+  BXT_GPIO_PAD_CONF(L"GPIO_7",                   M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE , Inverted,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0038, NORTH), // SLEEP#
+  BXT_GPIO_PAD_CONF(L"GPIO_8",                   M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0040, NORTH), // NC
+  BXT_GPIO_PAD_CONF(L"GPIO_9",                   M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0048, NORTH), // NC
+  BXT_GPIO_PAD_CONF(L"GPIO_10",                  M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0050, NORTH), // NC
+  BXT_GPIO_PAD_CONF(L"GPIO_11",                  M0   ,    GPI   , GPIO_D,  NA    ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0058, NORTH), // NC
+  BXT_GPIO_PAD_CONF(L"GPIO_12",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,DisPuPd, GPIO_PADBAR+0x0060, NORTH), // NC
   BXT_GPIO_PAD_CONF(L"GPIO_13",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0068, NORTH), // GPIO7
   BXT_GPIO_PAD_CONF(L"GPIO_14",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0070, NORTH), // GPIO8
   BXT_GPIO_PAD_CONF(L"GPIO_15",                  M0   ,    GPI   ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0078, NORTH), // NC
