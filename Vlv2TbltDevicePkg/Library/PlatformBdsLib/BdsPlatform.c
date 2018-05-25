@@ -2031,9 +2031,11 @@ PlatformBdsPolicyBehavior (
     //
     if (EsrtManagement != NULL) {
       EsrtManagement->SyncEsrtFmp();
-      PcdSetBool(PcdEsrtSyncFmp, FALSE);
     }
 
+    DEBUG((DEBUG_INFO, "ProcessCapsules After ConnectAll......\n"));
+    ProcessCapsules();
+    DEBUG((DEBUG_INFO, "ProcessCapsules Done\n"));
 
 
     PlatformBdsLockNonUpdatableFlash ();
@@ -2089,6 +2091,9 @@ FULL_CONFIGURATION:
     TrEEPhysicalPresenceLibProcessRequest(NULL);
     #endif
 
+    if (EsrtManagement != NULL) {
+      EsrtManagement->SyncEsrtFmp();
+    }
     //
     // Close boot script and install ready to lock
     //

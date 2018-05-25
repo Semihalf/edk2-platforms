@@ -840,7 +840,8 @@ READ_STATUS        = TRUE
 READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
-INF  SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
+INF FILE_GUID=232393E2-185F-4212-A986-2B01F529EED9 USE=IA32 SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
+INF FILE_GUID=F1E68873-DA37-4AA0-A12F-F0F8EBA2B24E USE=X64 SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
 
 
 !endif

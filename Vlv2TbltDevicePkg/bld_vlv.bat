@@ -186,7 +186,7 @@ findstr /V "TARGET  TARGET_ARCH  TOOL_CHAIN_TAG  BUILD_RULE_CONF  ACTIVE_PLATFOR
 
 echo TARGET          = %TARGET%                                  >> Conf\target.txt.tmp
 if "%Arch%"=="IA32" (
-    echo TARGET_ARCH = IA32                                      >> Conf\target.txt.tmp
+    echo TARGET_ARCH = IA32 X64                                      >> Conf\target.txt.tmp
 ) else if "%Arch%"=="X64" (
     echo TARGET_ARCH = IA32 X64                                  >> Conf\target.txt.tmp
 )
