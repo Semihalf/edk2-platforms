@@ -1996,20 +1996,23 @@ PlatformBdsPolicyBehavior (
 
   case BOOT_ON_FLASH_UPDATE:
 
-    DEBUG((EFI_D_INFO, "ProcessCapsules Before EndOfDxe ......\n"));
-    Status = ProcessCapsules ();
-    DEBUG((EFI_D_INFO, "ProcessCapsules %r\n", Status));
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
 
     //
     // Boot with the specific configuration
     //
     PlatformBdsConnectConsole (gPlatformConsole);
     PlatformBdsDiagnostics (EXTENSIVE, FALSE, BaseMemoryTest);
+
+    DEBUG((DEBUG_INFO, "ProcessCapsules Before EndOfDxe......\n"));
+    ProcessCapsules ();
+    DEBUG((DEBUG_INFO, "ProcessCapsules Done\n"));
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
+
     BdsLibConnectAll ();
 
     //
