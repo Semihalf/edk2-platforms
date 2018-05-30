@@ -392,7 +392,13 @@ INF MdeModulePkg/Universal/ReportStatusCodeRouter/Smm/ReportStatusCodeRouterSmm.
 INF MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 INF RuleOverride = BINARY $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/MpCpu.inf
 INF $(PLATFORM_PACKAGE)/Metronome/Metronome.inf
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+INF MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+INF MdeModulePkg/Application/UiApp/UiApp.inf
+!else
 INF IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
+!endif
 INF MdeModulePkg/Universal/LoadFileOnFv2/LoadFileOnFv2.inf
 INF MdeModulePkg/Universal/SmmCommunicationBufferDxe/SmmCommunicationBufferDxe.inf
 INF MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
@@ -636,11 +642,17 @@ FILE DRIVER = 961578FE-B6B7-44c3-AF35-6BC705CD2B1F {
 #
 # UEFI Shell
 #
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+FILE APPLICATION = 7C04A583-9E3E-4f1c-AD65-E05268D0B4D1 {
+#    SECTION PE32 = EdkShellBinPkg/FullShell/$(EDK_DXE_ARCHITECTURE)/Shell_Full.efi
+    SECTION PE32 = ShellBinPkg/UefiShell/$(EDK_DXE_ARCHITECTURE)/Shell.efi
+  }
+!else
 FILE APPLICATION = PCD(gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdShellFile) {
 #    SECTION PE32 = EdkShellBinPkg/FullShell/$(EDK_DXE_ARCHITECTURE)/Shell_Full.efi
     SECTION PE32 = ShellBinPkg/UefiShell/$(EDK_DXE_ARCHITECTURE)/Shell.efi
   }
-
+!endif
 
 
 !if $(GOP_DRIVER_ENABLE) == TRUE
@@ -673,6 +685,12 @@ FILE FREEFORM = 878AC2CC-5343-46F2-B563-51F89DAF56BA {
   INF  MdeModulePkg/Universal/Network/Udp4Dxe/Udp4Dxe.inf
   INF  MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
   INF  MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+  INF NetworkPkg/HttpDxe/HttpDxe.inf
+  INF NetworkPkg/HttpBootDxe/HttpBootDxe.inf
+  INF NetworkPkg/HttpUtilitiesDxe/HttpUtilitiesDxe.inf
+  INF NetworkPkg/DnsDxe/DnsDxe.inf
+!endif
   !if $(NETWORK_IP6_ENABLE) == TRUE
   INF  NetworkPkg/Ip6Dxe/Ip6Dxe.inf
   INF  NetworkPkg/Dhcp6Dxe/Dhcp6Dxe.inf

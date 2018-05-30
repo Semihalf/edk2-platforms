@@ -105,7 +105,14 @@
   UefiDriverEntryPoint|MdePkg/Library/UefiDriverEntryPoint/UefiDriverEntryPoint.inf
   UefiApplicationEntryPoint|MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
   DxeSmmDriverEntryPoint|IntelFrameworkPkg/Library/DxeSmmDriverEntryPoint/DxeSmmDriverEntryPoint.inf
-
+!if $(HTTP_BOOT_SUPPORT) == TRUE  
+  TcgPhysicalPresenceLib|SecurityPkg/Library/DxeTcgPhysicalPresenceLib/DxeTcgPhysicalPresenceLib.inf
+  Tcg2PhysicalPresenceLib|SecurityPkg/Library/DxeTcg2PhysicalPresenceLib/DxeTcg2PhysicalPresenceLib.inf
+  TcgPpVendorLib|SecurityPkg/Library/TcgPpVendorLibNull/TcgPpVendorLibNull.inf
+  Tcg2PpVendorLib|SecurityPkg/Library/Tcg2PpVendorLibNull/Tcg2PpVendorLibNull.inf
+  Tpm2DeviceLib|SecurityPkg/Library/Tpm2DeviceLibRouter/Tpm2DeviceLibRouterDxe.inf
+!endif
+  
   #
   # Basic
   #
@@ -178,6 +185,11 @@
   UdpIoLib|MdeModulePkg/Library/DxeUdpIoLib/DxeUdpIoLib.inf
   TcpIoLib|MdeModulePkg/Library/DxeTcpIoLib/DxeTcpIoLib.inf
   DpcLib|MdeModulePkg/Library/DxeDpcLib/DxeDpcLib.inf
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+  HttpLib|MdeModulePkg/Library/DxeHttpLib/DxeHttpLib.inf
+  PlatformBootManagerLib | $(PLATFORM_PACKAGE)/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+  BootLogoLib | MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
+!endif
 !endif
 !if $(S3_ENABLE) == TRUE
   S3Lib|IntelFrameworkModulePkg/Library/PeiS3Lib/PeiS3Lib.inf
@@ -640,6 +652,9 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdHiiOsRuntimeSupport|FALSE
 
 [PcdsFixedAtBuild.common]
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+  gEfiNetworkPkgTokenSpaceGuid.PcdAllowHttpConnections|TRUE
+!endif
 !if $(MINNOW2_FSP_BUILD) == TRUE
 # $(FLASH_REGION_VLVMICROCODE_BASE)
   gFspWrapperTokenSpaceGuid.PcdCpuMicrocodePatchAddress|0xFFC00000
@@ -1195,6 +1210,30 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/MpCpu.inf
   $(PLATFORM_PACKAGE)/Metronome/Metronome.inf
 
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+  MdeModulePkg/Universal/BdsDxe/BdsDxe.inf{
+    <LibraryClasses>
+      OpensslLib|CryptoPkg/Library/OpensslLib/OpensslLib.inf
+      IntrinsicLib|CryptoPkg/Library/IntrinsicLib/IntrinsicLib.inf
+      BaseCryptLib|CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
+      PlatformBdsLib|$(PLATFORM_PACKAGE)/Library/PlatformBdsLib/PlatformBdsLib.inf
+      DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+      PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
+      SerialPortLib|$(PLATFORM_PACKAGE)/Library/SerialPortLib/SerialPortLib.inf
+    !if $(FTPM_ENABLE) == TRUE  
+      Tpm2DeviceLib|Vlv2TbltDevicePkg/Library/Tpm2DeviceLibSeCDxe/Tpm2DeviceLibSeC.inf
+    !else
+      TrEEPhysicalPresenceLib|$(PLATFORM_PACKAGE)/Library/DxeTrEEPhysicalPresenceLibNull/DxeTrEEPhysicalPresenceLibNull.inf
+    !endif  
+  }
+  MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+  MdeModulePkg/Application/UiApp/UiApp.inf {
+    <LibraryClasses>
+      NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
+      NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
+      NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
+  }
+!else
   IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf{
     <LibraryClasses>
       OpensslLib|CryptoPkg/Library/OpensslLib/OpensslLib.inf
@@ -1210,11 +1249,11 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
       TrEEPhysicalPresenceLib|$(PLATFORM_PACKAGE)/Library/DxeTrEEPhysicalPresenceLibNull/DxeTrEEPhysicalPresenceLibNull.inf
     !endif  
   }
-  
+  $(PLATFORM_PACKAGE)/UiApp/UiApp.inf
+!endif
   MdeModulePkg/Universal/LoadFileOnFv2/LoadFileOnFv2.inf
   MdeModulePkg/Universal/SmmCommunicationBufferDxe/SmmCommunicationBufferDxe.inf
 
-  $(PLATFORM_PACKAGE)/UiApp/UiApp.inf
 
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
   MdeModulePkg/Core/RuntimeDxe/RuntimeDxe.inf
@@ -1562,6 +1601,12 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     MdeModulePkg/Universal/Network/MnpDxe/MnpDxe.inf
     MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
     MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
+!if $(HTTP_BOOT_SUPPORT) == TRUE
+    NetworkPkg\HttpDxe\HttpDxe.inf
+    NetworkPkg\HttpBootDxe\HttpBootDxe.inf
+    NetworkPkg\HttpUtilitiesDxe\HttpUtilitiesDxe.inf
+    NetworkPkg\DnsDxe\DnsDxe.inf
+!endif
     MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
     MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
     MdeModulePkg/Universal/Network/Tcp4Dxe/Tcp4Dxe.inf {
