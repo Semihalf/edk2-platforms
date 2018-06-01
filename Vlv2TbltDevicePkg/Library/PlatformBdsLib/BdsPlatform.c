@@ -143,8 +143,8 @@ DisableAhciCtlr (
 }
 
 /**
-  Issues EndOfDxe event, installs gExitPmAuthProtocolGuid, and issues SMM lock envent. Bus Master DMA mus
-  not be enabled before SMM lock.
+  Lock SMRAM with EFI_SMM_ACCESS2_PROTOCOL. To prevent DMA attack, Bus Master DMA of untrusetd PCI devices
+  must not be enabled before SMRAM lock.
 
   @param VOID
 
@@ -152,14 +152,12 @@ DisableAhciCtlr (
 
 **/
 VOID
-InstallReadyToLock (
+SmramLock (
   VOID
   )
 {
   EFI_STATUS                Status;
-  EFI_HANDLE                Handle;
   EFI_SMM_ACCESS2_PROTOCOL  *SmmAccess;
-  EFI_ACPI_S3_SAVE_PROTOCOL *AcpiS3Save;
   UINTN                      PciDeviceConfigAdd;
   UINT16                     VendorID;
   UINT16                     CommandReg;
@@ -167,7 +165,7 @@ InstallReadyToLock (
   UINT8                      FunIndex;
 
   // 
-  // Check Buster Master Enable bit of PCI devices,including PCIe root ports, on bus 0.
+  // Check Buster Master Enable bit of untrusted PCI devices,including PCIe root ports, on bus 0.
   //
   DEBUG ((DEBUG_ERROR, "BDS: Check Bus Master Enable of PCI devices before SMRAM lock: \n"));
   
@@ -204,12 +202,50 @@ InstallReadyToLock (
       // Report error if Bus Master has been enabled.
       //
       if (((CommandReg & BIT2) == BIT2)) {
-          DEBUG ((DEBUG_ERROR, "Error: Bus Master is enabled before SMRAM lock!\n"));
+          DEBUG ((DEBUG_ERROR, "Error: Bus Master of above device is enabled before SMRAM lock!\n"));
           ASSERT_EFI_ERROR(FALSE);
       }
     }
   }
   
+  //
+  // Lock SMRAM.
+  //
+  Status = gBS->LocateProtocol (
+                  &gEfiSmmAccess2ProtocolGuid,
+                  NULL,
+                  (VOID **) &SmmAccess
+                  );
+  if (!EFI_ERROR (Status)) {
+    //
+    //
+    //
+    Status = SmmAccess->Lock(SmmAccess);
+    DEBUG ((DEBUG_ERROR, "SMRAM is locked by EFI_SMM_ACCESS2_PROTOCOL!\n"));
+    ASSERT_EFI_ERROR (Status);
+  }
+
+  return ;
+}
+
+/**
+  Issues EndOfDxe event, installs gExitPmAuthProtocolGuid, and issues SMM lock envent.
+
+  @param VOID
+
+  @retval  None.
+
+**/
+VOID
+InstallReadyToLock (
+  VOID
+  )
+{
+  EFI_STATUS                Status;
+  EFI_HANDLE                Handle;
+  EFI_SMM_ACCESS2_PROTOCOL  *SmmAccess;
+  EFI_ACPI_S3_SAVE_PROTOCOL *AcpiS3Save;
+
   //
   // Install DxeSmmReadyToLock protocol prior to the processing of boot options
   //
@@ -240,11 +276,14 @@ InstallReadyToLock (
                     NULL
                     );
     ASSERT_EFI_ERROR (Status);
+
+    DEBUG ((DEBUG_INFO, "Signal gEfiEndOfDxeEventGroupGuid event! End of DXE!\n"));
     //
     // Signal EndOfDxe PI Event
     //
     EfiEventGroupSignal (&gEfiEndOfDxeEventGroupGuid);
 
+    DEBUG ((DEBUG_INFO, "Signal gEfiDxeSmmReadyToLockProtocolGuid event!\n"));
     Handle = NULL;
     Status = gBS->InstallProtocolInterface (
                     &Handle,
@@ -1855,14 +1894,19 @@ PlatformBdsPolicyBehavior (
     #ifdef FTPM_ENABLE
     TrEEPhysicalPresenceLibProcessRequest(NULL);
     #endif
+
     //
-    // Close boot script and install ready to lock
+    // Lock SMRAM.
     //
-    InstallReadyToLock ();
+    SmramLock ();
     
     PlatformBdsInitHotKeyEvent ();
     PlatformBdsConnectSimpleConsole (gPlatformSimpleConsole);
 
+    //
+    // Close boot script and install ready to lock.
+    //
+    InstallReadyToLock ();
 
     //
     // Check to see if it's needed to dispatch more DXE drivers.
@@ -1951,9 +1995,9 @@ PlatformBdsPolicyBehavior (
   case BOOT_ASSUMING_NO_CONFIGURATION_CHANGES:
 
     //
-    // Close boot script and install ready to lock
+    // Lock SMRAM.
     //
-    InstallReadyToLock ();
+    SmramLock ();
 
     //
     // In no-configuration boot mode, we can connect the
@@ -1961,6 +2005,11 @@ PlatformBdsPolicyBehavior (
     //
     BdsLibConnectAllDefaultConsoles ();
     PlatformBdsDiagnostics (IGNORE, FALSE, BaseMemoryTest);
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
 
     //
     // Perform some platform specific connect sequence
@@ -1996,7 +2045,10 @@ PlatformBdsPolicyBehavior (
 
   case BOOT_ON_FLASH_UPDATE:
 
-
+    //
+    // Lock SMRAM.
+    //
+    SmramLock ();
 
     //
     // Boot with the specific configuration
@@ -2048,9 +2100,9 @@ PlatformBdsPolicyBehavior (
   case BOOT_IN_RECOVERY_MODE:
 
     //
-    // Close boot script and install ready to lock
+    // Lock SMRAM.
     //
-    InstallReadyToLock ();
+    SmramLock ();
 
     //
     // In recovery mode, just connect platform console
@@ -2058,6 +2110,12 @@ PlatformBdsPolicyBehavior (
     //
     PlatformBdsConnectConsole (gPlatformConsole);
     PlatformBdsDiagnostics (EXTENSIVE, FALSE, BaseMemoryTest);
+
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock ();
+        
     BdsLibConnectAll ();
 
     //
@@ -2097,11 +2155,13 @@ FULL_CONFIGURATION:
     if (EsrtManagement != NULL) {
       EsrtManagement->SyncEsrtFmp();
     }
+
+
     //
-    // Close boot script and install ready to lock
+    // Lock SMRAM.
     //
-    InstallReadyToLock ();
-     
+    SmramLock ();
+
     //
     // Connect platform console
     //
@@ -2115,7 +2175,12 @@ FULL_CONFIGURATION:
     }
 
     //
-    // Chenyunh[TODO]: This is Workgroud to show the fs for uSDcard,
+    // Close boot script and install ready to lock.
+    //
+    InstallReadyToLock ();
+
+    //
+    // This is Workgroud to show the fs for uSDcard,
     // Need to root cause this issue.
     //
     DEBUG ((DEBUG_ERROR, "Start to reconnect all driver.\n"));
@@ -2168,11 +2233,11 @@ FULL_CONFIGURATION:
     //
     PlatformBdsEnterFrontPageWithHotKey (Timeout, FALSE);
 
-	//
-	// Give one chance to enter the setup if we 
-	// select Gummiboot "Reboot Into Firmware Interface"
-	//
-	BootIntoFirmwareInterface();
+    //
+    // Give one chance to enter the setup if we 
+    // select Gummiboot "Reboot Into Firmware Interface"
+    //
+    BootIntoFirmwareInterface();
 
     //
     // In default boot mode, always find all boot
