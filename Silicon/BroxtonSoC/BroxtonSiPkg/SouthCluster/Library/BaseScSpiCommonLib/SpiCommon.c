@@ -1,7 +1,7 @@
 /** @file
   SC SPI Common Driver implements the SPI Host Controller Compatibility Interface.
 
-  Copyright (c) 2008 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -73,6 +73,8 @@ SpiProtocolConstructor (
 
   SpiInstance->RegionPermission = MmioRead16 (ScSpiBar0 + R_SPI_FRAP);
   DEBUG ((DEBUG_INFO, "Flash RegionPermission : %0x\n", SpiInstance->RegionPermission));
+
+  MmioOr32 (ScSpiBar0 + R_SPI_LVSCC, B_SPI_LVSCC_VCL);
 
   SpiInstance->SfdpVscc0Value = MmioRead32 (ScSpiBar0 + R_SPI_LVSCC);
   DEBUG ((DEBUG_INFO, "Component 0 SFDP VSCC value : %0x\n", SpiInstance->SfdpVscc0Value));
