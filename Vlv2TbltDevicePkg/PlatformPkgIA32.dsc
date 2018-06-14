@@ -111,6 +111,7 @@
   TcgPpVendorLib|SecurityPkg/Library/TcgPpVendorLibNull/TcgPpVendorLibNull.inf
   Tcg2PpVendorLib|SecurityPkg/Library/Tcg2PpVendorLibNull/Tcg2PpVendorLibNull.inf
   Tpm2DeviceLib|SecurityPkg/Library/Tpm2DeviceLibRouter/Tpm2DeviceLibRouterDxe.inf
+  TlsLib|CryptoPkg/Library/TlsLib/TlsLib.inf
 !endif
   
   #
@@ -1609,6 +1610,11 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     NetworkPkg\HttpBootDxe\HttpBootDxe.inf
     NetworkPkg\HttpUtilitiesDxe\HttpUtilitiesDxe.inf
     NetworkPkg\DnsDxe\DnsDxe.inf
+    !if $(NETWORK_TLS_ENABLE) == TRUE
+      NetworkPkg/TlsDxe/TlsDxe.inf
+      NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf
+    !endif
+    MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 !endif
     MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
     MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf

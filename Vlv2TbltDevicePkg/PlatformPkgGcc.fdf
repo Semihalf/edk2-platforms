@@ -690,7 +690,12 @@ FILE FREEFORM = 878AC2CC-5343-46F2-B563-51F89DAF56BA {
   INF NetworkPkg/HttpBootDxe/HttpBootDxe.inf
   INF NetworkPkg/HttpUtilitiesDxe/HttpUtilitiesDxe.inf
   INF NetworkPkg/DnsDxe/DnsDxe.inf
-!endif
+  !if $(NETWORK_TLS_ENABLE) == TRUE
+    INF  NetworkPkg/TlsDxe/TlsDxe.inf
+    INF  NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf
+  !endif
+  INF RuleOverride = DRIVER_ACPITABLE MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+  !endif
   !if $(NETWORK_IP6_ENABLE) == TRUE
   INF  NetworkPkg/Ip6Dxe/Ip6Dxe.inf
   INF  NetworkPkg/Dhcp6Dxe/Dhcp6Dxe.inf
