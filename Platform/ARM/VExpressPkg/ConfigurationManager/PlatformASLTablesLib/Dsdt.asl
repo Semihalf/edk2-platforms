@@ -12,7 +12,7 @@
 
 **/
 
-DefinitionBlock("DsdtTable.aml", "DSDT", 1, "ARMLTD", "ARM-VEXPRESS", 1) {
+DefinitionBlock("DsdtTable.aml", "DSDT", 1, "ARMLTD", "ARM-VEXP", 1) {
   Scope(_SB) {
     //
     // Processor
