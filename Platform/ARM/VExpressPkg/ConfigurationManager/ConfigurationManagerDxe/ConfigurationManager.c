@@ -303,9 +303,10 @@ GetStandardNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS                      Status = EFI_SUCCESS;
+  EFI_STATUS                      Status;
   EFI_PLATFORM_REPOSITORY_INFO  * PlatformRepo;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
@@ -353,9 +354,10 @@ GetArmNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS                      Status = EFI_SUCCESS;
+  EFI_STATUS                      Status;
   EFI_PLATFORM_REPOSITORY_INFO  * PlatformRepo;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
@@ -437,8 +439,9 @@ GetOemNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS  Status = EFI_SUCCESS;
+  EFI_STATUS  Status;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
