@@ -267,9 +267,11 @@ GetStandardNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS                      Status = EFI_SUCCESS;
+  EFI_STATUS                      Status;
   EFI_PLATFORM_REPOSITORY_INFO  * PlatformRepo;
+  UINT32                          TableCount;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
@@ -284,8 +286,8 @@ GetStandardNameSpaceObject (
       if (PlatformRepo->JunoRevision != JUNO_REVISION_R0) {
         CmObject->Size = sizeof (PlatformRepo->CmAcpiTableList);
       } else {
-        UINT32 TableCount = sizeof (PlatformRepo->CmAcpiTableList) /
-                              sizeof (PlatformRepo->CmAcpiTableList[0]);
+        TableCount = sizeof (PlatformRepo->CmAcpiTableList) /
+                       sizeof (PlatformRepo->CmAcpiTableList[0]);
         /* The last 2 tables in the ACPI table list enable PCIe support.
            Reduce the CmObject size so that the PCIe specific ACPI
            tables are not installed on Juno R0
@@ -339,9 +341,10 @@ GetArmNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS                      Status = EFI_SUCCESS;
+  EFI_STATUS                      Status;
   EFI_PLATFORM_REPOSITORY_INFO  * PlatformRepo;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
@@ -419,8 +422,9 @@ GetOemNameSpaceObject (
   IN  OUT   CM_OBJ_DESCRIPTOR                   * CONST CmObject
   )
 {
-  EFI_STATUS  Status = EFI_SUCCESS;
+  EFI_STATUS  Status;
 
+  Status = EFI_SUCCESS;
   if ((This == NULL) || (CmObject == NULL)) {
     ASSERT (This != NULL);
     ASSERT (CmObject != NULL);
