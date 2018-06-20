@@ -27,6 +27,7 @@ Revision History
 
 extern  UINT16                          mAcpiBaseAddr;
 EFI_PHYSICAL_ADDRESS                    mRuntimeScriptTableBase;
+BOOLEAN                                 mScriptSaved = FALSE;
 
 EFI_STATUS
 InitRuntimeScriptTable (
@@ -249,7 +250,9 @@ SaveRuntimeScriptTable (
   //
   UINT8                 ExtReg[] = { 0x9E, 0x9D };  // SMRAM settings
 
-
+  if (mScriptSaved == TRUE) {
+    return EFI_SUCCESS;
+  }
 
   //
   // Save PCI-Host bridge settings (0, 0, 0). 0x90, 94 and 9c are changed by CSM
@@ -377,6 +380,7 @@ SaveRuntimeScriptTable (
       &Data16
       );
 
-
+  mScriptSaved = TRUE;
+  
   return EFI_SUCCESS;
 }

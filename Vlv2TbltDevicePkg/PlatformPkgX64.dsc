@@ -894,11 +894,9 @@ gEfiMdeModulePkgTokenSpaceGuid.PcdSystemRebootAfterCapsuleProcessFlag|0x0001
 
   ## This PCD defines the video horizontal resolution.
   #  This PCD could be set to 0 then video resolution could be at highest resolution.
-  #gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|0
   gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|800
   ## This PCD defines the video vertical resolution.
   #  This PCD could be set to 0 then video resolution could be at highest resolution.
-  #gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|0
   gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|600
 
   ## This PCD defines the Console output column and the default value is 25 according to UEFI spec.
@@ -1323,6 +1321,9 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     <PcdsPatchableInModule>
         gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0xF0000043
   }
+  
+  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PchInitSmm.inf
+
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PchSmiDispatcher.inf
 
 !if $(PCIESC_ENABLE) == TRUE
@@ -1334,6 +1335,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/SmmAccess.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PciHostBridge.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/VlvInitDxe.inf
+  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/GraphicDxeInitSmm.inf
 
   IntelFrameworkModulePkg/Universal/LegacyRegionDxe/LegacyRegionDxe.inf
   
@@ -1608,10 +1610,10 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
     MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
 !if $(HTTP_BOOT_SUPPORT) == TRUE
-    NetworkPkg\HttpDxe\HttpDxe.inf
-    NetworkPkg\HttpBootDxe\HttpBootDxe.inf
-    NetworkPkg\HttpUtilitiesDxe\HttpUtilitiesDxe.inf
-    NetworkPkg\DnsDxe\DnsDxe.inf
+    NetworkPkg/HttpDxe/HttpDxe.inf
+    NetworkPkg/HttpBootDxe/HttpBootDxe.inf
+    NetworkPkg/HttpUtilitiesDxe/HttpUtilitiesDxe.inf
+    NetworkPkg/DnsDxe/DnsDxe.inf
     !if $(NETWORK_TLS_ENABLE) == TRUE
       NetworkPkg/TlsDxe/TlsDxe.inf
       NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf

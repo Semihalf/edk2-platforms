@@ -1322,6 +1322,9 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     <PcdsPatchableInModule>
         gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0xF0000043
   }
+
+  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PchInitSmm.inf
+
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PchSmiDispatcher.inf
 
 !if $(PCIESC_ENABLE) == TRUE
@@ -1333,6 +1336,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/SmmAccess.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/PciHostBridge.inf
   $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/VlvInitDxe.inf
+  $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/$(DXE_ARCHITECTURE)/GraphicDxeInitSmm.inf
 
   IntelFrameworkModulePkg/Universal/LegacyRegionDxe/LegacyRegionDxe.inf
   
@@ -1606,10 +1610,10 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
     MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
     MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
 !if $(HTTP_BOOT_SUPPORT) == TRUE
-    NetworkPkg\HttpDxe\HttpDxe.inf
-    NetworkPkg\HttpBootDxe\HttpBootDxe.inf
-    NetworkPkg\HttpUtilitiesDxe\HttpUtilitiesDxe.inf
-    NetworkPkg\DnsDxe\DnsDxe.inf
+    NetworkPkg/HttpDxe/HttpDxe.inf
+    NetworkPkg/HttpBootDxe/HttpBootDxe.inf
+    NetworkPkg/HttpUtilitiesDxe/HttpUtilitiesDxe.inf
+    NetworkPkg/DnsDxe/DnsDxe.inf
     !if $(NETWORK_TLS_ENABLE) == TRUE
       NetworkPkg/TlsDxe/TlsDxe.inf
       NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf

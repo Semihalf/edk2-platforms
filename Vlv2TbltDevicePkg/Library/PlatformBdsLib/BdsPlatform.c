@@ -143,8 +143,8 @@ DisableAhciCtlr (
 }
 
 /**
-  Lock SMRAM with EFI_SMM_ACCESS2_PROTOCOL. To prevent DMA attack, Bus Master DMA of untrusetd PCI devices
-  must not be enabled before SMRAM lock.
+  Issues EndOfDxe event, installs gExitPmAuthProtocolGuid, and issues SMM lock envent. Bus Master DMA should
+  not be enabled before SMRAM lock.
 
   @param VOID
 
@@ -152,12 +152,14 @@ DisableAhciCtlr (
 
 **/
 VOID
-SmramLock (
+InstallReadyToLock (
   VOID
   )
 {
   EFI_STATUS                Status;
+  EFI_HANDLE                Handle;
   EFI_SMM_ACCESS2_PROTOCOL  *SmmAccess;
+  EFI_ACPI_S3_SAVE_PROTOCOL *AcpiS3Save;
   UINTN                      PciDeviceConfigAdd;
   UINT16                     VendorID;
   UINT16                     CommandReg;
@@ -165,7 +167,7 @@ SmramLock (
   UINT8                      FunIndex;
 
   // 
-  // Check Buster Master Enable bit of untrusted PCI devices,including PCIe root ports, on bus 0.
+  // Check Buster Master Enable bit of PCI devices,including PCIe root ports, on bus 0.
   //
   DEBUG ((DEBUG_ERROR, "BDS: Check Bus Master Enable of PCI devices before SMRAM lock: \n"));
   
@@ -208,44 +210,6 @@ SmramLock (
     }
   }
   
-  //
-  // Lock SMRAM.
-  //
-  Status = gBS->LocateProtocol (
-                  &gEfiSmmAccess2ProtocolGuid,
-                  NULL,
-                  (VOID **) &SmmAccess
-                  );
-  if (!EFI_ERROR (Status)) {
-    //
-    //
-    //
-    Status = SmmAccess->Lock(SmmAccess);
-    DEBUG ((DEBUG_ERROR, "SMRAM is locked by EFI_SMM_ACCESS2_PROTOCOL!\n"));
-    ASSERT_EFI_ERROR (Status);
-  }
-
-  return ;
-}
-
-/**
-  Issues EndOfDxe event, installs gExitPmAuthProtocolGuid, and issues SMM lock envent.
-
-  @param VOID
-
-  @retval  None.
-
-**/
-VOID
-InstallReadyToLock (
-  VOID
-  )
-{
-  EFI_STATUS                Status;
-  EFI_HANDLE                Handle;
-  EFI_SMM_ACCESS2_PROTOCOL  *SmmAccess;
-  EFI_ACPI_S3_SAVE_PROTOCOL *AcpiS3Save;
-
   //
   // Install DxeSmmReadyToLock protocol prior to the processing of boot options
   //
@@ -1896,17 +1860,13 @@ PlatformBdsPolicyBehavior (
     #endif
 
     //
-    // Lock SMRAM.
+    // Close boot script and install ready to lock.
     //
-    SmramLock ();
+    InstallReadyToLock ();
     
     PlatformBdsInitHotKeyEvent ();
     PlatformBdsConnectSimpleConsole (gPlatformSimpleConsole);
 
-    //
-    // Close boot script and install ready to lock.
-    //
-    InstallReadyToLock ();
 
     //
     // Check to see if it's needed to dispatch more DXE drivers.
@@ -1995,9 +1955,9 @@ PlatformBdsPolicyBehavior (
   case BOOT_ASSUMING_NO_CONFIGURATION_CHANGES:
 
     //
-    // Lock SMRAM.
+    // Close boot script and install ready to lock
     //
-    SmramLock ();
+    InstallReadyToLock ();
 
     //
     // In no-configuration boot mode, we can connect the
@@ -2006,10 +1966,6 @@ PlatformBdsPolicyBehavior (
     BdsLibConnectAllDefaultConsoles ();
     PlatformBdsDiagnostics (IGNORE, FALSE, BaseMemoryTest);
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
 
     //
     // Perform some platform specific connect sequence
@@ -2046,9 +2002,9 @@ PlatformBdsPolicyBehavior (
   case BOOT_ON_FLASH_UPDATE:
 
     //
-    // Lock SMRAM.
+    // Close boot script and install ready to lock
     //
-    SmramLock ();
+    InstallReadyToLock();
 
     //
     // Boot with the specific configuration
@@ -2060,10 +2016,6 @@ PlatformBdsPolicyBehavior (
     ProcessCapsules ();
     DEBUG((DEBUG_INFO, "ProcessCapsules Done\n"));
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
 
     BdsLibConnectAll ();
 
@@ -2100,9 +2052,9 @@ PlatformBdsPolicyBehavior (
   case BOOT_IN_RECOVERY_MODE:
 
     //
-    // Lock SMRAM.
+    // Close boot script and install ready to lock
     //
-    SmramLock ();
+    InstallReadyToLock ();
 
     //
     // In recovery mode, just connect platform console
@@ -2111,11 +2063,7 @@ PlatformBdsPolicyBehavior (
     PlatformBdsConnectConsole (gPlatformConsole);
     PlatformBdsDiagnostics (EXTENSIVE, FALSE, BaseMemoryTest);
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock ();
-        
+
     BdsLibConnectAll ();
 
     //
@@ -2158,9 +2106,9 @@ FULL_CONFIGURATION:
 
 
     //
-    // Lock SMRAM.
+    // Close boot script and install ready to lock.
     //
-    SmramLock ();
+    InstallReadyToLock ();
 
     //
     // Connect platform console
@@ -2174,10 +2122,6 @@ FULL_CONFIGURATION:
       PlatformBdsNoConsoleAction ();
     }
 
-    //
-    // Close boot script and install ready to lock.
-    //
-    InstallReadyToLock ();
 
     //
     // This is Workgroud to show the fs for uSDcard,
