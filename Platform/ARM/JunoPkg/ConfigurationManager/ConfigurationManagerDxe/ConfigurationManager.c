@@ -228,7 +228,7 @@ EFI_PLATFORM_REPOSITORY_INFO ArmJunoPlatformRepositoryInfo = {
   @param [in]  This        Pointer to the Configuration Manager Protocol.
 
   @retval EFI_SUCCESS   Success
-*/
+**/
 STATIC
 EFI_STATUS
 EFIAPI
@@ -247,17 +247,17 @@ InitializePlatformRepository (
 
 /** Return a standard namespace object.
 
-  @param [in]  This        Pointer to the Configuration Manager Protocol.
-  @param [in]  CmObjectId  The Configuration Manager Object ID.
-  @param [in]  Token       An optional token identifying the object. If
-                           unused this must be CM_NULL_TOKEN.
-  @param [out] CmObject    Pointer to the Configuration Manager Object
-                           descriptor describing the requested Object.
+  @param [in]      This        Pointer to the Configuration Manager Protocol.
+  @param [in]      CmObjectId  The Configuration Manager Object ID.
+  @param [in]      Token       An optional token identifying the object. If
+                               unused this must be CM_NULL_TOKEN.
+  @param [in, out] CmObject    Pointer to the Configuration Manager Object
+                               descriptor describing the requested Object.
 
   @retval EFI_SUCCESS           Success.
   @retval EFI_INVALID_PARAMETER A parameter is invalid.
   @retval EFI_NOT_FOUND         The required object information is not found.
-*/
+**/
 EFI_STATUS
 EFIAPI
 GetStandardNameSpaceObject (
@@ -319,17 +319,17 @@ GetStandardNameSpaceObject (
 
 /** Return an ARM namespace object.
 
-  @param [in]  This        Pointer to the Configuration Manager Protocol.
-  @param [in]  CmObjectId  The Configuration Manager Object ID.
-  @param [in]  Token       An optional token identifying the object. If
-                           unused this must be CM_NULL_TOKEN.
-  @param [out] CmObject    Pointer to the Configuration Manager Object
-                           descriptor describing the requested Object.
+  @param [in]      This        Pointer to the Configuration Manager Protocol.
+  @param [in]      CmObjectId  The Configuration Manager Object ID.
+  @param [in]      Token       An optional token identifying the object. If
+                               unused this must be CM_NULL_TOKEN.
+  @param [in, out] CmObject    Pointer to the Configuration Manager Object
+                               descriptor describing the requested Object.
 
   @retval EFI_SUCCESS           Success.
   @retval EFI_INVALID_PARAMETER A parameter is invalid.
   @retval EFI_NOT_FOUND         The required object information is not found.
-*/
+**/
 EFI_STATUS
 EFIAPI
 GetArmNameSpaceObject (
@@ -399,17 +399,17 @@ GetArmNameSpaceObject (
 
 /** Return an OEM namespace object.
 
-  @param [in]  This        Pointer to the Configuration Manager Protocol.
-  @param [in]  CmObjectId  The Configuration Manager Object ID.
-  @param [in]  Token       An optional token identifying the object. If
-                           unused this must be CM_NULL_TOKEN.
-  @param [out] CmObject    Pointer to the Configuration Manager Object
-                           descriptor describing the requested Object.
+  @param [in]      This        Pointer to the Configuration Manager Protocol.
+  @param [in]      CmObjectId  The Configuration Manager Object ID.
+  @param [in]      Token       An optional token identifying the object. If
+                               unused this must be CM_NULL_TOKEN.
+  @param [in, out] CmObject    Pointer to the Configuration Manager Object
+                               descriptor describing the requested Object.
 
   @retval EFI_SUCCESS           Success.
   @retval EFI_INVALID_PARAMETER A parameter is invalid.
   @retval EFI_NOT_FOUND         The required object information is not found.
-*/
+**/
 EFI_STATUS
 EFIAPI
 GetOemNameSpaceObject (
@@ -447,17 +447,17 @@ GetOemNameSpaceObject (
     Configuration Manager Protocol for returning the Configuration
     Manager Objects.
 
-  @param [in]  This        Pointer to the Configuration Manager Protocol.
-  @param [in]  CmObjectId  The Configuration Manager Object ID.
-  @param [in]  Token       An optional token identifying the object. If
-                           unused this must be CM_NULL_TOKEN.
-  @param [out] CmObject    Pointer to the Configuration Manager Object
-                           descriptor describing the requested Object.
+  @param [in]      This        Pointer to the Configuration Manager Protocol.
+  @param [in]      CmObjectId  The Configuration Manager Object ID.
+  @param [in]      Token       An optional token identifying the object. If
+                               unused this must be CM_NULL_TOKEN.
+  @param [in, out] CmObject    Pointer to the Configuration Manager Object
+                               descriptor describing the requested Object.
 
   @retval EFI_SUCCESS           Success.
   @retval EFI_INVALID_PARAMETER A parameter is invalid.
   @retval EFI_NOT_FOUND         The required object information is not found.
-*/
+**/
 EFI_STATUS
 EFIAPI
 ArmJunoPlatformGetObject (
@@ -504,15 +504,15 @@ ArmJunoPlatformGetObject (
     Configuration Manager Protocol for updating the Configuration
     Manager Objects.
 
-  @param [in]  This        Pointer to the Configuration Manager Protocol.
-  @param [in]  CmObjectId  The Configuration Manager Object ID.
-  @param [in]  Token       An optional token identifying the object. If
-                           unused this must be CM_NULL_TOKEN.
-  @param [out] CmObject    Pointer to the Configuration Manager Object
-                           descriptor describing the Object.
+  @param [in]      This        Pointer to the Configuration Manager Protocol.
+  @param [in]      CmObjectId  The Configuration Manager Object ID.
+  @param [in]      Token       An optional token identifying the object. If
+                               unused this must be CM_NULL_TOKEN.
+  @param [in]      CmObject    Pointer to the Configuration Manager Object
+                               descriptor describing the Object.
 
   @retval EFI_UNSUPPORTED  This operation is not supported.
-*/
+**/
 EFI_STATUS
 EFIAPI
 ArmJunoPlatformSetObject (
