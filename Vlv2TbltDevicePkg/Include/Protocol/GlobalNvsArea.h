@@ -473,7 +473,7 @@ typedef struct {
   UINT8       MicrosoftIoT;                      // (794)JP1 pins are for Microsoft IoT project.
   UINT8       RtcBattery;                        // (795) The Flag of RTC Battery Present.
   UINT8       LpeAudioReportedByDSDT;            // (796)
-  UINT8       Uart1Pnp0501Com;                   // (797) Report UART 1 as PNP0501 COM.
+  UINT8       Uart1Int3511Com;                   // (797) Report UART 1 as INT3511 COM.
 } EFI_GLOBAL_NVS_AREA;
 #pragma pack ()
 

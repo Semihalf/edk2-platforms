@@ -350,6 +350,6 @@ Field(GNVS,AnyAcc,Lock,Preserve)
   IOT,      8,      //(794) MinnowBoard Max JP1 is configured for MSFT IOT project.
   BATT,     8,      //(795) The Flag of RTC Battery Prensent.  
   LPAD,     8,      //(796) 
-  U1CM,     8,      //(797) Report UART1 as PNP0501 COM. 
+  U1CM,     8,      //(797) Report UART1 as COM. 
 }
 

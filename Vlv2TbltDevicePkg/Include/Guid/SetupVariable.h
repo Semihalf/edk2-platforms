@@ -1310,7 +1310,7 @@ typedef struct {
   UINT8   GpioWakeCapability;
   UINT8   RtcBattery;
   UINT8   LpeAudioReportedByDSDT;
-  UINT8   Uart1Pnp0501Com; // Report UART1 as PNP0501 COM
+  UINT8   Uart1Int3511Com; // Report UART1 as COM with _HID INT3511
 
 } SYSTEM_CONFIGURATION;
 #pragma pack()

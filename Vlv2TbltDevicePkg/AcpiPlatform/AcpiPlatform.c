@@ -1146,7 +1146,7 @@ AcpiPlatformEntryPoint (
   //
   // Report UART1 as PNP0501 COM.
   //
-  mGlobalNvsArea.Area->Uart1Pnp0501Com = mSystemConfiguration.Uart1Pnp0501Com;
+  mGlobalNvsArea.Area->Uart1Int3511Com = mSystemConfiguration.Uart1Int3511Com;
 
   //
   // SIO related option.

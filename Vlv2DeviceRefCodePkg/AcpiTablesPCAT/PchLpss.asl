@@ -225,13 +225,6 @@ Device(URT1)
       Return (0x0)
     }
 
-    //
-    // Is UART 1 is reported as PNP0501 COM?
-    //
-    If(LEqual(U1CM, One)) {
-      Return (0x0)   
-    }
-
     Return (0xF)
   }
 
@@ -253,48 +246,46 @@ Device(URT1)
     Offset (0x84),
     PSAT,   32
   }
-}//  Device (URT1)
-
-Device(U1CO) // UART 1 as COM
-{
-  Name(_HID, EISAID("PNP0501"))
-  Name(_UID,2) // _UID must not conflict wit _UID of LPC COM.
-
-  Name (RBUF, ResourceTemplate ()
-  {
-    Memory32Fixed (ReadWrite, 0x00000000, 0x00001000, BAR0)
-    Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , ) {39}  // HS-UART #1 IRQ
-
-    FixedDMA(0x2, 0x2, Width32Bit, )
-    FixedDMA(0x3, 0x3, Width32Bit, )
-  })
   
-  Method (_CRS, 0x0, NotSerialized)
-  {
-    CreateDwordField(^RBUF, ^BAR0._BAS, B0BA)
-    CreateDwordField(^RBUF, ^BAR0._LEN, B0LN)
-    Store(U10A, B0BA)
-    Store(U10L, B0LN)
-    Return (RBUF)
-  }
+  //
+  // Virtual COM port for HSUART1
+  //
+  Device (VUT0) {
   
-  Method(_STA,0,Serialized)
-  {  
-     If (LOr(LEqual(U10A, 0), LEqual(L13D, 1)))
-    {
-      Return (0x0000)
-    }
+    Name (_HID, "INT3511")
     
-    //
-    // Is UART 1 reported as PNP0501 COM?
-    //
-    If(LEqual(U1CM, One)) {
-       Return(0x000F)
-    } Else {
-       Return(0x0000)
+    Method (_STA, 0x0, NotSerialized)
+    {
+      If(LEqual(U1CM, 1)) {
+        Return(0xf)
+      } else {
+        Return(0x0)
+      }
     }
-  }
-}
+
+    Method (_CRS, 0, NotSerialized) {
+      Name (BBUF, ResourceTemplate () {
+        UartSerialBus (
+        0x0001C200, 
+        DataBitsEight, 
+        StopBitsOne, 
+        0xFC, 
+        LittleEndian, 
+        ParityTypeNone, 
+        FlowControlHardware,
+        0x0020, 
+        0x0020, 
+        "\\_SB.URT1",
+        0x00, 
+        ResourceConsumer, 
+        ,
+        )
+     })
+     Return (BBUF)
+   }
+
+  } //Device (VUT0)
+}//  Device (URT1)
 
 //
 // LPIO1 HS-UART #2

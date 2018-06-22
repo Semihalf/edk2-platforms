@@ -587,9 +587,9 @@ endif;     // grayoutif NOT ideqval Setup.LpssSdcardEnabled == 0x1;
   endif;
   
   grayoutif ideqval Setup.LpssHsuart0Enabled == 0x00;
-  oneof varid   = Setup.Uart1Pnp0501Com,
-    prompt      = STRING_TOKEN(STR_LPSS_HSUART1_PNP0501_PROMPT),
-    help        = STRING_TOKEN(STR_LPSS_HSUART1_PNP0501_HELP_ENBDT_DEV_LIST),
+  oneof varid   = Setup.Uart1Int3511Com,
+    prompt      = STRING_TOKEN(STR_LPSS_HSUART1_INT3511_PROMPT),
+    help        = STRING_TOKEN(STR_LPSS_HSUART1_INT3511_HELP_ENBDT_DEV_LIST),
     option text = STRING_TOKEN(STR_DISABLE), value=0, flags=0 |DEFAULT | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE), value=1, flags= MANUFACTURING | RESET_REQUIRED;
   endoneof;
