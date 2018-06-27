@@ -1606,6 +1606,7 @@ $(PLATFORM_BINARY_PACKAGE)/$(DXE_ARCHITECTURE)$(TARGET)/IA32/fTPMInitPeim.inf
       NetworkPkg/TlsDxe/TlsDxe.inf
       NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf
     !endif
+    MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 !endif
     MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
     MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
