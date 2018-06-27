@@ -2001,10 +2001,6 @@ PlatformBdsPolicyBehavior (
 
   case BOOT_ON_FLASH_UPDATE:
 
-    //
-    // Close boot script and install ready to lock
-    //
-    InstallReadyToLock();
 
     //
     // Boot with the specific configuration
@@ -2016,6 +2012,10 @@ PlatformBdsPolicyBehavior (
     ProcessCapsules ();
     DEBUG((DEBUG_INFO, "ProcessCapsules Done\n"));
 
+    //
+    // Close boot script and install ready to lock
+    //
+    InstallReadyToLock();
 
     BdsLibConnectAll ();
 
