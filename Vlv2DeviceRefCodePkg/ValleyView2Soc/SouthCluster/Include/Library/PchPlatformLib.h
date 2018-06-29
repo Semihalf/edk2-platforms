@@ -23,6 +23,8 @@ Copyright (c) 2012  - 2014, Intel Corporation. All rights reserved
 #ifndef _PCH_PLATFORM_LIB_H_
 #define _PCH_PLATFORM_LIB_H_
 
+#include <PchRegs/PchRegsPcu.h>
+
 ///
 /// Timeout value used when Sending / Receiving messages.
 /// NOTE: this must cover the longest possible wait time
@@ -83,6 +85,7 @@ PchStepping (
 ;
 
 BOOLEAN
+EFIAPI
 IsPchSupported (
   VOID
   )
@@ -118,12 +121,26 @@ PchAlternateAccessMode (
 **/
 ;
 UINT32
+EFIAPI
 DetectTurbotBoard (
 VOID
   );
 
 UINT32
+EFIAPI
 DetectGpioPinValue (
+VOID
+  );
+
+UINT32
+EFIAPI
+DetectGpioSus0PinValue (
+VOID
+  );
+
+UINT32
+EFIAPI
+DetectGpioSus1PinValue (
 VOID
   );
 

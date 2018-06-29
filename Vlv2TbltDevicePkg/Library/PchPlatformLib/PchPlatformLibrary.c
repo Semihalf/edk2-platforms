@@ -106,6 +106,7 @@ PchStepping (
 
 **/
 BOOLEAN
+EFIAPI
 IsPchSupported (
   VOID
   )
@@ -144,7 +145,8 @@ IsPchSupported (
   @retval  1    Turbot board 
 
 **/
-UINT32 
+UINT32
+EFIAPI
 DetectTurbotBoard (
   void
   )
@@ -198,6 +200,7 @@ DetectTurbotBoard (
 **/
 
 UINT32
+EFIAPI
 DetectGpioPinValue (
 VOID
   )
@@ -242,3 +245,95 @@ VOID
 
   return (GpioValue & 0x1);
 }
+
+/**
+  Detect if Physcial Presence Reject pin is pulled down. If it is pulled down,
+  it means user has rejected TPM request. 
+
+  @param   None
+
+  @retval  0    Pull Down.
+  @retval  1    Pull Up.
+
+**/
+
+UINT32
+EFIAPI
+DetectGpioSus1PinValue (
+VOID
+  )
+{
+  UINTN                            PciD31F0RegBase = 0;
+  UINT32                           GpioValue;
+  UINT32                           SSUSOffset = 0x2000;
+  UINT32                           IoBase = 0;
+  UINT32                           MmioConf0 = 0;
+  UINT32                           MmioPadval = 0;
+  UINT32                           PConf0Offset = 0x210; //GPIO_S5_1 pad_conf0 register offset
+  UINT32                           PValueOffset = 0x218; //GPIO_S5_1 pad_value register offset
+  
+  PciD31F0RegBase = MmPciAddress (0,
+                      0,
+                      PCI_DEVICE_NUMBER_PCH_LPC,
+                      PCI_FUNCTION_NUMBER_PCH_LPC,
+                      0
+                    );
+  IoBase = MmioRead32 (PciD31F0RegBase + R_PCH_LPC_IO_BASE) & B_PCH_LPC_IO_BASE_BAR;
+
+  //
+  // 0xFED0E1E0/0xFED0E0A8 is pad_Conf/pad_val register address of GPIO_S5_17
+  //
+  MmioConf0 = IoBase + SSUSOffset + PConf0Offset;
+  MmioPadval = IoBase + SSUSOffset + PValueOffset; 
+
+  GpioValue = MmioRead32 (MmioPadval);
+
+  return (GpioValue & 0x1);
+}
+
+/**
+  Detect if Physcial Presence Confirm pin is pulled down. If it is pulled down,
+  it means user has confirmed TPM request. 
+
+  @param   None
+
+  @retval  0    Pull Down.
+  @retval  1    Pull Up.
+
+**/
+
+UINT32
+EFIAPI
+DetectGpioSus0PinValue (
+VOID
+  )
+{
+  UINTN                            PciD31F0RegBase = 0;
+  UINT32                           GpioValue;
+  UINT32                           SSUSOffset = 0x2000;
+  UINT32                           IoBase = 0;
+  UINT32                           MmioConf0 = 0;
+  UINT32                           MmioPadval = 0;
+  UINT32                           PConf0Offset = 0x1E0; //GPIO_S5_2 pad_conf0 register offset
+  UINT32                           PValueOffset = 0x1E8; //GPIO_S5_2 pad_value register offset
+  
+  PciD31F0RegBase = MmPciAddress (0,
+                      0,
+                      PCI_DEVICE_NUMBER_PCH_LPC,
+                      PCI_FUNCTION_NUMBER_PCH_LPC,
+                      0
+                    );
+  IoBase = MmioRead32 (PciD31F0RegBase + R_PCH_LPC_IO_BASE) & B_PCH_LPC_IO_BASE_BAR;
+
+  //
+  // 0xFED0E1E0/0xFED0E0A8 is pad_Conf/pad_val register address of GPIO_S5_17
+  //
+  MmioConf0 = IoBase + SSUSOffset + PConf0Offset;
+  MmioPadval = IoBase + SSUSOffset + PValueOffset; 
+
+  GpioValue = MmioRead32 (MmioPadval);
+
+  return (GpioValue & 0x1);
+}
+
+
