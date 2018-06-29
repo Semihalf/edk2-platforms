@@ -267,9 +267,7 @@ VOID
   UINT32                           GpioValue;
   UINT32                           SSUSOffset = 0x2000;
   UINT32                           IoBase = 0;
-  UINT32                           MmioConf0 = 0;
   UINT32                           MmioPadval = 0;
-  UINT32                           PConf0Offset = 0x210; //GPIO_S5_1 pad_conf0 register offset
   UINT32                           PValueOffset = 0x218; //GPIO_S5_1 pad_value register offset
   
   PciD31F0RegBase = MmPciAddress (0,
@@ -283,7 +281,6 @@ VOID
   //
   // 0xFED0E1E0/0xFED0E0A8 is pad_Conf/pad_val register address of GPIO_S5_17
   //
-  MmioConf0 = IoBase + SSUSOffset + PConf0Offset;
   MmioPadval = IoBase + SSUSOffset + PValueOffset; 
 
   GpioValue = MmioRead32 (MmioPadval);
@@ -312,9 +309,7 @@ VOID
   UINT32                           GpioValue;
   UINT32                           SSUSOffset = 0x2000;
   UINT32                           IoBase = 0;
-  UINT32                           MmioConf0 = 0;
   UINT32                           MmioPadval = 0;
-  UINT32                           PConf0Offset = 0x1E0; //GPIO_S5_2 pad_conf0 register offset
   UINT32                           PValueOffset = 0x1E8; //GPIO_S5_2 pad_value register offset
   
   PciD31F0RegBase = MmPciAddress (0,
@@ -328,7 +323,6 @@ VOID
   //
   // 0xFED0E1E0/0xFED0E0A8 is pad_Conf/pad_val register address of GPIO_S5_17
   //
-  MmioConf0 = IoBase + SSUSOffset + PConf0Offset;
   MmioPadval = IoBase + SSUSOffset + PValueOffset; 
 
   GpioValue = MmioRead32 (MmioPadval);
