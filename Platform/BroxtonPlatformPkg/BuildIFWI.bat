@@ -5,6 +5,7 @@ SetLocal EnableDelayedExpansion EnableExtensions
 set thisscript=%0
 set exitCode=0
 set "Build_Flags= "
+set "Stitch_Flags= "
 set Arch=X64
 set SkipUsageFlag=FALSE
 set FabId=B
@@ -30,11 +31,6 @@ if /i "%~1"=="" goto Usage
 if /i "%~1"=="/?" goto Usage
 
 ::Build Flags
-if /i "%~1"=="/l" (
-    set Build_Flags=%Build_Flags% /l
-    shift
-    goto OptLoop
-)
 if /i "%~1" == "/c" (
     set Build_Flags=%Build_Flags% /c
     shift
@@ -143,6 +139,11 @@ if /i "%~1"=="/m" (
     goto OptLoop
 )
 
+if /i "%~1"=="/L" (
+    set Stitch_Flags=L
+    shift
+    goto OptLoop
+)
 
 :: Require 2 input parameters
 if "%~2"=="" (
@@ -191,8 +192,8 @@ echo.
 echo BIOS ROM input:  %BIOS_Name%
 echo.
 pushd %STITCH_PATH%
-   echo  - call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
-   call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId%
+   echo  - call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId% %Stitch_Flags%
+   call IFWIStitch_Simple.bat %WORKSPACE%\%STITCH_PATH%\%BIOS_Name% %FabId% %BoardId% %Stitch_Flags%
    @echo off
 popd
 if ErrorLevel 1 (

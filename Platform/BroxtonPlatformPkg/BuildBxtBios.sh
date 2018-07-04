@@ -30,6 +30,7 @@ exitCode=0
 Arch=X64
 FabId=B
 BoardId=MN
+SpiAccessControl=0
 
 ## Initialize all the build flags to FALSE
 ## depending on the cmd line input, some will be set to TRUE prior to building
@@ -125,6 +126,9 @@ for (( i=1; i<=$#; ))
       shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/A" ]; then
       FabId=A
+      shift
+    elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/L" ]; then
+      SpiAccessControl=1
       shift
     else
       break
@@ -394,10 +398,12 @@ if [ $BoardId == "MX" ]; then
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_B/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_B/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_B/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_B/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
   else
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_A/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_A/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_A/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Next/IFWI/FAB_A/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
   fi
 fi
 
@@ -406,6 +412,7 @@ if [ $BoardId == "LH" ]; then
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_D/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_D/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_D/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_D/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
   fi
 fi
 
@@ -419,9 +426,11 @@ cat FVIBBL.Fv > IBBL.Fv
 cat FVIBBM.Fv FSP_M.Fv > IBB.Fv
 
 cat FSP_S.Fv FVIBBR.Fv FVOBB.Fv FVOBBX.Fv > OBB.Fv
-
-cat SpiChunk1.bin IBBL.Fv IBB.Fv SpiChunk2.bin OBB.Fv NvStorage.Fv SpiChunk3.bin > $BIOS_Name"_GCC".bin
-
+if [ $SpiAccessControl == 0 ]; then
+  cat SpiChunk1.bin IBBL.Fv IBB.Fv SpiChunk2.bin OBB.Fv NvStorage.Fv SpiChunk3.bin > $BIOS_Name"_GCC".bin
+else
+  cat SpiChunk1SpiAccessControl.bin IBBL.Fv IBB.Fv SpiChunk2.bin OBB.Fv NvStorage.Fv SpiChunk3.bin > $BIOS_Name"_GCC".bin
+fi
 popd
 
 echo

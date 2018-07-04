@@ -62,6 +62,7 @@ echo        /MX    MinnowBoard 3 Module
 echo        /BG    Benson Glacier Board
 echo        /AG    Aurora Glacier Board
 echo        /LH    LeafHill CRB Board
+echo        /L     Flash region access permission for host CPU
 echo        PlatformName:  Broxton
 echo        BuildTargets:  Release, Debug
 

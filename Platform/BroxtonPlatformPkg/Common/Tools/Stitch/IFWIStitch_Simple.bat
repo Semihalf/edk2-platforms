@@ -30,6 +30,7 @@ if /i "%~1"=="Help" goto Usage
 set FspWrapper=FALSE
 set FabId=B
 set BoardId=MN
+set SpiAccessControl=0
 
 if /i "%~2"=="B" (
     set FabId=B
@@ -57,6 +58,10 @@ if /i "%~3"=="MX" (
 
 if /i "%~3"=="LH" (
     set BoardId=LH
+)
+
+if /i "%~4"=="L" (
+    set SpiAccessControl=1
 )
 
 :OptLoop1
@@ -126,6 +131,7 @@ set IFWI_Name=!IFWI_Prefix!_%IFWI_Suffix%
 echo.
 echo ------------------------------------------
 echo.
+echo %SpiAccessControl%
 echo   Generating SPI Image...
 mkdir BIOS_COMPONENTS
 copy /y /b %BIOS_Names%\IBBL.Fv .\BIOS_COMPONENTS
@@ -168,12 +174,22 @@ if %BoardId%==BG (
            copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk1.bin .
            copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk2.bin .
            copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk3.bin .
-           copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk1SpiAccessControl.bin .
+           if %SpiAccessControl% EQU 0 (
+             copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           ) else (
+             copy /y /b SpiChunk1SpiAccessControl.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           )
 ) else if %BoardId%==LH (
            copy /y /b ..\..\..\Board\LeafHill\IFWI\FAB_D\SpiChunk1.bin .
            copy /y /b ..\..\..\Board\LeafHill\IFWI\FAB_D\SpiChunk2.bin .
            copy /y /b ..\..\..\Board\LeafHill\IFWI\FAB_D\SpiChunk3.bin .
-           copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           copy /y /b ..\..\..\Board\LeafHill\IFWI\FAB_D\SpiChunk1SpiAccessControl.bin .
+           if %SpiAccessControl% EQU 0 (
+             copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           ) else (
+             copy /y /b SpiChunk1SpiAccessControl.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
+           )
 )
 move /y spi_out.bin %BIOS_ID%.bin  >> Stitching.log
 
