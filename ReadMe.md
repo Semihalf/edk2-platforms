@@ -32,7 +32,7 @@ edk2-non-osi repository
 	``git clone https://github.com/tianocore/edk2-non-osi.git -b devel-MinPlatform``
 
 FSP repository
-	``git clone https://github.com/IntelFsp/FSP.git -b KabylakeFsp0001``
+	``git clone https://github.com/IntelFsp/FSP.git -b Kabylake``
 
 ### Build
 
