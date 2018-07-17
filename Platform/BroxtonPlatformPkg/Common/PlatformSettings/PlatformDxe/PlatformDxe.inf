@@ -1,7 +1,7 @@
 ## @file
 #  Component description file for platform DXE driver
 #
-#  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -43,6 +43,7 @@
   IntelFrameworkModulePkg/IntelFrameworkModulePkg.dec
   BroxtonPlatformPkg/PlatformPkg.dec
   BroxtonSiPkg/BroxtonSiPkg.dec
+  BroxtonSiPkg/BroxtonSiPrivate.dec
   SecurityPkg/SecurityPkg.dec
 
 [LibraryClasses]
@@ -89,6 +90,8 @@
   gEfiImageSecurityDatabaseGuid
   gEfiPlatformInfoGuid
   gFdoModeEnabledHobGuid                        ## CONSUMES
+  gScPolicyHobGuid
+  gVtdConfigGuid
 
 [Protocols]
   gDxeSiPolicyProtocolGuid           # PRODUCES

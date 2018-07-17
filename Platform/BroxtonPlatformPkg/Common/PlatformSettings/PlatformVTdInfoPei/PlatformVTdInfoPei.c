@@ -15,12 +15,14 @@
 #include <PiPei.h>
 
 #include <Ppi/VtdInfo.h>
-
+#include <Ppi/ReadOnlyVariable2.h>
 #include <Library/PeiServicesLib.h>
 #include <Library/DebugLib.h>
 #include <Library/PciLib.h>
 #include <Library/IoLib.h>
+#include <Library/BaseMemoryLib.h>
 #include <Library/MemoryAllocationLib.h>
+#include <Guid/SetupVariable.h>
 
 
 #define R_SA_MCHBAR               (0x48)
@@ -320,7 +322,33 @@ PlatformVTdInfoInitialize (
 {
   EFI_STATUS               Status;
   EFI_PEI_PPI_DESCRIPTOR   *PpiDesc;
-  
+  UINTN                            VariableSize;
+  EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariableServices;
+  SYSTEM_CONFIGURATION             SystemConfiguration;
+
+  VariableSize = sizeof (SYSTEM_CONFIGURATION);
+  ZeroMem (&SystemConfiguration, sizeof (SYSTEM_CONFIGURATION));
+
+ Status = (*PeiServices)->LocatePpi (
+                    (CONST EFI_PEI_SERVICES **)PeiServices,
+                    &gEfiPeiReadOnlyVariable2PpiGuid,
+                    0,
+                    NULL,
+                    (VOID **) &VariableServices
+                    );
+
+  Status = VariableServices->GetVariable (
+                      VariableServices,
+                      PLATFORM_SETUP_VARIABLE_NAME,
+                      &gEfiSetupVariableGuid,
+                      NULL,
+                      &VariableSize,
+                      &SystemConfiguration
+                      );
+
+  if ((SystemConfiguration.VTdEnable == FALSE) || (SystemConfiguration.PrebootVTdEnable == FALSE) ) {
+    return EFI_SUCCESS;
+  }
   //
   // This driver assumes VT-d has been enabled by FSP.
   //

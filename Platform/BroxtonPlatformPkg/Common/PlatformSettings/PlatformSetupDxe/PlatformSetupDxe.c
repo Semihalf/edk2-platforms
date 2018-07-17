@@ -477,6 +477,11 @@ SystemConfigCallback (
         if (Private->FakeNvData.IpuEn == 1) {
           Private->FakeNvData.VTdEnable = 0;
         }
+
+        if (Private->FakeNvData.VTdEnable == 0) {
+          Private->FakeNvData.PrebootVTdEnable = 0;
+        }
+        
         //
         // Pass changed uncommitted data back to Form Browser
         //

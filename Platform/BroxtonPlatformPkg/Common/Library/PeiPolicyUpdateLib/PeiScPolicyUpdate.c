@@ -640,6 +640,8 @@ UpdatePeiScPolicy (
   }
 
   VtdConfig->VtdEnable = SystemConfiguration.VTdEnable;
+  VtdConfig->PrebootVTdEnable = SystemConfiguration.PrebootVTdEnable;
+  
   //
   // Power management Configuration
   //

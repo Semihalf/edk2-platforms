@@ -306,6 +306,12 @@
   INF MdeModulePkg/Universal/ReportStatusCodeRouter/Pei/ReportStatusCodeRouterPei.inf
 !endif
 
+  #
+  # VT-d for DMA Protection
+  #
+  INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformVTdInfoPei/PlatformVTdInfoPei.inf
+  INF IntelSiliconPkg/Feature/VTd/IntelVTdPmrPei/IntelVTdPmrPei.inf
+  
 [FV.FVIBBM]
   BlockSize          = $(FLASH_BLOCK_SIZE)
   FvBaseAddress      = 0xFEF45000
@@ -768,6 +774,8 @@ APRIORI DXE {
   # VT-d for MDA Protection
   #
   INF RuleOverride = ACPITABLE $(PLATFORM_SI_PACKAGE)/SouthCluster/AcpiTableDmar/AcpiTableDmar.inf
+  INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformVTdDxe/PlatformVTdDxe.inf
+  INF IntelSiliconPkg/Feature/VTd/IntelVTdDxe/IntelVTdDxe.inf
 
 [FV.FVOBB]
   BlockSize          = $(FLASH_BLOCK_SIZE)

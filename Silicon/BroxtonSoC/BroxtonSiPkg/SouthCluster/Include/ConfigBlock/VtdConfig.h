@@ -28,8 +28,9 @@ extern EFI_GUID gVtdConfigGuid;
 typedef struct {
   CONFIG_BLOCK_HEADER  Header;                      ///< Config Block Header
   UINT32               VtdEnable           :  1;    ///< 1: Enable, <b>0: Disable</b> VT-d
+  UINT32               PrebootVTdEnable    :  1;
   UINT8                x2ApicEnabled       :  1;
-  UINT32               RsvdBits            :  30;   ///< Reserved bits
+  UINT32               RsvdBits            :  29;   ///< Reserved bits
   UINT64               RmrrUsbBaseAddr;
   UINT64               RmrrUsbLimit;
 } SC_VTD_CONFIG;

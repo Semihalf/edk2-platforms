@@ -1,7 +1,7 @@
 /** @file
   Platform Initialization Driver.
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -38,6 +38,9 @@
 #include <Library/HeciMsgLib.h>
 #include <Ppi/SiPolicyPpi.h>
 #include <Library/GpioLib.h>
+#include <Private/Guid/ScPolicyHobGuid.h>
+#include <Library/HobLib.h>
+#include <Library/ConfigBlockLib.h>
 
 #if (ENBDT_PF_ENABLE == 1) //BXTP
   #include <Library/PlatformCmosLib.h>
@@ -496,6 +499,31 @@ InitPlatformBootMode (
 
 }
 
+VOID
+InitPlatformVtdDxePolicy (
+  VOID
+  )
+{
+  SC_POLICY_HOB         *ScPolicy;
+  EFI_PEI_HOB_POINTERS  HobPtr;
+  SC_VTD_CONFIG         *VtdConfig;
+  EFI_STATUS            Status;
+
+  //
+  // Get SC VT-d config block
+  //
+  HobPtr.Guid = GetFirstGuidHob (&gScPolicyHobGuid);
+  ASSERT (HobPtr.Guid != NULL);
+  ScPolicy = (SC_POLICY_HOB*) GET_GUID_HOB_DATA (HobPtr.Guid);
+  Status = GetConfigBlock ((VOID *) ScPolicy, &gVtdConfigGuid, (VOID *) &VtdConfig);
+  ASSERT_EFI_ERROR (Status);
+  DEBUG ((DEBUG_INFO, "Set ScPolicy VtdConfig PrebootVTdEnable.\n"));
+  
+  VtdConfig->PrebootVTdEnable = 0;
+  if ((BOOLEAN)(mSystemConfiguration.PrebootVTdEnable) == TRUE) {
+    VtdConfig->PrebootVTdEnable = 1;
+  }
+}
 
 VOID
 InitPlatformUsbPolicy (
@@ -839,6 +867,7 @@ InitializePlatform (
   IoWrite8 (PCAT_RTC_ADDRESS_REGISTER, RTC_ADDRESS_REGISTER_B);
   IoWrite8 (PCAT_RTC_DATA_REGISTER, IoRead8 (PCAT_RTC_DATA_REGISTER) & ~B_RTC_ALARM_INT_ENABLE);
 
+  InitPlatformVtdDxePolicy();
   InitPlatformIdePolicy ();
   InitPlatformUsbPolicy ();
   InitSioPlatformPolicy ();

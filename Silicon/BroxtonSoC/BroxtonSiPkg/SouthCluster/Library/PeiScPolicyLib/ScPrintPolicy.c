@@ -500,7 +500,7 @@ PrintVtdConfig (
 {
   DEBUG ((DEBUG_INFO, "------------------ Vtd Config ------------------\n"));
   DEBUG ((DEBUG_INFO, " VtdEnable    = %x\n", VtdConfig->VtdEnable));
-
+  DEBUG ((DEBUG_INFO, " PrebootVTdEnable = %x\n", VtdConfig->PrebootVTdEnable));
   return;
 }
 

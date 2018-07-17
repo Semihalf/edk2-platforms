@@ -542,10 +542,23 @@ UpdateDmarOnReadyToBoot (
   UINTN                           AcpiTableHandle;
   EFI_FIRMWARE_VOLUME2_PROTOCOL   *FwVol;
   EFI_ACPI_DESCRIPTION_HEADER     *DmarAcpiTable;
+  SC_POLICY_HOB                   *ScPolicy;
+  EFI_PEI_HOB_POINTERS            HobPtr;
+  SC_VTD_CONFIG                   *VtdConfig;
 
   AcpiTableProtocol = NULL;
   DmarAcpiTable = NULL;
   Index       = 0;
+
+  //
+  // Get SC VT-d config block
+  //
+  HobPtr.Guid = GetFirstGuidHob (&gScPolicyHobGuid);
+  ASSERT (HobPtr.Guid != NULL);
+  ScPolicy = (SC_POLICY_HOB*) GET_GUID_HOB_DATA (HobPtr.Guid);
+  Status = GetConfigBlock ((VOID *) ScPolicy, &gVtdConfigGuid, (VOID *) &VtdConfig);
+  ASSERT_EFI_ERROR (Status);
+  DEBUG ((DEBUG_INFO, "ScPolicy PrebootVTdEnable = %x\n", VtdConfig->PrebootVTdEnable));
 
   //
   // Locate ACPI support protocol
@@ -684,7 +697,13 @@ UpdateDmarOnReadyToBoot (
     DEBUG ((DEBUG_ERROR, "Error updating the DMAR ACPI table\n"));
   }
 
-  EfiEventGroupSignal (&gEfiAcpi10TableGuid);
+  //
+  // Only notify IntelVtdDxe driver to setup pre-boot VT-d if pre-boot VT-d has been enabled by BIOS Setup option.
+  //
+  if ((BOOLEAN)(VtdConfig->PrebootVTdEnable) == TRUE) {
+    DEBUG ((DEBUG_INFO, "VT-d signal gEfiAcpi10TableGuid.\n"));
+    EfiEventGroupSignal (&gEfiAcpi10TableGuid);
+  }
 }
 
 

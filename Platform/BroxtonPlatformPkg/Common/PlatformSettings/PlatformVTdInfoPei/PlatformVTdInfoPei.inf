@@ -36,6 +36,7 @@
   MdeModulePkg/MdeModulePkg.dec
   IntelSiliconPkg/IntelSiliconPkg.dec
   BroxtonSiPkg/BroxtonSiPkg.dec
+  BroxtonPlatformPkg/PlatformPkg.dec
 
 [LibraryClasses]
   PeimEntryPoint
@@ -43,9 +44,14 @@
   DebugLib
   PciLib
   IoLib
+  BaseMemoryLib
 
 [Ppis]
   gEdkiiVTdInfoPpiGuid         ## PRODUCES
+  gEfiPeiReadOnlyVariable2PpiGuid
+  
+[Guids]
+  gEfiSetupVariableGuid
 
 [Depex]
   gEfiPeiMasterBootModePpiGuid
