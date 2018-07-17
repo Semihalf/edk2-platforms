@@ -18,7 +18,7 @@
   #
   MdeModulePkg/Core/Dxe/DxeMain.inf {
     <PcdsPatchableInModule>
-      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000046
+      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000047
     <LibraryClasses>
   !if $(DXE_CRC32_SECTION_ENABLE) == TRUE
       NULL|MdeModulePkg/Library/DxeCrc32GuidedSectionExtractLib/DxeCrc32GuidedSectionExtractLib.inf
@@ -26,7 +26,6 @@
   !if $(LZMA_ENABLE) == TRUE
       NULL|IntelFrameworkModulePkg/Library/LzmaCustomDecompressLib/LzmaCustomDecompressLib.inf
   !endif
-     DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
   }
   MdeModulePkg/Universal/PCD/Dxe/Pcd.inf {
     <LibraryClasses>
@@ -544,4 +543,17 @@
   # Application
   #
   $(PLATFORM_PACKAGE_COMMON)/Application/FirmwareUpdate/FirmwareUpdate.inf
-
+  MdeModulePkg/Application/VariableInfo/VariableInfo.inf
+  
+  #
+  # VT-d for DMA Protection
+  #
+  $(PLATFORM_SI_PACKAGE)/SouthCluster/AcpiTableDmar/AcpiTableDmar.inf
+  $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformVTdDxe/PlatformVTdDxe.inf {
+    <PcdsPatchableInModule>
+      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x0
+  }
+  IntelSiliconPkg/Feature/VTd/IntelVTdDxe/IntelVTdDxe.inf {
+    <PcdsPatchableInModule>
+      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x0
+  }

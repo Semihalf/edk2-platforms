@@ -763,6 +763,12 @@ APRIORI DXE {
   #
   INF  $(PLATFORM_PACKAGE_COMMON)/Acpi/UsbTypeCDxe/UsbTypeCDxe.inf
 
+  
+  #
+  # VT-d for MDA Protection
+  #
+  INF RuleOverride = ACPITABLE $(PLATFORM_SI_PACKAGE)/SouthCluster/AcpiTableDmar/AcpiTableDmar.inf
+
 [FV.FVOBB]
   BlockSize          = $(FLASH_BLOCK_SIZE)
   FvAlignment        = 16

@@ -1,7 +1,7 @@
 /** @file
   ACPI Platform Driver.
 
-  Copyright (c) 2012 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -1081,7 +1081,7 @@ OnReadyToBoot (
   //
   // Update the DMAR Table
   //
-  UpdateDmarOnReadyToBoot (SetupVarBuffer.VTdEnable);
+  // UpdateDmarOnReadyToBoot (SetupVarBuffer.VTdEnable);
 
   //
   // Publish ACPI 1.0 or 2.0 Tables

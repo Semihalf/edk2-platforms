@@ -211,3 +211,9 @@
 !if $(SOURCE_DEBUG_ENABLE) == TRUE
   SourceLevelDebugPkg/DebugAgentPei/DebugAgentPei.inf
 !endif
+
+#
+# VT-d for DMA Protection
+#
+$(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformVTdInfoPei/PlatformVTdInfoPei.inf
+IntelSiliconPkg/Feature/VTd/IntelVTdPmrPei/IntelVTdPmrPei.inf

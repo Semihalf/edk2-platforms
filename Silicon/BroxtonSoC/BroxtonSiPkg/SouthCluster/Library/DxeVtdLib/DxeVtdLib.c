@@ -1,7 +1,7 @@
 /** @file
   This code provides a initialization of Intel VT-d (Virtualization Technology for Directed I/O).
 
-  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -527,66 +527,164 @@ UpdateDmarOnReadyToBoot (
   BOOLEAN   VtEnable
   )
 {
-  EFI_ACPI_DESCRIPTION_HEADER     *Table;
-  EFI_ACPI_SUPPORT_PROTOCOL       *AcpiSupport;
+  EFI_ACPI_TABLE_PROTOCOL         *AcpiTableProtocol;
   EFI_ACPI_TABLE_VERSION          Version;
   EFI_STATUS                      Status;
-  UINT8                           Index;
-  UINTN                           Handle;
+  UINT16                          Index;
+  EFI_HANDLE                      *HandleBuffer;
+  UINTN                           NumberOfHandles;
+  EFI_FV_FILETYPE                 FileType;
+  UINT32                          FvStatus;
+  EFI_FV_FILE_ATTRIBUTES          Attributes;
+  UINTN                           Size;
+  INTN                            Instance;
+  EFI_ACPI_COMMON_HEADER          *CurrentTable;
+  UINTN                           AcpiTableHandle;
+  EFI_FIRMWARE_VOLUME2_PROTOCOL   *FwVol;
+  EFI_ACPI_DESCRIPTION_HEADER     *DmarAcpiTable;
 
-  AcpiSupport = NULL;
+  AcpiTableProtocol = NULL;
+  DmarAcpiTable = NULL;
   Index       = 0;
 
   //
   // Locate ACPI support protocol
   //
-  Status = gBS->LocateProtocol (&gEfiAcpiSupportProtocolGuid, NULL, (VOID **) &AcpiSupport);
+  Status = gBS->LocateProtocol (&gEfiAcpiTableProtocolGuid, NULL, (VOID **) &AcpiTableProtocol);
   ASSERT_EFI_ERROR (Status);
 
-  //
-  // Find the DMAR ACPI table
-  //
-  do {
-    Status = AcpiSupport->GetAcpiTable(AcpiSupport, Index, (VOID **) &Table, &Version, &Handle);
-    if (Status == EFI_NOT_FOUND) {
+  ///
+  /// Locate protocol.
+  /// There is little chance we can't find an FV protocol
+  ///
+  Status = gBS->LocateHandleBuffer (
+                  ByProtocol,
+                  &gEfiFirmwareVolume2ProtocolGuid,
+                  NULL,
+                  &NumberOfHandles,
+                  &HandleBuffer
+                  );
+  ASSERT_EFI_ERROR (Status);
+
+  ///
+  /// Looking for FV with ACPI storage file
+  ///
+  for (Index = 0; Index < NumberOfHandles; Index++) {
+    ///
+    /// Get the protocol on this handle
+    /// This should not fail because of LocateHandleBuffer
+    ///
+    Status = gBS->HandleProtocol (
+                    HandleBuffer[Index],
+                    &gEfiFirmwareVolume2ProtocolGuid,
+                    (VOID **) &FwVol
+                    );
+    ASSERT_EFI_ERROR (Status);
+
+    ///
+    /// See if it has the ACPI storage file
+    ///
+    Size      = 0;
+    FvStatus  = 0;
+    Status = FwVol->ReadFile (
+                      FwVol,
+                      &gAcpiDmarTableFileGuid,
+                      NULL,
+                      &Size,
+                      &FileType,
+                      &Attributes,
+                      &FvStatus
+                      );
+
+    ///
+    /// If we found it, then we are done
+    ///
+    if (Status == EFI_SUCCESS) {
       break;
     }
-    ASSERT_EFI_ERROR(Status);
-    Index++;
-  } while (Table->Signature != EFI_ACPI_VTD_DMAR_TABLE_SIGNATURE);
+  }
+  ///
+  /// Our exit status is determined by the success of the previous operations
+  /// If the protocol was found, Instance already points to it.
+  ///
+  ///
+  /// Free any allocated buffers
+  ///
+  FreePool (HandleBuffer);
 
-  DEBUG ((DEBUG_INFO, "DMAR ACPI Table: Address = 0x%x, Version = %u, Handle = %u\n", Table, Version, Handle));
+  ///
+  /// Sanity check that we found our data file
+  ///
+  ASSERT (FwVol);
+  if (FwVol == NULL) {
+    return;
+  }
+  ///
+  /// By default, a table belongs in all ACPI table versions published.
+  ///
+  Version = EFI_ACPI_TABLE_VERSION_1_0B | EFI_ACPI_TABLE_VERSION_2_0 | EFI_ACPI_TABLE_VERSION_3_0;
 
-  if (VtEnable) {
-    //
-    // Update the DMAR table structure
-    //
-    DEBUG ((DEBUG_INFO, "DMAR ACPI table to be Installed \n"));
-    DmarTableUpdate (Table, &Version);
-  } else {
-    //
-    // Uninstall DMAR table
-    //
-    DEBUG ((DEBUG_INFO, "DMAR ACPI table to be Uninstalled \n"));
-    Table = NULL;
+  ///
+  /// Read tables from the storage file.
+  ///
+  Instance      = 0;
+  CurrentTable  = NULL;
+
+  while (Status == EFI_SUCCESS) {
+    Status = FwVol->ReadSection (
+                      FwVol,
+                      &gAcpiDmarTableFileGuid,
+                      EFI_SECTION_RAW,
+                      Instance,
+                      (VOID **) &CurrentTable,
+                      &Size,
+                      &FvStatus
+                      );
+
+    if (!EFI_ERROR (Status)) {
+      ///
+      /// Check the Signature ID to modify the table
+      ///
+      switch (((EFI_ACPI_DESCRIPTION_HEADER *) CurrentTable)->Signature) {
+
+        case EFI_ACPI_VTD_DMAR_TABLE_SIGNATURE:
+          DmarAcpiTable = (EFI_ACPI_DESCRIPTION_HEADER *) CurrentTable;
+          DmarTableUpdate (DmarAcpiTable, &Version);
+          break;
+
+        default:
+          break;
+      }
+      ///
+      /// Increment the instance
+      ///
+      Instance++;
+      CurrentTable = NULL;
+    }
+  }
+  ///
+  /// Update the VTD table in the ACPI tables.
+  ///
+  AcpiTableHandle = 0;
+  if (DmarAcpiTable != NULL) {
+    DEBUG ((DEBUG_INFO, "Installing DMAR ACPI table.\n"));
+    Status = AcpiTableProtocol->InstallAcpiTable (
+                          AcpiTableProtocol,
+                          DmarAcpiTable,
+                          DmarAcpiTable->Length,
+                          &AcpiTableHandle
+                          );
+    ASSERT_EFI_ERROR (Status);
   }
 
-  //
-  // Update the DMAR ACPI table
-  //
-  Status = AcpiSupport->SetAcpiTable (
-                          AcpiSupport,
-                          Table,
-                          TRUE,
-                          Version,
-                          &Handle
-                          );
 
   if (!EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_INFO, "DMAR ACPI table was successfully updated\n"));
+    DEBUG ((DEBUG_INFO, "DMAR ACPI table has been successfully installed and updated.\n"));
   } else {
     DEBUG ((DEBUG_ERROR, "Error updating the DMAR ACPI table\n"));
   }
+
+  EfiEventGroupSignal (&gEfiAcpi10TableGuid);
 }
 
 
@@ -626,6 +724,77 @@ UpdateRmrrUsbAddress (
   VtdConfig->RmrrUsbLimit = Address + VTD_RMRR_USB_LENGTH - 1;
 
   return;
+}
+
+
+/**
+  Notification function of ACPI Table change.
+
+  This is a notification function registered on ACPI Table change event.
+
+  @param  Event        Event whose notification function is being invoked.
+  @param  Context      Pointer to the notification function's context.
+
+**/
+VOID
+EFIAPI
+PciEnumerationCompleteCallback (
+  IN EFI_EVENT        Event,
+  IN VOID             *Context
+  )
+{
+  EFI_STATUS          Status;
+  SC_POLICY_HOB         *ScPolicy;
+  EFI_PEI_HOB_POINTERS  HobPtr;
+  SC_VTD_CONFIG         *VtdConfig;
+
+  gBS->CloseEvent (Event);
+
+  //
+  // Get SC VT-d config block
+  //
+  HobPtr.Guid = GetFirstGuidHob (&gScPolicyHobGuid);
+  ASSERT (HobPtr.Guid != NULL);
+  ScPolicy = (SC_POLICY_HOB*) GET_GUID_HOB_DATA (HobPtr.Guid);
+  Status = GetConfigBlock ((VOID *) ScPolicy, &gVtdConfigGuid, (VOID *) &VtdConfig);
+
+  if ((BOOLEAN)(UINT8)(VtdConfig->VtdEnable) == TRUE) {
+    UpdateDmarOnReadyToBoot ((BOOLEAN)(UINT8)(VtdConfig->VtdEnable));
+  }
+  
+}
+
+VOID
+InstallAcpiDmarTable (
+  BOOLEAN VtdEnable
+)
+{
+
+  VOID        *CallbackNotifyReg;
+  EFI_EVENT   CallbackEvent;
+  EFI_STATUS  Status;
+
+  Status = gBS->CreateEvent (
+                  EVT_NOTIFY_SIGNAL,
+                  TPL_CALLBACK,
+                  PciEnumerationCompleteCallback,
+                  NULL,
+                  &CallbackEvent
+                  );
+
+  ASSERT_EFI_ERROR (Status);
+
+
+  Status = gBS->RegisterProtocolNotify (
+                  &gEfiPciEnumerationCompleteProtocolGuid,
+                  CallbackEvent,
+                  &CallbackNotifyReg
+                  );
+  ASSERT_EFI_ERROR (Status);
+
+
+  return;
+
 }
 
 
@@ -676,6 +845,11 @@ VtdInit (
   //
   UpdateRmrrUsbAddress (VtdConfig);
 
+  //
+  // Register callback function for updating DMAR table.
+  //
+  InstallAcpiDmarTable ((BOOLEAN)(VtdConfig->VtdEnable));
+  
   DEBUG ((DEBUG_INFO, "VtdInit () - End\n"));
 
   return EFI_SUCCESS;

@@ -15,28 +15,16 @@
 
 [defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = AcpiTables
-  FILE_GUID                      = 7E374E25-8E01-4FEE-87F2-390C23C606CD
+  BASE_NAME                      = AcpiTableDmar
+  FILE_GUID                      = 6767ABFE-27D2-41B3-A084-B8A89824D35A
   MODULE_TYPE                    = USER_DEFINED
   VERSION_STRING                 = 1.0
   EDK_RELEASE_VERSION            = 0x00020000
   EFI_SPECIFICATION_VERSION      = 0x00020000
 
 [sources.common]
-  DSDT.ASL
-  Facs/Facs.aslc
-  Facp/Facp.aslc
-  Madt/Madt30.aslc
-  Mcfg/Mcfg.aslc
-  Hpet/Hpet.aslc
-  Lpit/Lpit.aslc
-  Lpit/Lpit.h
-  SsdtRtd3/RvpRtd3.asl
-  DBG2/DBG2.aslc
-  DBGP/DBGP.aslc
-  DptfAcpiTable/Dptf.asl
-  UsbTypeC/UsbTypeC.asl
-  Wsmt/Wsmt.act
+  Dmar.aslc
+  Dmar.h
 
 [Packages]
   MdePkg/MdePkg.dec

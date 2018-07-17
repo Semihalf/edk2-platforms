@@ -1,7 +1,7 @@
 ## @file
 #  Library for Intel VT-d.
 #
-#  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -33,10 +33,18 @@
 [Guids]
   gVtdConfigGuid
   gScPolicyHobGuid
+  gEfiAcpi10TableGuid
+  gEfiAcpi20TableGuid
 
 [Protocols]
   gEfiAcpiSupportProtocolGuid     ## CONSUMES
-
+  gEfiFirmwareVolume2ProtocolGuid ## CONSUMES
+  gEfiPciEnumerationCompleteProtocolGuid ## CONSUMES
+  
+[Guids]
+  gAcpiDmarTableFileGuid
+  gEfiAcpi10TableGuid
+  
 [Packages]
   MdePkg/MdePkg.dec
   BroxtonSiPkg/BroxtonSiPkg.dec
