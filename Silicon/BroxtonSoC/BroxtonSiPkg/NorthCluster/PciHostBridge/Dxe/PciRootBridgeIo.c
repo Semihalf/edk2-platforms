@@ -16,6 +16,8 @@
 #include "PciRootBridge.h"
 #include <IndustryStandard/Pci22.h>
 
+extern EDKII_IOMMU_PROTOCOL        *mIoMmuProtocol;
+
 typedef struct {
   EFI_ACPI_ADDRESS_SPACE_DESCRIPTOR SpaceDesp[TypeMax];
   EFI_ACPI_END_TAG_DESCRIPTOR       EndDesp;
@@ -1093,11 +1095,29 @@ RootBridgeIoMap (
   if (Operation < 0 || Operation >= EfiPciOperationMaximum) {
     return EFI_INVALID_PARAMETER;
   }
-  //
-  // Most PCAT like chipsets can not handle performing DMA above 4GB.
-  // If any part of the DMA transfer being mapped is above 4GB, then
-  // map the DMA transfer to a buffer below 4GB.
-  //
+
+  if (mIoMmuProtocol != NULL) {
+    //
+    // Clear 64bit support
+    //
+    if (Operation > EfiPciOperationBusMasterCommonBuffer) {
+      Operation = (EFI_PCI_ROOT_BRIDGE_IO_PROTOCOL_OPERATION) (Operation - EfiPciOperationBusMasterRead64);
+    }
+    return mIoMmuProtocol->Map (
+                               mIoMmuProtocol,
+                               (EDKII_IOMMU_OPERATION) Operation,
+                               HostAddress,
+                               NumberOfBytes,
+                               DeviceAddress,
+                               Mapping
+                               );
+  }
+
+  ///
+  /// Most PCAT like chipsets can not handle performing DMA above 4GB.
+  /// If any part of the DMA transfer being mapped is above 4GB, then
+  /// map the DMA transfer to a buffer below 4GB.
+  ///
   PhysicalAddress = (EFI_PHYSICAL_ADDRESS) (UINTN) HostAddress;
   if ((PhysicalAddress + *NumberOfBytes) > 0x100000000) {
     //
@@ -1186,10 +1206,17 @@ RootBridgeIoUnmap (
 {
   MAP_INFO    *MapInfo;
 
-  //
-  // See if the Map() operation associated with this Unmap() required a mapping buffer.
-  // If a mapping buffer was not required, then this function simply returns EFI_SUCCESS.
-  //
+  if (mIoMmuProtocol != NULL) {
+    return mIoMmuProtocol->Unmap (
+                               mIoMmuProtocol,
+                               Mapping
+                               );
+  }
+
+  ///
+  /// See if the Map() operation associated with this Unmap() required a mapping buffer.
+  /// If a mapping buffer was not required, then this function simply returns EFI_SUCCESS.
+  ///
   if (Mapping != NULL) {
     //
     // Get the MAP_INFO structure from Mapping
@@ -1277,6 +1304,22 @@ RootBridgeIoAllocateBuffer (
   if (MemoryType != EfiBootServicesData && MemoryType != EfiRuntimeServicesData) {
     return EFI_INVALID_PARAMETER;
   }
+
+  if (mIoMmuProtocol != NULL) {
+    //
+    // Clear DUAL_ADDRESS_CYCLE
+    //
+    Attributes &= ~((UINT64) EFI_PCI_ATTRIBUTE_DUAL_ADDRESS_CYCLE);
+    Status = mIoMmuProtocol->AllocateBuffer (
+                               mIoMmuProtocol,
+                               Type,
+                               MemoryType,
+                               Pages,
+                               HostAddress,
+                               Attributes
+                               );
+    return Status;
+  }
   //
   // Limit allocations to memory below 4GB
   //
@@ -1314,6 +1357,16 @@ RootBridgeIoFreeBuffer (
   OUT VOID                             *HostAddress
   )
 {
+  EFI_STATUS                Status;
+
+  if (mIoMmuProtocol != NULL) {
+    Status = mIoMmuProtocol->FreeBuffer (
+                               mIoMmuProtocol,
+                               Pages,
+                               HostAddress
+                               );
+    return Status;
+  }
   FreePages ((VOID *) HostAddress, Pages);
   return EFI_SUCCESS;
 }

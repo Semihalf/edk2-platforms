@@ -23,6 +23,7 @@
 #include <Protocol/PciHostBridgeResourceAllocation.h>
 #include <Protocol/Metronome.h>
 #include <Protocol/CpuIo.h>
+#include <Protocol/IoMmu.h>
 #include <Library/UefiLib.h>
 #include <Library/DevicePathLib.h>
 #include <Library/DebugLib.h>

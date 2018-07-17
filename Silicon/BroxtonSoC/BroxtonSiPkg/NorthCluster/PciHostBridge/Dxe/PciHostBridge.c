@@ -22,6 +22,9 @@
 #include <ScRegs/RegsUsb.h>
 #include <Library/SteppingLib.h>
 
+EDKII_IOMMU_PROTOCOL        *mIoMmuProtocol;
+EFI_EVENT                   mIoMmuEvent;
+VOID                        *mIoMmuRegistration;
 //
 // Support 64 K IO space
 //
@@ -74,6 +77,28 @@ static EFI_PCI_ROOT_BRIDGE_DEVICE_PATH    mEfiPciRootBridgeDevicePath[1][1] = {
 static PCI_ROOT_BRIDGE_RESOURCE_APPETURE  mResAppeture[1][1] = { {{ 0, 255, 0, 0xffffffff, 0, (1 << 16) } }};
 
 static EFI_HANDLE                         mDriverImageHandle;
+
+/**
+  Event notification that is fired when IOMMU protocol is installed.
+
+  @param  Event                 The Event that is being processed.
+  @param  Context               Event Context.
+
+**/
+VOID
+EFIAPI
+IoMmuProtocolCallback (
+  IN  EFI_EVENT       Event,
+  IN  VOID            *Context
+  )
+{
+  EFI_STATUS   Status;
+
+  Status = gBS->LocateProtocol (&gEdkiiIoMmuProtocolGuid, NULL, (VOID **)&mIoMmuProtocol);
+  if (!EFI_ERROR(Status)) {
+    gBS->CloseEvent (mIoMmuEvent);
+  }
+}
 
 //
 // Implementation
@@ -240,6 +265,15 @@ PciHostBridgeEntryPoint (
                        );
   ASSERT_EFI_ERROR (Status);
   DEBUG ((EFI_D_INFO, "Successfully changed memory attribute for PCIe\n"));
+
+
+  mIoMmuEvent = EfiCreateProtocolNotifyEvent (
+                  &gEdkiiIoMmuProtocolGuid,
+                  TPL_CALLBACK,
+                  IoMmuProtocolCallback,
+                  NULL,
+                  &mIoMmuRegistration
+                  );
 
   return EFI_SUCCESS;
 }
