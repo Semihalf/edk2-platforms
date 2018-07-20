@@ -91,7 +91,6 @@ for (( i=1; i<=$#; ))
       Build_Flags="$Build_Flags /A"
       shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/L" ]; then
-      FabId=A
       Build_Flags="$Build_Flags /L"
       shift
     else
