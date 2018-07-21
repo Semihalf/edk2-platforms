@@ -1,0 +1,62 @@
+## @file
+#  Library producing EEPROM structure data functionality.
+#
+#  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010017
+  BASE_NAME                      = EepromPeiLib
+  FILE_GUID                      = 2B91CA36-CDBC-4A3B-BDE7-404BA69C8C55
+  VERSION_STRING                 = 1.0
+  MODULE_TYPE                    = BASE
+  LIBRARY_CLASS                  = EepromPeiLib
+  CONSTRUCTOR                    = EepromInitConstructor
+
+[Depex]
+  TRUE
+
+[Guids]
+  gEepromVariableGuid
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  EepromDataLib
+  MemoryAllocationLib
+  PcdLib
+  PeiServicesLib
+  PrintLib
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  BroxtonPlatformPkg/PlatformPkg.dec
+  BroxtonSiPkg/BroxtonSiPkg.dec
+
+[Pcd]
+  gPlatformModuleTokenSpaceGuid.PcdEepromAutoPriority
+  gPlatformModuleTokenSpaceGuid.PcdEepromAddress
+  gPlatformModuleTokenSpaceGuid.PcdEepromBus
+  gPlatformModuleTokenSpaceGuid.PcdEepromInMemoryFlag
+  gPlatformModuleTokenSpaceGuid.PcdEepromLibraryValid
+  gPlatformModuleTokenSpaceGuid.PcdEepromMemoryPointer
+  gPlatformModuleTokenSpaceGuid.PcdEepromMemorySize
+
+[Ppis]
+  gEfiPeiReadOnlyVariable2PpiGuid               ## SOMETIMES_CONSUMES
+
+[Sources]
+  EepromLib.c
+  EepromLib.h
+  Pei/ValidateHashPei.c
