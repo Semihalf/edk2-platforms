@@ -50,6 +50,7 @@ For MinPurley
 4. Type "bld" to build Purley BIOS image, "bld release" for release build.
 
 The user can run FITC tool to build full image for flash (BIOS + ME + DESC). The user can also burn the BIOS image to highest part of flash region directly.
+The validated version of iasl compiler that can build MinPurley is 20180629. Older version may generate ACPI build errors. 
 
 ### Known limitations
 
