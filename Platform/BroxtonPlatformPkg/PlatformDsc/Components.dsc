@@ -501,12 +501,30 @@
 #  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
 #  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
 
-  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
-  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
-  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
-  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
-  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf
-  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
+  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
+  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
+  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
+  MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
+  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf  {
+   <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+  }
   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf {
     <BuildOptions>
     !if $(SIMICS_ENABLE) == TRUE
