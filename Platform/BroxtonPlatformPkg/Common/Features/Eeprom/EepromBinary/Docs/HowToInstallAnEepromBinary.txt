@@ -1,0 +1,26 @@
+## @file
+#  EEPROM Tools.
+#
+#  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+1. Generate the EEPROM binary.
+2. Copy the EEPROM binary and EepromApp.efi onto a USB drive.
+3. Insert the USB drive into the target system.
+4. Boot to the UEFI Shell.
+5. Change to the FS that contains the files.
+6. Use the following command to write the binary to the EEPROM:
+    EepromApp.efi -b # -a # -w 1 EepromBinary.bin
+    -b # indicates which I2C bus the EEPROM is hanging off of
+    -a # indicates what the 7-bit address is for the EEPROM
+    # should be replaced with the appropriate number in either
+      decimal (##) or hexidecimal (0x##) format

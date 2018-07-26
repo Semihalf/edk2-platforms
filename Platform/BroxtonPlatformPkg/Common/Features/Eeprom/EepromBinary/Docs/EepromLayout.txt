@@ -1,0 +1,306 @@
+## @file
+#  EEPROM Layout.
+#
+#  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+Version: 1.00
+Dated:   07-02-2018
+
+- The first 4KB of the EEPROM data MUST be accessible from I2C bus
+  gPlatformModuleTokenSpaceGuid.PcdEepromBus, address
+  gPlatformModuleTokenSpaceGuid.PcdEepromAddress and MUST contain, at a minimum, the
+  EEPROM Header structure, Board Info structure and EEPROM Map structure in their entirety.
+
+- These structures must be contiguous in the EEPROM part. That is one structure ends and
+  the next starts on the next paragraph aligned byte.
+
+- They must be paragraph aligned.
+
+- Unused space between structures will be zero filled.
+
+- They must start with the same 16 byte header structure so unknown structures can still
+  get "walked". (See Generic header.)
+
+- The EEPROM header structure must be first, the EepromMap is second, the BoardInfo is third,
+  the Signature structure must be last (if it exists), and the others may be in any order.
+
+- The EEPROM Map records must start at offset 0x00000000 and proceed in numeric order. In
+  other words, the records should describe the EEPROM data layout from beginning to end, in
+  order, without gaps.
+
+- Each EEPROM has it's own EEPROM map. The header will tell what I2C bus this EEPROM is on
+  and how many bytes are in each block. The map record will tell where each block is on the
+  I2C bus and where it goes in the EEPROM binary. This allows the binary to self-describe
+  the EEPROM layout scheme without the code requiring any knowledge of the EEPROM devices.
+
+- There may be multiple EEPROM devices on multiple buses. The master EEPROM map describes
+  the platform. Slave EEPROM maps would typically describe add-on cards. It is assumed that
+  if the first EEPROM map record block is invalid, then that entire EEPROM map is invalid.
+  In other words, if you can't find the $Eeprom$.Signature at offset 0x00, then that map is
+  invalid. Each map creates it's own image and is validated separately from each other. The
+  master image should only contain possible slave EEPROM maps with a single record that
+  points to the first 4KB for that possible slave image. The slave image will contain a full
+  EEPROM map to describe that EEPROM. It has yet to be determined how slave images are
+  integrated into the master image data.
+  [***Slave image support has not been coded yet.***]
+
+- If the structure header size or layout changes, then the structure VerMajor must be reved
+  and the VerMinor reset to 0x0000.
+
+- If the structure reserved bytes are used, then the structure VerMinor must be reved and
+  the VerMajor remains the same.
+
+- CRC32 is calculated by pre-filling in the CRC32 with 0x00. It includes all of the
+  structures in their entirety, including the Signature structure (if it exists) up to the
+  $PromSig.EepromSig, but not including the $PromSig.EepromSig element, as well as any blank
+  space between structures.
+
+- If a hash is used, the CRC32 must already be filled out before calculating. Everything up
+  to, but not including, the $PromSig.EepromSig is included in the hash. The hash is then
+  added to $PromSig.EepromSig. If a signed hash is indicated, then it is added after the
+  hash data.
+
+- The header "Length" field will contain the actual structure size and not account for any
+  unused space between structures.
+
+- GPIO data records are applied in order. IE - Start at the beginning and apply the records
+  in order.
+
+- If characters in a Signature[8] or a Label[16] don't fill the entire allocated length,
+  append string with $ as a sentinel value. IE - Signature[8] : "$uCode" shall be "$uCode$"
+
+- If there is a valid binary in both the FV and EEPROM, BIOS will use the following rules to determine
+  which one to load into memory and use:
+  - It is assumed that the FV and EEPROM binaries have both passed sanity checks.
+    - CRC32 passes
+    - Hash and signed hash passes if present
+  - If the following fields are not equal, then the FV is assumed to have priority:
+    - $BrdInfo.ManuName
+    - $BrdInfo.BrdName
+    - $BrdInfo.BoardId
+    - $BrdInfo.FabId
+    - $BrdInfo.EcId
+    - $BrdInfo.BoardType
+  - If the $BrdInfo test passes, then priority is given to the image with the greater $Eeprom$.Version.
+  - If the $BrdInfo test passes and $Eeprom$.Version are equal, then use the FV due to speed concerns.
+
+- Due to the size of OpenSSL, it is unavailable in PEI for verifying the hash and/or signature in
+  $PromSig. As such, the $PromSig data, if present, is stored in a NvStorage variable for use in PEI.
+  It will be checked and if needed, updated each boot in DXE. If it changes, then BIOS will reboot to
+  ensure that the PEI integrity check passes.
+
+
+Generic header structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$       "    | Marks the beginning of the structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x00000010    | Length in bytes of this structure
+
+EEPROM header structure
+  - This structure MUST be first
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$Eeprom$"    | Marks the beginning of the EEPROM Header structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x00000020    | Length in bytes of this structure
+ 0x10  | 0x04   | StructLen | 0x00000000    | Length of all of the structures including this one.
+ 0x14  | 0x04   | Crc32     | 0x00000000    | CRC32 of all of the structures
+ 0x18  | 0x04   | CrcLength | 0x00000000    | Length in bytes of what is in the CRC32
+ 0x1C  | 0x04   | Version   | 0x00000000    | Version of the binary
+ 0x20  | 0x10   | Reserved  | 0x00          | Reserved for future info
+
+ACPI Table structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$AcpiTbl"    | Marks the beginning of the ACPI Table structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | AcpiTbl   | 0x00          | ACPI tables
+
+Board info structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$BrdInfo"    | Marks the beginning of the Board Info structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x00000060    | Length in bytes of this structure
+ 0x10  | 0x10   | ManuName  | "           " | Board manufacturer name
+ 0x20  | 0x10   | BrdName   | "           " | Board name
+ 0x30  | 0x10   | BrdSerial | "           " | Board Serial number
+ 0x40  | 0x04   | BoardId   | 0x00000000    | Board ID
+ 0x44  | 0x04   | FabId     | 0x00000000    | Fab ID
+ 0x48  | 0x04   | EcId      | 0x00000000    | EC ID
+ 0x4C  | 0x01   | BoardType | 0x00          | Type of board
+                                            | - 0x00 = Main board, aka "RedBox"
+                                            | - 0x01 = Plug-in board
+ 0x4D  | 0x13   | Reserved  | 0x00          | Reserved for future info
+
+EEPROM Map structure
+  - This structure MUST be right after the EEPROM header structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$EeprMap"    | Marks the beginning of the EEPROM Map structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | PartLabel | ""            | Part label
+ 0x20  | 0x04   | BlkLength | 0x0000????    | block length in bytes of this EEPROM device
+ 0x24  | 0x02   | PageSize  | 0x0000        | size of page in bytes of this EEPROM device
+ 0x26  | 0x04   | PartSize  | 0x00000000    | Part size in bytes of this EEPROM device
+ 0x2A  | 0x01   | BusNumber | 0x00          | I2C Device Bus
+ 0x2B  | 0x01   | Master    | 0x00          | Set to 1 if EEPROM is master, 0 otherwise
+ 0x2C  | 0x01   | Speed     | 0x00          | The speed the EEPROM part should run at
+       |        |           |               |  1 - 100KHz (Standard speed)
+       |        |           |               |  2 - 400KHz (Fast speed)
+       |        |           |               |  3 - 3.4MHz (High speed)
+ 0x2D  | 0x03   | Reserved  | 0x00          | Reserved for future info
+ 0x30  | ????   | MapData   | 0x00          | EEPROM Map records
+
+   EEPROM Map record
+   Offset | Length |   Label   | Default value | Description
+   =======+========+===========+===============+==============================================
+    0x00  | 0x10   | MapLabel  | ""            | String label for this Map record
+    0x10  | 0x04   | Length    | 0x00000020    | Length of this block
+    0x14  | 0x04   | Offset    | 0x00000000    | Offset into EEPROM address space
+    0x18  | 0x01   | Address   | 0x00          | I2C Device address, 7-bit
+    0x19  | 0x07   | Reserved  | 0x0000        | Reserved for future info
+
+GPIO data structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$GpioDat"    | Marks the beginning of the GPIO data structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | GpioData  | 0x00          | GPIO data records
+
+   GPIO data record
+   Offset | Length |   Label   | Default value | Description
+   =======+========+===========+===============+==============================================
+    0x00  | 0x10   | GpioLabel | ""            | String label for this GPIO record
+    0x10  | 0x04   | Length    | 0x00000030    | Length of this block
+    0x14  | 0x04   | Offset    | 0x00000000    | Offset into GPIO address space
+    0x18  | 0x04   | AndData   | 0x00000000    | Read the value from the Offset and do a logical
+          |        |           |               |   AND using AndData
+    0x1C  | 0x04   | OrData    | 0x00000000    | Do a logical OR against the value from AndData
+          |        |           |               |   and write it back to Offset
+    0x20  | 0x01   | DataSize  | 0x00          | Size of data in bytes
+          |        |           |               | - 0x01 -  8-bits
+          |        |           |               | - 0x02 - 16-bits
+          |        |           |               | - 0x04 - 32-bits
+    0x21  | 0x01   | DataType  | 0x00          | Type of access method for the data
+          |        |           |               | - 0x00 = IO
+          |        |           |               | - 0x01 = MMIO
+          |        |           |               | - 0x02 = PCI
+          |        |           |               | - 0x03 = PCIe
+          |        |           |               | - 0x04 = PAD Offset
+    0x22  | 0x0E   | Reserved  | 0x0000        | Reserved for future info
+
+HDA Codec structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$HdCodec"    | Marks the beginning of the HDA Codec structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | HdaCodec  | 0x00          | HDA Codec verb table
+
+Logo structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$Logo$"      | Marks the beginning of the Logo structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | LogoData  | 0x00          | Logo data
+
+Memory SPD structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$MemCnfg"    | Marks the beginning of the memory SPD structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x02   | SpdSlot   | 0x0000        | Which slot this SPD data belongs to in bit flag format
+       |        |           |               | - 0x0001 - This is for Slot 1 only
+       |        |           |               | - 0x0005 - This is for Slot 1 & 3 only
+ 0x12  | 0x0E   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | SpdData   | 0x00          | SPD data for memory
+
+NIC info structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$MacInfo"    | Marks the beginning of the NIC Info structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x08   | NicId     | ""            | String to describe this NIC
+ 0x18  | 0x06   | MacAddr   | 0x00000000000 | MAC Address
+ 0x1E  | 0x02   | NicNum    | 0x0000        | NIC number that this MAC belongs to
+ 0x20  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x30  | ????   | NicData   | 0x00          | This space is reserved for anything else that
+       |        |           |               |   the NIC might need, but is not necessarily
+       |        |           |               |   required to hold anything and may be 0 length
+
+Signature structure
+  - This structure is only to be appended to a final EEPROM image by a signing tool.
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$PromSig"    | Marks the beginning of the Signature Header structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x02   | HashType  | 0x0000        | Which hash type was used
+       |        |           |               | - 0x0000 = None    - 0x00 byte hash
+       |        |           |               | - 0x0001 = MD5     - 0x10 byte hash [signable]
+       |        |           |               | - 0x0002 = SHA-1   - 0x14 byte hash [signable]
+       |        |           |               | - 0x0003 = SHA-256 - 0x20 byte hash [signable]
+       |        |           |               | - 0x0004 = SHA-384 - 0x30 byte hash
+       |        |           |               | - 0x0005 = SHA-512 - 0x40 byte hash
+       |        |           |               | - 0x8000 flag to indicate this is a signed hash
+       |        |           |               |   - It is assumed that the BIOS knows how to verify
+       |        |           |               |     the signed hash.
+ 0x12  | 0x0E   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | EepromSig | 0x00          | Hash and possibly the signed hash of all data structures.
+       |        |           |               |   Includes this structure up to EepromSig, but not
+       |        |           |               |   including it, and CRC32 already calculated.
+       |        |           |               |   If signed hash flag is set, then the signed hash is
+       |        |           |               |     appended after the hash.
+
+uCode data structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$uCode$"     | Marks the beginning of the uCode data structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | UcodeData | 0x00          | uCode data
+
+Video structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$Video$"     | Marks the beginning of the Video structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | VideoData | 0x00          | Video data
