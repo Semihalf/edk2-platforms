@@ -1,7 +1,7 @@
 /** @file
   Register Definitions for I2C Library.
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -30,7 +30,7 @@
 **/
 EFI_STATUS
 ProgramPciLpssI2C (
-  VOID
+  IN UINT8        BusNo
   );
 
 /**

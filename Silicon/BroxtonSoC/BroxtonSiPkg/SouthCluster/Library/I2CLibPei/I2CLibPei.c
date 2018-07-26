@@ -1,7 +1,7 @@
 /** @file
   Pei library for I2C bus driver.
 
-  Copyright (c) 2014 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -114,7 +114,7 @@ IntelI2CPeiLibConstructor (
 **/
 EFI_STATUS
 ProgramPciLpssI2C (
-  VOID
+  IN UINT8        BusNo
   )
 {
   UINT32       PmcBase;
@@ -387,7 +387,7 @@ I2CInit (
     //
     // Need to enable the I2C PCI device
     //
-    ProgramPciLpssI2C ();
+    ProgramPciLpssI2C (BusNo);
 
     I2CBaseAddress = (UINT32) (LPSS_I2C0_TMP_BAR0 + (BusNo * LPSS_I2C_TMP_BAR0_DELTA));
     if (DebugFlag) DEBUG ((DEBUG_INFO, "I2CBaseAddress = 0x%x \n", I2CBaseAddress));

@@ -106,9 +106,9 @@
 #define    R_IC_CLR_START_DET                (0x64) ///< Clear START_DET interrupt
 #define    R_IC_CLR_GEN_CALL                 (0x68) ///< Clear GEN_CALL interrupt
 #define    R_IC_ENABLE                       (0x6C) ///< I2C Enable
+#define    I2C_ENABLE_ABORT                  BIT1
+#define    I2C_ENABLE_ENABLE                 BIT0
 #define    R_IC_STATUS                       (0x70) ///< I2C Status
-
-#define    R_IC_SDA_HOLD                     (0x7C) ///< I2C IC_DEFAULT_SDA_HOLD//16bits
 
 #define    STAT_MST_ACTIVITY                 BIT5  ///< Master FSM Activity Status.
 #define    STAT_RFF                          BIT4  ///< RX FIFO is completely full
@@ -118,7 +118,24 @@
 
 #define    R_IC_TXFLR                        (0x74) ///< Transmit FIFO Level Register
 #define    R_IC_RXFLR                        (0x78) ///< Receive FIFO Level Register
+#define    R_IC_SDA_HOLD                     (0x7C) ///< I2C IC_DEFAULT_SDA_HOLD//16bits
 #define    R_IC_TX_ABRT_SOURCE               (0x80) ///< I2C Transmit Abort Status Register
+#define    I2C_ABRT_SLVRD_INTX               BIT15
+#define    I2C_ABRT_SLV_ARBLOST              BIT14
+#define    I2C_ABRT_SLVFLUSH_TXFIFO          BIT13
+#define    I2C_ARB_LOST                      BIT12
+#define    I2C_ABRT_MASTER_DIS               BIT11
+#define    I2C_ABRT_10B_RD_NORSTRT           BIT10
+#define    I2C_ABRT_SBYTE_NORSTRT            BIT9
+#define    I2C_ABRT_HS_NORSTRT               BIT8
+#define    I2C_ABRT_SBYTE_ACKDET             BIT7
+#define    I2C_ABRT_HS_ACKDET                BIT6
+#define    I2C_ABRT_GCALL_READ               BIT5
+#define    I2C_ABRT_GCALL_NOACK              BIT4
+#define    I2C_ABRT_TXDATA_NOACK             BIT3
+#define    I2C_ABRT_10ADDR2_NOACK            BIT2
+#define    I2C_ABRT_10ADDR1_NOACK            BIT1
+#define    I2C_ABRT_7B_ADDR_NOACK            BIT0
 #define    R_IC_SLV_DATA_NACK_ONLY           (0x84) ///< Generate SLV_DATA_NACK Register
 #define    R_IC_DMA_CR                       (0x88) ///< DMA Control Register
 #define    R_IC_DMA_TDLR                     (0x8C) ///< DMA Transmit Data Level
@@ -130,7 +147,15 @@
 #define    R_IC_COMP_VERSION                 (0xF8) ///< Component Version ID
 #define    R_IC_COMP_TYPE                    (0xFC) ///< Component Type
 
-#define    R_IC_CLK_GATE                     (0xC0) ///< Clock Gate
+#define    R_IC_RESET_CONTROL                (0x204) ///< Reset control
+#define    I2C_RESET_CONTROLLER              (BIT0 | BIT1)
+#define    I2C_RESET_IDMA                    (BIT2)
+
+#define    R_IC_CLK_GATE                     (0x238) ///< Clock Gate
+#define    I2C_FORCE_CLOCK_ON                (BIT0 | BIT1)
+#define    I2C_FORCE_CLOCK_OFF               (BIT1)
+#define    I2C_FORCE_IDMA_CLOCK_ON           (BIT2 | BIT3)
+#define    I2C_FORCE_IDMA_CLOCK_OFF          (BIT3)
 
 #define    I2C_SS_SCL_HCNT_VALUE_100M         0x1DD
 #define    I2C_SS_SCL_LCNT_VALUE_100M         0x1E4
