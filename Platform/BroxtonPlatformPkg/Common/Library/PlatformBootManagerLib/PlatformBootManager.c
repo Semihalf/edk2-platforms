@@ -858,6 +858,7 @@ PlatformBootManagerBeforeConsole (
   //
   // Fill ConIn/ConOut in Full Configuration boot mode.
   //
+  mBootMode = GetBootModeHob();
   DEBUG ((DEBUG_ERROR, "PlatformBootManagerInit - %x\n", mBootMode));
   if (mBootMode == BOOT_WITH_FULL_CONFIGURATION ||
       mBootMode == BOOT_WITH_DEFAULT_SETTINGS ||
