@@ -272,35 +272,34 @@ CreateFvBootOption (
 
   EfiInitializeFwVolDevicepathNode (&FileNode, FileGuid);
 
-  if (!CompareGuid (&gUefiShellFileGuid, FileGuid)) {
+  Status = gBS->HandleProtocol (
+                  gImageHandle,
+                  &gEfiLoadedImageProtocolGuid,
+                  (VOID **) &LoadedImage
+                  );
+  if (!EFI_ERROR (Status)) {
     Status = gBS->HandleProtocol (
-                    gImageHandle,
-                    &gEfiLoadedImageProtocolGuid,
-                    (VOID **) &LoadedImage
+                    LoadedImage->DeviceHandle,
+                    &gEfiFirmwareVolume2ProtocolGuid,
+                    (VOID **) &Fv
                     );
     if (!EFI_ERROR (Status)) {
-      Status = gBS->HandleProtocol (
-                      LoadedImage->DeviceHandle,
-                      &gEfiFirmwareVolume2ProtocolGuid,
-                      (VOID **) &Fv
+      Buffer  = NULL;
+      Size    = 0;
+      Status  = Fv->ReadSection (
+                      Fv,
+                      FileGuid,
+                      EFI_SECTION_PE32,
+                      0,
+                      &Buffer,
+                      &Size,
+                      &AuthenticationStatus
                       );
-      if (!EFI_ERROR (Status)) {
-        Buffer  = NULL;
-        Size    = 0;
-        Status  = Fv->ReadSection (
-                        Fv,
-                        FileGuid,
-                        EFI_SECTION_PE32,
-                        0,
-                        &Buffer,
-                        &Size,
-                        &AuthenticationStatus
-                        );
-        if (Buffer != NULL) {
-          FreePool (Buffer);
-        }
+      if (Buffer != NULL) {
+        FreePool (Buffer);
       }
     }
+  }
     if (EFI_ERROR (Status)) {
       return EFI_NOT_FOUND;
     }
@@ -309,12 +308,6 @@ CreateFvBootOption (
                    DevicePathFromHandle (LoadedImage->DeviceHandle),
                    (EFI_DEVICE_PATH_PROTOCOL *) &FileNode
                    );
-  } else {
-    DevicePath = AppendDevicePathNode (
-                   BdsCreateShellDevicePath (),
-                   (EFI_DEVICE_PATH_PROTOCOL *) &FileNode
-                   );
-  }
 
   Status = EfiBootManagerInitializeLoadOption (
              BootOption,
