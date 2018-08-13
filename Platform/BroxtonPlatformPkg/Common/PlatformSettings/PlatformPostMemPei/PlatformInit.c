@@ -1,7 +1,7 @@
 /** @file
   Do platform specific PEI stage initializations.
 
-  Copyright (c) 2012 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -90,6 +90,7 @@ TpmPolicyInit (
 
   if ((IsPttEnabled) && (SystemConfiguration->TPM == TPM_PTT)) {
     if (SystemConfiguration->PttSuppressCommandSend == 1) {
+      Size = sizeof (gEfiTpmDeviceInstanceNoneGuid);
       PcdSetPtrS (PcdTpmInstanceGuid, &Size, &gEfiTpmDeviceInstanceNoneGuid);
       DEBUG ((DEBUG_ERROR, "BIOS will send no further commands to PTT.\n"));
     } else {
