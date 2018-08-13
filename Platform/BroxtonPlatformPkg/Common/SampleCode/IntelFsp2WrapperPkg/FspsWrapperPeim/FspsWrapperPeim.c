@@ -3,7 +3,7 @@
   register TemporaryRamDonePpi to call TempRamExit API, and register MemoryDiscoveredPpi
   notify to call FspSiliconInit API.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -228,6 +228,10 @@ PeiMasterBootModeNotify (
   // Copy default FSP-S UPD data from Flash
   //
   FspsHeaderPtr = (FSP_INFO_HEADER *) FspFindFspHeader (PcdGet32 (PcdFspsBaseAddress));
+  if (FspsHeaderPtr == NULL) {
+    DEBUG ((DEBUG_ERROR, "Fail to get Fsps Header\n"));
+    return EFI_UNSUPPORTED;
+  }
   FspsHeaderPtr->ImageBase = (UINT32) (PcdGet32 (PcdFspsBaseAddress));
 
   FspsUpdDataPtr = (FSPS_UPD_COMMON *) AllocateZeroPool ((UINTN) FspsHeaderPtr->CfgRegionSize);

@@ -418,13 +418,15 @@ AddSmbiosManuCallback (
   //
   //ForType1InputData->SystemUuid.Data1 = PcdGet32 (PcdProductSerialNumber);
   //ForType1InputData->SystemUuid.Data4[0] = PcdGet8 (PcdEmmcManufacturerId);
-  ForType1InputData->SystemUuid.Data1 = (UINT32)MacAddressString [0] + (((UINT32)MacAddressString [1]) << 16);
-  ForType1InputData->SystemUuid.Data2 = (UINT16)MacAddressString [2];
-  ForType1InputData->SystemUuid.Data3 = (UINT16)MacAddressString [3];
-  ForType1InputData->SystemUuid.Data4[0] = (UINT8)MacAddressString [4];
-  ForType1InputData->SystemUuid.Data4[1] = (UINT8)(MacAddressString [4] >> 8);
-  ForType1InputData->SystemUuid.Data4[2] = (UINT8)MacAddressString [5];
-  ForType1InputData->SystemUuid.Data4[3] = (UINT8)(MacAddressString [5] >> 8);
+  if ( MacAddressString != NULL) {
+    ForType1InputData->SystemUuid.Data1 = (UINT32)MacAddressString [0] + (((UINT32)MacAddressString [1]) << 16);
+    ForType1InputData->SystemUuid.Data2 = (UINT16)MacAddressString [2];
+    ForType1InputData->SystemUuid.Data3 = (UINT16)MacAddressString [3];
+    ForType1InputData->SystemUuid.Data4[0] = (UINT8)MacAddressString [4];
+    ForType1InputData->SystemUuid.Data4[1] = (UINT8)(MacAddressString [4] >> 8);
+    ForType1InputData->SystemUuid.Data4[2] = (UINT8)MacAddressString [5];
+    ForType1InputData->SystemUuid.Data4[3] = (UINT8)(MacAddressString [5] >> 8);
+ }
   
   CopyMem ((UINT8 *) (&SmbiosRecord->Uuid),&ForType1InputData->SystemUuid,16);
 

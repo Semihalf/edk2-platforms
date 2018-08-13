@@ -1,7 +1,7 @@
 /** @file
   Smbios Processor Information Driver which produces Smbios type 4 and 7 tables.
 
-  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -276,6 +276,11 @@ InstallSmbiosCacheInfo (
       // Allocate full record, including fixed data region, and string buffer region.
       //
       SmbiosType7Record = (SMBIOS_TABLE_TYPE7 *) AllocateZeroPool (sizeof (SMBIOS_TABLE_TYPE7) + StringBufferLength);
+      if (SmbiosType7Record == NULL) {
+        DEBUG ((DEBUG_ERROR, "Fail to allocate memory\n"));
+        return EFI_OUT_OF_RESOURCES;
+      }
+
       SmbiosStringBufferPtr = ((UINT8 *) SmbiosType7Record) + sizeof (SMBIOS_TABLE_TYPE7);
 
       //
