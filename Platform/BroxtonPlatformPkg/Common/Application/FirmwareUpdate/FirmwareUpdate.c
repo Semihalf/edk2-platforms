@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2007  - 2017, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2007  - 2018, Intel Corporation. All rights reserved.<BR>
                                                                                    
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.  
@@ -287,7 +287,7 @@ ParseCommandLine (
         PrintToken (STRING_TOKEN (STR_FWUPDATE_PATH_ERROR), HiiHandle, Argv[Index]);
         return EFI_INVALID_PARAMETER;
       }
-      StrCpy (mInputData.FileName, Argv[Index]);
+      StrCpyS (mInputData.FileName,sizeof (mInputData.FileName) / sizeof (CHAR16), Argv[Index]);
       mInputData.UpdateFromFile = TRUE;
     }
   }
