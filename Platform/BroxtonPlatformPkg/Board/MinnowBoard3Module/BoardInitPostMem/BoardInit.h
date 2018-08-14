@@ -2,7 +2,7 @@
   GPIO setting for CherryView.
   This file includes package header files, library classes.
 
-  Copyright (c) 2013 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2013 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -14,8 +14,8 @@
 
 **/
 
-#ifndef _MINNOW3_NEXT_BOARDINIT_H_
-#define _MINNOW3_NEXT_BOARDINIT_H_
+#ifndef _MINNOW3_MODULE_BOARDINIT_H_
+#define _MINNOW3_MODULE_BOARDINIT_H_
 
 #include <PiPei.h>
 #include <Library/IoLib.h>
@@ -24,7 +24,7 @@
 #include <Guid/PlatformInfo_Aplk.h>
 #include <ScRegs/RegsPcu.h>
 
-VOID Minnow3NextGpioTest (VOID);
+VOID Minnow3ModuleGpioTest (VOID);
 
 #endif
 

@@ -1,7 +1,7 @@
 /** @file
   This file does Multiplatform initialization.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -25,11 +25,11 @@
 
 **/
 VOID
-Minnow3NextGpioGroupTierInit (
+Minnow3ModuleGpioGroupTierInit (
   IN EFI_PLATFORM_INFO_HOB  *PlatformInfoHob
   )
 {
-  DEBUG ((DEBUG_INFO, "Minnow3NextGpioGroupTierInit Start\n"));
+  DEBUG ((DEBUG_INFO, "Minnow3ModuleGpioGroupTierInit Start\n"));
   switch (PlatformInfoHob->BoardId) {
     default:
       GpioSetGroupToGpeDwX (GPIO_BXTP_GROUP_7,  // map group 7 to GPE 0 ~ 31
@@ -44,7 +44,7 @@ Minnow3NextGpioGroupTierInit (
 
 EFI_STATUS
 EFIAPI
-Minnow3NextMultiPlatformInfoInit (
+Minnow3ModuleMultiPlatformInfoInit (
   IN CONST EFI_PEI_SERVICES     **PeiServices,
   IN OUT EFI_PLATFORM_INFO_HOB  *PlatformInfoHob
   )
@@ -110,30 +110,35 @@ Minnow3NextMultiPlatformInfoInit (
   //
   // Get GPIO table
   //
-  Status = Minnow3NextMultiPlatformGpioTableInit (PeiServices, PlatformInfoHob);
+  Status = Minnow3ModuleMultiPlatformGpioTableInit (PeiServices, PlatformInfoHob);
   ASSERT_EFI_ERROR (Status);
 
   //
   // Program GPIO
   //
-  Status = Minnow3NextMultiPlatformGpioProgram (PeiServices, PlatformInfoHob);
+  Status = Minnow3ModuleMultiPlatformGpioProgram (PeiServices, PlatformInfoHob);
 
   if (GetBxtSeries () == BxtP) {
-    Minnow3NextGpioGroupTierInit (PlatformInfoHob);
+    Minnow3ModuleGpioGroupTierInit (PlatformInfoHob);
   }
 
   //
   // Update OemId
   //
-  Status = Minnow3NextInitializeBoardOemId (PeiServices, PlatformInfoHob);
-  Status = Minnow3NextInitializeBoardSsidSvid (PeiServices, PlatformInfoHob);
+  Status = Minnow3ModuleInitializeBoardOemId (PeiServices, PlatformInfoHob);
+  Status = Minnow3ModuleInitializeBoardSsidSvid (PeiServices, PlatformInfoHob);
+
+  //
+  // TypeC MUX AUX mode
+  //
+  MB3SetupTypecMuxAux ();
 
   return EFI_SUCCESS;
 }
 
 
 EFI_STATUS
-Minnow3NextInitializeBoardOemId (
+Minnow3ModuleInitializeBoardOemId (
   IN CONST EFI_PEI_SERVICES       **PeiServices,
   IN EFI_PLATFORM_INFO_HOB        *PlatformInfoHob
   )
@@ -158,7 +163,7 @@ Minnow3NextInitializeBoardOemId (
 }
 
 EFI_STATUS
-Minnow3NextInitializeBoardSsidSvid (
+Minnow3ModuleInitializeBoardSsidSvid (
   IN CONST EFI_PEI_SERVICES       **PeiServices,
   IN EFI_PLATFORM_INFO_HOB        *PlatformInfoHob
   )

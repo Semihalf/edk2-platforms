@@ -2,7 +2,7 @@
 #  Board detected module for Intel(R) Atom(TM) x5 Processor Series.
 #  It will detect the board ID.
 #
-#  Copyright (c) 2014 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -16,11 +16,11 @@
 
 [Defines]
   INF_VERSION                    = 0x00010017
-  BASE_NAME                      = MinnowBoard3NextInitPostMem
+  BASE_NAME                      = MinnowBoard3ModuleInitPostMem
   FILE_GUID                      = 39D9CFF9-6187-4984-903F-34FF2840EB91
   VERSION_STRING                 = 1.0
   MODULE_TYPE                    = PEIM
-  CONSTRUCTOR                    = MinnowBoard3NextInitConstructor
+  CONSTRUCTOR                    = MinnowBoard3ModuleInitConstructor
 
 [Sources]
   BoardInit.c
@@ -30,11 +30,14 @@
   PlatformInfoHob.c
   BoardGpios.c
   BoardGpios.h
+  TypeC.c
+  TypeC.h
 
 [LibraryClasses]
   PeiServicesLib
   PcdLib
   DebugLib
+  EepromPlatformLib
   HeciMsgLib
   HobLib
   IoLib
@@ -72,11 +75,10 @@
   gEfiTpmDeviceInstanceTpm12Guid
   gEfiTpmDeviceInstanceTpm20DtpmGuid
   gTpmDeviceInstanceTpm20PttPtpGuid
-  gPeiMinnow3NextVbtGuid
+  gPeiMinnow3ModuleVbtGuid
 
 [Ppis]
   gBoardPostMemInitStartGuid
   gBoardPostMemInitDoneGuid
   gEfiPeiReadOnlyVariable2PpiGuid
   gSeCfTPMPolicyPpiGuid
-

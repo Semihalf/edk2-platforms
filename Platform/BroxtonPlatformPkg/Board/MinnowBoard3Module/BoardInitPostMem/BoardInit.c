@@ -1,7 +1,7 @@
 /** @file
   Board Init driver.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -25,20 +25,20 @@
 
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextPostMemInitCallback (
+MinnowBoard3ModulePostMemInitCallback (
   IN EFI_PEI_SERVICES     **PeiServices,
   IN EFI_PEI_NOTIFY_DESCRIPTOR  *NotifyDescriptor,
   IN VOID                       *Ppi
   );
 
 
-static EFI_PEI_NOTIFY_DESCRIPTOR mMinnowBoard3NextPostMemNotifyList = {
+static EFI_PEI_NOTIFY_DESCRIPTOR mMinnowBoard3ModulePostMemNotifyList = {
   (EFI_PEI_PPI_DESCRIPTOR_NOTIFY_CALLBACK | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
   &gBoardPostMemInitStartGuid,
-  MinnowBoard3NextPostMemInitCallback
+  MinnowBoard3ModulePostMemInitCallback
 };
 
-static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3NextPostMemDonePpi = {
+static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3ModulePostMemDonePpi = {
   (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
   &gBoardPostMemInitDoneGuid,
   NULL
@@ -46,7 +46,7 @@ static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3NextPostMemDonePpi = {
 
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextPostMemInitCallback (
+MinnowBoard3ModulePostMemInitCallback (
   IN EFI_PEI_SERVICES           **PeiServices,
   IN EFI_PEI_NOTIFY_DESCRIPTOR  *NotifyDescriptor,
   IN VOID                       *Ppi
@@ -97,7 +97,7 @@ MinnowBoard3NextPostMemInitCallback (
   BoardId = (UINT8) PcdGet8 (PcdBoardId);
   FabId = (UINT8) PcdGet8 (PcdFabId);
   DEBUG ((EFI_D_INFO,  "PostMemInit: BoardId == 0x%X, FabId == 0x%X\n", BoardId, FabId));
-  if (BoardId != (UINT8) BOARD_ID_MINNOW_NEXT) {
+  if (BoardId != (UINT8) BOARD_ID_MINNOW_MODULE) {
     DEBUG ((EFI_D_INFO,  "Minnow Board 3 Next Post Mem Init callback: Skip\n"));
     return EFI_SUCCESS;
   }
@@ -107,7 +107,7 @@ MinnowBoard3NextPostMemInitCallback (
   //
   // Set init function PCD
   //
-  PcdSet64 (PcdBoardPostMemInitFunc, (UINT64) (UINTN) Minnow3NextMultiPlatformInfoInit);
+  PcdSet64 (PcdBoardPostMemInitFunc, (UINT64) (UINTN) Minnow3ModuleMultiPlatformInfoInit);
 
   //
   // Set Reset Type according to different Board
@@ -119,7 +119,7 @@ MinnowBoard3NextPostMemInitCallback (
   // Board specific VBT table.
   //
   BufferSize = sizeof (EFI_GUID);
-  PcdSetPtr(PcdBoardVbtFileGuid, &BufferSize, (UINT8 *)&gPeiMinnow3NextVbtGuid);
+  PcdSetPtr(PcdBoardVbtFileGuid, &BufferSize, (UINT8 *)&gPeiMinnow3ModuleVbtGuid);
     
   //
   // Set PcdeMMCHostMaxSpeed
@@ -138,7 +138,7 @@ MinnowBoard3NextPostMemInitCallback (
   //
   // Install a flag signalling a board's post mem init is done
   //
-  Status = PeiServicesInstallPpi (&mMinnowBoard3NextPostMemDonePpi);
+  Status = PeiServicesInstallPpi (&mMinnowBoard3ModulePostMemDonePpi);
 
   return EFI_SUCCESS;
 }
@@ -154,17 +154,17 @@ MinnowBoard3NextPostMemInitCallback (
 **/
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextInitConstructor (
+MinnowBoard3ModuleInitConstructor (
   IN       EFI_PEI_FILE_HANDLE  FileHandle,
   IN CONST EFI_PEI_SERVICES     **PeiServices
   )
 {
   EFI_STATUS                        Status;
 
-  DEBUG ((EFI_D_INFO,  "MinnowBoard3Next Post Mem Init Constructor \n"));
+  DEBUG ((EFI_D_INFO,  "MinnowBoard3Module Post Mem Init Constructor \n"));
 
   DEBUG ((EFI_D_INFO,  "Notify on Post Mem Init Start PPI \n"));
-  Status = PeiServicesNotifyPpi (&mMinnowBoard3NextPostMemNotifyList);
+  Status = PeiServicesNotifyPpi (&mMinnowBoard3ModulePostMemNotifyList);
 
   return Status;
 }

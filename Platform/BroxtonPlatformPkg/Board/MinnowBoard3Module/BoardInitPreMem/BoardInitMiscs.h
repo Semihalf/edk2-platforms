@@ -2,7 +2,7 @@
   Multiplatform initialization header file.
   This file includes package header files, library classes.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -14,22 +14,22 @@
 
 **/
 
-#ifndef _MINNOW_NEXT_MULTIPLATFORM_LIB_H_
-#define _MINNOW_NEXT_MULTIPLATFORM_LIB_H_
+#ifndef _MINNOW_MODULE_MULTIPLATFORM_LIB_H_
+#define _MINNOW_MODULE_MULTIPLATFORM_LIB_H_
 
+#include "PlatformId.h"
 #include <BoardFunctionsPei.h>
 #include <Guid/SetupVariable.h>
 #include <Library/IoLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PeiDxeSmmMmPciLib.h>
 #include <SaRegs.h>
-#include "PlatformId.h"
 #include "MmrcData.h"
 
 
-extern UPDATE_FSPM_UPD_FUNC             mMb3NUpdateFspmUpdPtr;
-extern DRAM_CREATE_POLICY_DEFAULTS_FUNC mMb3NDramCreatePolicyDefaultsPtr;
-extern UPDATE_PCIE_CONFIG_FUNC          mMb3NUpdatePcieConfigPtr;
+extern UPDATE_FSPM_UPD_FUNC             mMb3MUpdateFspmUpdPtr;
+extern DRAM_CREATE_POLICY_DEFAULTS_FUNC mMb3MDramCreatePolicyDefaultsPtr;
+extern UPDATE_PCIE_CONFIG_FUNC          mMb3MUpdatePcieConfigPtr;
 
 typedef struct {
   UINT8    DeviceWidth[DRAM_POLICY_NUMBER_CHANNELS];
@@ -41,14 +41,14 @@ typedef struct {
 
 EFI_STATUS
 EFIAPI
-Mb3NUpdateFspmUpd (
+Mb3MUpdateFspmUpd (
   IN CONST EFI_PEI_SERVICES  **PeiServices,
   IN FSPM_UPD                *FspUpdRgn
   );
 
 EFI_STATUS
 EFIAPI
-Mb3NDramCreatePolicyDefaults (
+Mb3MDramCreatePolicyDefaults (
   IN  EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariablePpi,
   OUT DRAM_POLICY_PPI                  **DramPolicyPpi,
   IN  IAFWDramConfig                   *DramConfigData,
@@ -59,7 +59,7 @@ Mb3NDramCreatePolicyDefaults (
 
 EFI_STATUS
 EFIAPI
-Mb3NUpdatePcieConfig (
+Mb3MUpdatePcieConfig (
   IN  SC_PCIE_PREMEM_CONFIG  *PciePreMemConfig
   );
 

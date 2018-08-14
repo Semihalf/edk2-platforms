@@ -2,7 +2,7 @@
   The internal header file includes the common header files, defines
   internal structure and functions used by ImageVerificationLib.
 
-  Copyright (c) 2009 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -14,8 +14,8 @@
 
 **/
 
-#ifndef __MINNOW3_NEXT_BOARD_INIT_DXE_H__
-#define __MINNOW3_NEXT_BOARD_INIT_DXE_H__
+#ifndef __MINNOW3_MODULE_BOARD_INIT_DXE_H__
+#define __MINNOW3_MODULE_BOARD_INIT_DXE_H__
 
 #include <BoardFunctionsDxe.h>
 #include <Library/UefiDriverEntryPoint.h>
@@ -30,7 +30,7 @@
 
 CHAR16*
 EFIAPI
-Mb3NGetBoardName (
+Mb3MGetBoardName (
   IN  UINT8                   BoardId
   );
 

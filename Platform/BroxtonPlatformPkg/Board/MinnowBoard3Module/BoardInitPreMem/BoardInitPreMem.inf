@@ -2,7 +2,7 @@
 #  Board detected module for Intel(R) Atom(TM) x5 Processor Series.
 #  It will detect the board ID.
 #
-#  Copyright (c) 2014 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -16,11 +16,11 @@
 
 [Defines]
   INF_VERSION                    = 0x00010017
-  BASE_NAME                      = MinnowBoard3NextInitPreMem
+  BASE_NAME                      = MinnowBoard3ModuleInitPreMem
   FILE_GUID                      = A40B6929-FF79-4CF4-8B4E-40554390EC71
   VERSION_STRING                 = 1.0
   MODULE_TYPE                    = PEIM
-  CONSTRUCTOR                    = MinnowBoard3NextInitConstructor
+  CONSTRUCTOR                    = MinnowBoard3ModuleInitConstructor
 
 [Sources]
   BoardInit.c

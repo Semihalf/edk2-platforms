@@ -1,7 +1,7 @@
 /** @file
   Board Init driver.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -26,22 +26,22 @@
 
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextPreMemInit (
+MinnowBoard3ModulePreMemInit (
   IN CONST EFI_PEI_SERVICES     **PeiServices,
   IN PEI_BOARD_PRE_MEM_INIT_PPI *This
   );
 
-static PEI_BOARD_PRE_MEM_INIT_PPI mMinnow3NextPreMemInitPpiInstance = {
-  MinnowBoard3NextPreMemInit
+static PEI_BOARD_PRE_MEM_INIT_PPI mMinnow3ModulePreMemInitPpiInstance = {
+  MinnowBoard3ModulePreMemInit
 };
 
-static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3NextPreMemInitPpi = {
+static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3ModulePreMemInitPpi = {
   (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
   &gBoardPreMemInitPpiGuid,
-  &mMinnow3NextPreMemInitPpiInstance
+  &mMinnow3ModulePreMemInitPpiInstance
 };
 
-static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3NextPreMemInitDonePpi = {
+static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3ModulePreMemInitDonePpi = {
   (EFI_PEI_PPI_DESCRIPTOR_PPI | EFI_PEI_PPI_DESCRIPTOR_TERMINATE_LIST),
   &gBoardPreMemInitDoneGuid,
   NULL
@@ -49,7 +49,7 @@ static EFI_PEI_PPI_DESCRIPTOR mMinnowBoard3NextPreMemInitDonePpi = {
 
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextPreMemInit (
+MinnowBoard3ModulePreMemInit (
   IN CONST EFI_PEI_SERVICES     **PeiServices,
   IN PEI_BOARD_PRE_MEM_INIT_PPI *This
   )
@@ -76,9 +76,9 @@ MinnowBoard3NextPreMemInit (
   //
   // Pre Mem Board Init
   //
-  Status = Minnow3NextGetEmbeddedBoardIdFabId (PeiServices, &BoardId, &FabId);
+  Status = Minnow3ModuleGetEmbeddedBoardIdFabId (PeiServices, &BoardId, &FabId);
 
-  if (BoardId != (UINT8) BOARD_ID_MINNOW_NEXT) {
+  if (BoardId != (UINT8) BOARD_ID_MINNOW_MODULE) {
 
     return EFI_SUCCESS;
   }
@@ -86,22 +86,22 @@ MinnowBoard3NextPreMemInit (
 
   PcdSet8 (PcdBoardId, BoardId);
   PcdSet8 (PcdFabId,   FabId);
-  
+
   //
   //PcdSet8 (PcdSerialIoUartNumber, 0);
   //
-  
+
   //
   // Set board specific function as dynamic PCD to be called by common platform code
   //
-  PcdSet64 (PcdUpdateFspmUpdFunc,            (UINT64) (UINTN) mMb3NUpdateFspmUpdPtr);
-  PcdSet64 (PcdDramCreatePolicyDefaultsFunc, (UINT64) (UINTN) mMb3NDramCreatePolicyDefaultsPtr);
-  PcdSet64 (PcdUpdatePcieConfigFunc,         (UINT64) (UINTN) mMb3NUpdatePcieConfigPtr);
+  PcdSet64 (PcdUpdateFspmUpdFunc,            (UINT64) (UINTN) mMb3MUpdateFspmUpdPtr);
+  PcdSet64 (PcdDramCreatePolicyDefaultsFunc, (UINT64) (UINTN) mMb3MDramCreatePolicyDefaultsPtr);
+  PcdSet64 (PcdUpdatePcieConfigFunc,         (UINT64) (UINTN) mMb3MUpdatePcieConfigPtr);
 
   //
   // Install a flag signalling a board is detected and pre-mem init is done
   //
-  Status = PeiServicesInstallPpi (&mMinnowBoard3NextPreMemInitDonePpi);
+  Status = PeiServicesInstallPpi (&mMinnowBoard3ModulePreMemInitDonePpi);
 
   return EFI_SUCCESS;
 }
@@ -117,7 +117,7 @@ MinnowBoard3NextPreMemInit (
 **/
 EFI_STATUS
 EFIAPI
-MinnowBoard3NextInitConstructor (
+MinnowBoard3ModuleInitConstructor (
   IN       EFI_PEI_FILE_HANDLE  FileHandle,
   IN CONST EFI_PEI_SERVICES     **PeiServices
   )
@@ -127,7 +127,7 @@ MinnowBoard3NextInitConstructor (
   EFI_PEI_PPI_DESCRIPTOR           *PeiPpiDescriptor;
   UINTN                            Instance;
 
-  DEBUG ((EFI_D_INFO,  "MinnowBoard3Next Pre Mem Init Constructor \n"));
+  DEBUG ((EFI_D_INFO,  "MinnowBoard3Module Pre Mem Init Constructor \n"));
 
   Status = PeiServicesLocatePpi (
              &gBoardPreMemInitDoneGuid,
@@ -146,7 +146,7 @@ MinnowBoard3NextInitConstructor (
     DEBUG ((EFI_D_INFO,  "Reinstall Pre Mem Init Done PPI\n"));
     Status = PeiServicesReInstallPpi (
                PeiPpiDescriptor,
-               &mMinnowBoard3NextPreMemInitDonePpi
+               &mMinnowBoard3ModulePreMemInitDonePpi
                );
     ASSERT_EFI_ERROR (Status);
 
@@ -173,7 +173,7 @@ MinnowBoard3NextInitConstructor (
       DEBUG ((EFI_D_INFO,  "Reinstall Pre Mem Init PPI\n"));
       Status = PeiServicesReInstallPpi (
                  PeiPpiDescriptor,
-                 &mMinnowBoard3NextPreMemInitPpi
+                 &mMinnowBoard3ModulePreMemInitPpi
                  );
       ASSERT_EFI_ERROR (Status);
 
@@ -183,7 +183,7 @@ MinnowBoard3NextInitConstructor (
   }
 
   DEBUG ((EFI_D_INFO,  "Install Pre Mem Init PPI \n"));
-  Status = PeiServicesInstallPpi (&mMinnowBoard3NextPreMemInitPpi);
+  Status = PeiServicesInstallPpi (&mMinnowBoard3ModulePreMemInitPpi);
   return Status;
 }
 

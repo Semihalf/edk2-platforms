@@ -1,7 +1,7 @@
 /** @file
   GPIO setting for Broxton.
 
-  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -13,17 +13,17 @@
 
 **/
 
-#ifndef _MINNOW3_NEXT_BOARDGPIOS_H_
-#define _MINNOW3_NEXT_BOARDGPIOS_H_
+#ifndef _MINNOW3_MODULE_BOARDGPIOS_H_
+#define _MINNOW3_MODULE_BOARDGPIOS_H_
 
 #include <PiPei.h>
-#include"ChipsetAccess.h"
-#include"PlatformBaseAddresses.h"
+#include "ChipsetAccess.h"
+#include "PlatformBaseAddresses.h"
 #include "BoardInitMiscs.h"
-#include <Library/IoLib.h>
-#include <Library/HobLib.h>
-#include <Guid/PlatformInfo_Aplk.h>
 #include <Library/GpioLib.h>
+#include <Library/HobLib.h>
+#include <Library/IoLib.h>
+#include <Guid/PlatformInfo_Aplk.h>
 
 /**
 GPIO input pin interrupt type configuration:
@@ -58,7 +58,7 @@ Wake_Enabled:
 //
 // North Community
 //
-BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_N[] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_N[] =
 {
   //
   //                  Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,  Wake_Enabled ,Term_H_L,Inverted, GPI_ROUT, IOSstae, IOSTerm,     MMIO_Offset  , Community
@@ -146,7 +146,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_N[] =
 //
 // North West Community
 //
-BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_NW [] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_NW [] =
 {
   //
   //                 Group Pin#:  pad_name,     PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger, Wake_Enabled, Term_H_L,Inverted,GPI_ROUT,IOSstae,  IOSTerm,     MMIO_Offset    ,  Community
@@ -233,7 +233,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_NW [] =
 //
 // West Community
 //
-BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_W [] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_W [] =
 {
   //
   //                   Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L, Inverted,GPI_ROUT,IOSstae, IOSTerm,     MMIO_Offset    , Community
@@ -290,7 +290,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_W [] =
  //
  // South West Community
  //
-BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_SW[]=
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_SW[]=
 {
   //
   //                  Group Pin#:  pad_name,       PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L,Inverted,GPI_ROUT,IOSstae,  IOSTerm,   MMIO_Offset     ,  Community
@@ -338,7 +338,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_SW[]=
   BXT_GPIO_PAD_CONF(L"LPC_FRAMEB",                 M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x0150, SOUTHWEST), // LPC_FRAME#
 };
 
-BXT_GPIO_PAD_INIT  mMinnow3Next_GpioInitData_FAB2[] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_FAB2[] =
 {
   //
   //                  Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,  Wake_Enabled ,Term_H_L,Inverted, GPI_ROUT, IOSstae, IOSTerm,     MMIO_Offset  ,Community

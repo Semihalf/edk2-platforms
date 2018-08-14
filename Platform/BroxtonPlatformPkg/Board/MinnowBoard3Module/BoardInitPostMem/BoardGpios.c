@@ -1,7 +1,7 @@
 /** @file
   Gpio setting for multiplatform.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -14,10 +14,7 @@
 **/
 
 #include "BoardGpios.h"
-#include <Library/GpioLib.h>
-#include <Library/SteppingLib.h>
-#include <Library/TimerLib.h>
-
+#include <Library/EepromPlatformLib.h>
 
 /**
   Returns the Correct GPIO table for Mobile/Desktop respectively.
@@ -31,12 +28,12 @@
 
 **/
 EFI_STATUS
-Minnow3NextMultiPlatformGpioTableInit (
+Minnow3ModuleMultiPlatformGpioTableInit (
   IN CONST EFI_PEI_SERVICES     **PeiServices,
   IN EFI_PLATFORM_INFO_HOB      *PlatformInfoHob
   )
 {
-  DEBUG ((DEBUG_INFO, "Minnow3NextMultiPlatformGpioTableInit()...\n"));
+  DEBUG ((DEBUG_INFO, "%a()...\n", __FUNCTION__));
   DEBUG ((DEBUG_INFO, "PlatformInfoHob->BoardId: 0x%02X\n", PlatformInfoHob->BoardId));
 
   //
@@ -45,18 +42,18 @@ Minnow3NextMultiPlatformGpioTableInit (
   switch (PlatformInfoHob->BoardId) {
     case BOARD_ID_LFH_CRB:
     case BOARD_ID_MINNOW:
-    case BOARD_ID_MINNOW_NEXT:
+    case BOARD_ID_MINNOW_MODULE:
     case BOARD_ID_BENSON:
-      PlatformInfoHob->PlatformGpioSetting_SW = &mMinnow3Next_GpioInitData_SW[0];
-      PlatformInfoHob->PlatformGpioSetting_W  = &mMinnow3Next_GpioInitData_W[0];
-      PlatformInfoHob->PlatformGpioSetting_NW = &mMinnow3Next_GpioInitData_NW[0];
-      PlatformInfoHob->PlatformGpioSetting_N  = &mMinnow3Next_GpioInitData_N[0];
+      PlatformInfoHob->PlatformGpioSetting_SW = &mMinnow3Module_GpioInitData_SW[0];
+      PlatformInfoHob->PlatformGpioSetting_W  = &mMinnow3Module_GpioInitData_W[0];
+      PlatformInfoHob->PlatformGpioSetting_NW = &mMinnow3Module_GpioInitData_NW[0];
+      PlatformInfoHob->PlatformGpioSetting_N  = &mMinnow3Module_GpioInitData_N[0];
       break;
     default:
-      PlatformInfoHob->PlatformGpioSetting_SW = &mMinnow3Next_GpioInitData_SW[0];
-      PlatformInfoHob->PlatformGpioSetting_W  = &mMinnow3Next_GpioInitData_W[0];
-      PlatformInfoHob->PlatformGpioSetting_NW = &mMinnow3Next_GpioInitData_NW[0];
-      PlatformInfoHob->PlatformGpioSetting_N  = &mMinnow3Next_GpioInitData_N[0];
+      PlatformInfoHob->PlatformGpioSetting_SW = &mMinnow3Module_GpioInitData_SW[0];
+      PlatformInfoHob->PlatformGpioSetting_W  = &mMinnow3Module_GpioInitData_W[0];
+      PlatformInfoHob->PlatformGpioSetting_NW = &mMinnow3Module_GpioInitData_NW[0];
+      PlatformInfoHob->PlatformGpioSetting_N  = &mMinnow3Module_GpioInitData_N[0];
       break;
   }
 
@@ -69,11 +66,11 @@ Minnow3NextMultiPlatformGpioTableInit (
 
 **/
 VOID
-Minnow3NextSetGpioPadCfgLock (
+Minnow3ModuleSetGpioPadCfgLock (
   VOID
   )
 {
-  UINT32 Data32;
+  UINT32   Data32;
 
   Data32 = 0;
 
@@ -118,15 +115,15 @@ Minnow3NextSetGpioPadCfgLock (
   // SMBus
   // Set SMBus GPIO PAD_CFG.PADRSTCFG to Powergood
   //
-  Data32 = GpioPadRead (SW_SMB_ALERTB);
+  Data32  = GpioPadRead (SW_SMB_ALERTB);
   Data32 &= ~(BIT31 | BIT30);
   GpioPadWrite (SW_SMB_ALERTB, Data32);
 
-  Data32 = GpioPadRead (SW_SMB_CLK);
+  Data32  = GpioPadRead (SW_SMB_CLK);
   Data32 &= ~(BIT31 | BIT30);
   GpioPadWrite (SW_SMB_CLK, Data32);
 
-  Data32 = GpioPadRead (SW_SMB_DATA);
+  Data32  = GpioPadRead (SW_SMB_DATA);
   Data32 &= ~(BIT31 | BIT30);
   GpioPadWrite (SW_SMB_DATA, Data32);
 
@@ -135,9 +132,8 @@ Minnow3NextSetGpioPadCfgLock (
   GpioLockPadCfg (SW_SMB_DATA);
 }
 
-
 /**
-  Returns the Correct GPIO table for Mobile/Desktop respectively.
+  Programs the GPIOs according to the platform.
   Before call it, make sure PlatformInfoHob->BoardId&PlatformFlavor is get correctly.
 
   @param[in] PeiServices          General purpose services available to every PEIM.
@@ -148,7 +144,7 @@ Minnow3NextSetGpioPadCfgLock (
 
 **/
 EFI_STATUS
-Minnow3NextMultiPlatformGpioProgram (
+Minnow3ModuleMultiPlatformGpioProgram (
   IN CONST EFI_PEI_SERVICES     **PeiServices,
   IN EFI_PLATFORM_INFO_HOB      *PlatformInfoHob
   )
@@ -157,93 +153,62 @@ Minnow3NextMultiPlatformGpioProgram (
   EFI_PEI_READ_ONLY_VARIABLE2_PPI   *VariableServices;
   SYSTEM_CONFIGURATION              SystemConfiguration;
 
-  VariableSize = sizeof (SYSTEM_CONFIGURATION);
-  ZeroMem (&SystemConfiguration, sizeof (SYSTEM_CONFIGURATION));
+  DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
- (*PeiServices)->LocatePpi (
-                    PeiServices,
-                    &gEfiPeiReadOnlyVariable2PpiGuid,
-                    0,
-                    NULL,
-                    (VOID **) &VariableServices
-                     );
-
-  VariableServices->GetVariable (
-                      VariableServices,
-                      PLATFORM_SETUP_VARIABLE_NAME,
-                      &gEfiSetupVariableGuid,
+  if (PlatformInfoHob->BoardId != BOARD_ID_MINNOW_MODULE) {
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - This is not a Minnow Board 3 Module\n", __FUNCTION__, __LINE__));
+  } else {
+    //
+    // Get setup data
+    //
+    VariableSize = sizeof (SYSTEM_CONFIGURATION);
+    ZeroMem (&SystemConfiguration, sizeof (SYSTEM_CONFIGURATION));
+   (*PeiServices)->LocatePpi (
+                      PeiServices,
+                      &gEfiPeiReadOnlyVariable2PpiGuid,
+                      0,
                       NULL,
-                      &VariableSize,
-                      &SystemConfiguration
-                      );
-
-  DEBUG ((DEBUG_INFO, "MultiPlatformGpioProgram()...\n"));
-
-  switch (PlatformInfoHob->BoardId) {
-    case BOARD_ID_LFH_CRB:
-    case BOARD_ID_MINNOW:
-    case BOARD_ID_MINNOW_NEXT:
-    case BOARD_ID_BENSON:
-      //
-      // PAD programming
-      //
-      DEBUG ((DEBUG_INFO, "PAD programming, Board ID: 0x%X\n", PlatformInfoHob->BoardId));
-
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_N)  / sizeof (mMinnow3Next_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
-
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_NW) / sizeof (mMinnow3Next_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
-
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_W)  / sizeof (mMinnow3Next_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
-
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_SW) / sizeof (mMinnow3Next_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
-
-      break;
-    default:
-      //
-      // PAD programming
-      //
-      DEBUG ((DEBUG_INFO, "No board ID available for this board ....\n"));
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_N)  / sizeof (mMinnow3Next_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_NW) / sizeof (mMinnow3Next_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_W)  / sizeof (mMinnow3Next_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
-      GpioPadConfigTable (sizeof (mMinnow3Next_GpioInitData_SW) / sizeof (mMinnow3Next_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
-      break;
-  }
-  
-  DEBUG ((DEBUG_INFO, "PAD programming done\n"));
-
-  //
-  // Dump Community registers
-  //
-  DumpGpioCommunityRegisters (NORTH);
-  DumpGpioCommunityRegisters (NORTHWEST);
-  DumpGpioCommunityRegisters (WEST);
-  DumpGpioCommunityRegisters (SOUTHWEST);
-
-  switch (PlatformInfoHob->BoardId) {
-    case BOARD_ID_LFH_CRB:
-    case BOARD_ID_MINNOW:
-    case BOARD_ID_MINNOW_NEXT:
-    case BOARD_ID_BENSON:
-      //
-      // PAD programming
-      //
-      DEBUG ((DEBUG_INFO, "Dump Community pad registers, Board ID: 0x%X\n", PlatformInfoHob->BoardId));
-      DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_N)  / sizeof (mMinnow3Next_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
-      DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_NW) / sizeof (mMinnow3Next_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
-      DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_W)  / sizeof (mMinnow3Next_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
-      DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_SW) / sizeof (mMinnow3Next_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
-      break;
-    default:
+                      (VOID **) &VariableServices
+                       );
+    VariableServices->GetVariable (
+                        VariableServices,
+                        PLATFORM_SETUP_VARIABLE_NAME,
+                        &gEfiSetupVariableGuid,
+                        NULL,
+                        &VariableSize,
+                        &SystemConfiguration
+                        );
     //
-    // Dump Community pad registers
+    // PAD programming
     //
-    DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_N)  / sizeof (mMinnow3Next_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
-    DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_NW) / sizeof (mMinnow3Next_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
-    DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_W)  / sizeof (mMinnow3Next_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
-    DumpGpioPadTable (sizeof (mMinnow3Next_GpioInitData_SW) / sizeof (mMinnow3Next_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - PAD programming, Board ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId));
+    GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_N)  / sizeof (mMinnow3Module_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
+    GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_NW) / sizeof (mMinnow3Module_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
+    GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_W)  / sizeof (mMinnow3Module_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
+    GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_SW) / sizeof (mMinnow3Module_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - PAD programming done\n", __FUNCTION__, __LINE__));
 
-    break;
+    //
+    // Dump Community registers
+    //
+    DumpGpioCommunityRegisters (NORTH);
+    DumpGpioCommunityRegisters (NORTHWEST);
+    DumpGpioCommunityRegisters (WEST);
+    DumpGpioCommunityRegisters (SOUTHWEST);
+
+    //
+    // Dump GPIO tables
+    //
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - Dump Community pad registers, Board ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId));
+    DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_N)  / sizeof (mMinnow3Module_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
+    DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_NW) / sizeof (mMinnow3Module_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
+    DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_W)  / sizeof (mMinnow3Module_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
+    DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_SW) / sizeof (mMinnow3Module_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
+
+    //
+    // Now program any EEPROM defined GPIOs
+    //
+    EepromProgramGpioPads ();
   }
 
   return EFI_SUCCESS;
