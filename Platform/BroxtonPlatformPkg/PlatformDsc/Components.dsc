@@ -194,6 +194,7 @@
       NULL|$(PLATFORM_NAME)/Board/BensonGlacier/BoardInitDxe/BoardInitDxe.inf
       NULL|$(PLATFORM_NAME)/Board/AuroraGlacier/BoardInitDxe/BoardInitDxe.inf
       NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Next/BoardInitDxe/BoardInitDxe.inf
+      NULL|$(PLATFORM_NAME)/Board/UP2/BoardInitDxe/BoardInitDxe.inf
   }
 
 !if $(DATAHUB_ENABLE) == TRUE

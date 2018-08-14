@@ -277,6 +277,12 @@
     SECTION RAW = $(PLATFORM_NAME)/Board/AuroraGlacier/Vbt/VbtBxtMipi.bin
     SECTION UI = "IntelGopVbt1"
   }
+
+  # VBT For Up2 (File Guid is gPeiUp2VbtGuid)
+  FILE FREEFORM = 16667736-B2FE-49b3-A0EB-D6B9D7F9657B {
+    SECTION RAW = $(PLATFORM_NAME)/Board/UP2/Vbt/Vbt.bin
+    SECTION UI = "IntelGopVbt1"
+  }
 !endif
 
   INF $(PLATFORM_SI_PACKAGE)/Cpu/SmmAccess/Pei/SmmAccess.inf

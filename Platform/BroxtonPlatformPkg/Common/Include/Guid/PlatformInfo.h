@@ -173,6 +173,7 @@ typedef enum {
 
 
 typedef enum {
+  BOARD_ID_UP2             = 0x01,     // UP2
   BOARD_ID_MINNOW_NEXT     = 0x03,     // Minnow Board Next
   BOARD_ID_LFH_CRB         = 0x07,     // Leaf Hill
   BOARD_ID_MINNOW          = 0x0F,     // Minnow Board

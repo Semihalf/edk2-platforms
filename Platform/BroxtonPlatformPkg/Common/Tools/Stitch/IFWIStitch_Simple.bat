@@ -60,6 +60,10 @@ if /i "%~3"=="LH" (
     set BoardId=LH
 )
 
+if /i "%~3"=="UP" (
+    set BoardId=UP
+)
+
 if /i "%~4"=="L" (
     set SpiAccessControl=1
 )
@@ -190,6 +194,11 @@ if %BoardId%==BG (
            ) else (
              copy /y /b SpiChunk1SpiAccessControl.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
            )
+)  else if %BoardId%==UP (
+           copy /y /b ..\..\..\Board\UP2\IFWI\FAB_A\SpiChunk1.bin .
+           copy /y /b ..\..\..\Board\UP2\IFWI\FAB_A\SpiChunk2.bin .
+           copy /y /b ..\..\..\Board\UP2\IFWI\FAB_A\SpiChunk3.bin .
+           copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
 )
 move /y spi_out.bin %BIOS_ID%.bin  >> Stitching.log
 

@@ -61,6 +61,7 @@ set SrcDebug=FALSE
 set APLK_SETUP_ENABLE_BUILD=FALSE
 set FSP_BUILD=FALSE
 set FSP_WRAPPER=FALSE
+set UP2_BOARD=FALSE
 
 :: Set Defaults of platform specific environment variables.
 set EFI_SOURCE=%CD%
@@ -199,6 +200,12 @@ if /i "%~1"=="/LH" (
     shift
     goto OptLoop
 )
+if /i "%~1"=="/UP" (
+    set BoardId=UP
+    echo.
+    shift
+    goto OptLoop
+)
 if /i "%~1"=="/m" (
     if defined NUMBER_OF_PROCESSORS (
         set /a build_threads=%NUMBER_OF_PROCESSORS%
@@ -229,6 +236,9 @@ if /i "%~1" == "%Minnow_RVP%" (
     set BOARD_ID=M3MODUL
   ) else if %BoardId%==LH (
     set BOARD_ID=LEAFHIL
+  ) else if %BoardId%==UP (
+    set BOARD_ID=UPBOARD
+    set UP2_BOARD=TRUE
   )
     set ENBDT_PF_BUILD=TRUE
     set PLATFORM_NAME=BroxtonPlatformPkg
@@ -263,6 +273,8 @@ if "%Arch%"=="IA32" (
 ) else if "%Arch%"=="X64" (
     echo DEFINE X64_CONFIG              = TRUE                      >> %Build_Macros%
 )
+
+echo DEFINE UP2_BOARD                = %UP2_BOARD%               >> %Build_Macros%
 
 ::Stage of copy of BiosId.env in Conf/ with Platform_Type and Build_Target values removed
 
@@ -312,6 +324,12 @@ if %BoardId%==MX (
 if %BoardId%==LH (
   if %FabId%==D (
     echo BOARD_REV = D >> Conf\BiosId.env
+  )
+)
+
+if %BoardId%==UP (
+  if %FabId%==A (
+    echo BOARD_REV = A >> Conf\BiosId.env
   )
 )
 

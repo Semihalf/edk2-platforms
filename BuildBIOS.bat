@@ -52,6 +52,7 @@ echo.       /?    Display this help text
 echo.
 echo        /m     Set the build thread count to number of processors
 echo        /vs13  Set Compiler to vs2013 build (default: vs2013)
+echo        /vs15  Set Compiler to vs2015 build (default: vs2013)
 echo        /x64   Set Arch to X64  (default: X64)
 echo        /IA32  Set Arch to IA32 (default: X64)
 echo        /A     Set FabId to A
@@ -62,12 +63,13 @@ echo        /MX    MinnowBoard 3 Module
 echo        /BG    Benson Glacier Board
 echo        /AG    Aurora Glacier Board
 echo        /LH    LeafHill CRB Board
+echo        /UP    AAEON UP2 Board
 echo        /L     Flash region access permission for host CPU
 echo        PlatformName:  Broxton
 echo        BuildTargets:  Release, Debug
 
 echo Examples:
-echo    %thisscript% /vs13 /B /x64 Broxton Debug
+echo    %thisscript% /vs13 /LH /B /x64 Broxton Debug
 
 set exitCode=1
 

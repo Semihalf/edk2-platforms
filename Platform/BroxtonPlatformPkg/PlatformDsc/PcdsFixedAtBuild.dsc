@@ -85,4 +85,9 @@
   !endif
   
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmStackSize|0x3000
-
+  
+  !if $(UP2_BOARD) == TRUE
+    gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|0
+  !else 
+    gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|2
+  !endif

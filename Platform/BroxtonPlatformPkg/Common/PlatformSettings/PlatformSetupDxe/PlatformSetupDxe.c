@@ -141,15 +141,6 @@ LoadPlatformDefaultValues (
   IN EFI_CALLBACK_INFO                       *Private
   )
 {
-  switch (Private->FakeNvData.BoardId) {
-    case BOARD_ID_LFH_CRB:
-    case BOARD_ID_MINNOW:
-    case BOARD_ID_BENSON:
-
-      break;
-    default:
-      break;
-  }
 
   Private->FakeNvData.PlatformSettingEn = 1;
 }

@@ -44,6 +44,7 @@ PPV_BIOS_ENABLE=FALSE
 RVVP_BIOS_ENABLE=FALSE
 RVV_BIOS_ENABLE=FALSE
 SrcDebug=FALSE
+UP2_BOARD=FALSE
 
 ## Clean up previous build files.
 if [ -e $(pwd)/EDK2.log ]; then
@@ -162,6 +163,11 @@ elif [ $BoardId == "LH" ]; then
   BOARD_ID=LEAF
   echo BOARD_ID = LEAFHIL >> $WORKSPACE/Conf/BiosId.env
 else
+elif [ $BoardId == "UP" ]; then
+  BOARD_ID=UPBO
+  echo BOARD_ID = UP2BORD >> $WORKSPACE/Conf/BiosId.env
+  UP2_BOARD=TRUE
+else
   break
 fi
 
@@ -187,6 +193,7 @@ echo DEFINE SV_BIOS_ENABLE      = $SV_BIOS_ENABLE   >> $Build_Macros
 echo DEFINE PPV_BIOS_ENABLE     = $PPV_BIOS_ENABLE  >> $Build_Macros
 echo DEFINE RVVP_BIOS_ENABLE    = $RVVP_BIOS_ENABLE >> $Build_Macros
 echo DEFINE RVV_BIOS_ENABLE     = $RVV_BIOS_ENABLE  >> $Build_Macros
+echo DEFINE UP2_BOARD           = $UP2_BOARD        >> $Build_Macros
 
 if [ $Arch == "IA32" ]; then
   echo DEFINE X64_CONFIG = FALSE      >> $Build_Macros
@@ -241,6 +248,12 @@ if [ $BoardId == "LH" ]; then
   fi
 fi
 
+if [ $BoardId == "UP" ]; then
+  if [ $FabId == "A" ]; then
+    BOARD_REV=A
+    echo BOARD_REV = A >> $WORKSPACE/Conf/BiosId.env
+  fi
+fi
 ##**********************************************************************
 ## Additional EDK Build Setup/Configuration
 ##**********************************************************************
@@ -416,6 +429,14 @@ if [ $BoardId == "LH" ]; then
   fi
 fi
 
+if [ $BoardId == "UP" ]; then
+  if [ $FabId == "A" ]; then
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+  fi
+fi
 #
 # Assmeble components
 #
