@@ -17,6 +17,7 @@
 #include "BoardInitDxe.h"
 
 GET_BOARD_NAME mUp2GetBoardNamePtr = Up2GetBoardName;
+SYSTEM_CONFIGURATION  mSystemConfiguration;
 
 CHAR16*
 EFIAPI
@@ -37,7 +38,44 @@ Up2GetBoardName (
   }
 }
 
+EFI_STATUS
+UpdateSetupVariable (
+  VOID
+  )
+{
+  UINTN       VarSize;
+  UINT32      VariableAttributes;
+  EFI_STATUS  Status;
 
+  //
+  // Update default value of Setup Variable for PCIe W/A.
+  // PCIe RealTek NIC on root port #1 blocks Windows 10 installation.
+  //
+  
+  VarSize = sizeof (SYSTEM_CONFIGURATION);
+  Status = gRT->GetVariable (
+                    L"Setup",
+                    &gEfiSetupVariableGuid,
+                    &VariableAttributes,
+                    &VarSize,
+                    &mSystemConfiguration
+                    );
+  ASSERT_EFI_ERROR (Status);
+
+  if (Status == EFI_SUCCESS) {
+    mSystemConfiguration.PcieRootPortEn[3]= (UINT8) 0;
+    Status = gRT->SetVariable (
+                    L"Setup",
+                    &gEfiSetupVariableGuid,
+                    VariableAttributes,
+                    VarSize,
+                    &mSystemConfiguration
+                    );
+    ASSERT_EFI_ERROR (Status);
+  }
+  
+  return Status;
+}
 /**
   Set PCDs for board specific functions
 
@@ -62,6 +100,8 @@ Up2BoardInitDxeConstructor (
   }
 
   PcdSet64 (PcdGetBoardNameFunc, (UINT64) mUp2GetBoardNamePtr);
+ 
+  UpdateSetupVariable();
 
   return EFI_SUCCESS;
 }

@@ -27,6 +27,7 @@
 #include <Library/PcdLib.h>
 #include <Library/PrintLib.h>
 #include <Guid/PlatformInfo_Aplk.h>
+#include <Guid/SetupVariable.h>
 
 CHAR16*
 EFIAPI
