@@ -1,0 +1,57 @@
+## @file
+#  Library producing EEPROM structure data functionality.
+#
+#  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution. The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php.
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010017
+  BASE_NAME                      = EepromPlatformPeiLib
+  FILE_GUID                      = 6BC636D5-AD8F-46FD-9B9B-BD53A3D5E56B
+  VERSION_STRING                 = 1.0
+  MODULE_TYPE                    = BASE
+  LIBRARY_CLASS                  = EepromPlatformPeiLib
+
+[Depex]
+  TRUE
+
+[Guids]
+  gEepromVariableGuid
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  EepromDataLib
+  EepromLib
+  GpioLib
+  I2cLib
+  MemoryAllocationLib
+  PcdLib
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  BroxtonPlatformPkg/PlatformPkg.dec
+  BroxtonSiPkg/BroxtonSiPkg.dec
+
+[Pcd]
+  gEfiBxtTokenSpaceGuid.PcdPmcGcrBaseAddress          ## SOMETIMES_CONSUMES
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress   ## SOMETIMES_CONSUMES
+  gPlatformModuleTokenSpaceGuid.PcdEepromAddress
+  gPlatformModuleTokenSpaceGuid.PcdEepromBus
+  gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList
+
+[Sources]
+  EepromAcpiPei.c
+  EepromPlatformLib.c
+  EepromPlatformLib.h
