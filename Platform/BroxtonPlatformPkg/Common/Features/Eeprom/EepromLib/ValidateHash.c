@@ -28,23 +28,6 @@ CONST UINT8  mHashSizeLookup[] = {
                SHA512_DIGEST_SIZE
                };
 
-UINTN
-EFIAPI
-DisplayStackPointer (
-  IN   CHAR8    *Function,
-  IN   UINTN     LineNumber
-  )
-{
-  UINT8   *Temp;
-  
-  Temp = AllocatePool (1);
-  if (mEepromDataLibDebugFlag) {
-    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeBottom = %08x\n", __FUNCTION__, __LINE__, Temp));
-  }
-
-  return (UINTN) Temp;
-}
-
 BOOLEAN
 EFIAPI
 InPeiPhase (VOID)
@@ -102,47 +85,47 @@ Exit:
 EFI_STATUS
 EFIAPI
 SignedHashCheck (
-  IN       UINT8             LibraryIndex,
-  IN       UINT8            *ImageBuffer,
-  IN       UINT32            Crc32Size,
-  IN       SIGNATURE_DATA   *Signature
+  IN       UINT8             LibraryIndex
   )
 {
-  UINT8              Digest[MAX_DIGEST_SIZE];
-  FV_FUNCTION_INFO   FvInfo;
-  EFI_GUID           FvPublicKeyFile;
-  UINT8             *Hash;
-  UINT32             HashSize;
-  BOOLEAN            HashStatus;
-  UINT16             HashType;
-  UINT8             *PublicKey;
-  UINT32             PublicKeySize;
-  VOID              *Rsa;
-  BOOLEAN            RsaStatus;
-  UINT8             *SignedHash;
-  UINT32             SignedHashSize;
-  EFI_STATUS         Status;
+  UINT32                  Crc32Size;
+  UINT8                   Digest[MAX_DIGEST_SIZE];
+  EEPROM_HEADER          *EepromHeader;
+  EEPROM_FUNCTION_INFO    EepromInfo;
+  FV_FUNCTION_INFO        FvInfo;
+  EFI_GUID                FvPublicKeyFile;
+  UINT8                  *Hash;
+  UINT32                  HashSize;
+  BOOLEAN                 HashStatus;
+  UINT16                  HashType;
+  UINT8                  *ImageBuffer;
+  UINT32                  ImageSize;
+  UINT8                  *PublicKey;
+  UINT32                  PublicKeySize;
+  VOID                   *Rsa;
+  BOOLEAN                 RsaStatus;
+  SIGNATURE_DATA         *Signature;
+  UINT8                  *SignedHash;
+  UINT32                  SignedHashSize;
+  UINT32                  Size;
+  EFI_STATUS              Status;
 
   //
   // Initialize variables
   //
   CopyMem (&FvPublicKeyFile, PcdGetPtr (PcdEepromPublicKeyFile), sizeof (EFI_GUID));
   ZeroMem (&FvInfo, sizeof (FV_FUNCTION_INFO));
+  EepromInfo.Bus          = PcdGet8 (PcdEepromBus);
+  EepromInfo.Address      = PcdGet8 (PcdEepromAddress);
+  EepromInfo.LibraryIndex = EEPROM_EEPROM;
   FvInfo.LibraryIndex = EEPROM_FV;
   FvInfo.FvFileGuid   = &FvPublicKeyFile;
-  Hash                = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
-  HashType            = Signature->hashtype;
-  HashSize            = mHashSizeLookup[HashType & HASH_TYPE_MASK];
   PublicKey           = NULL;
   PublicKeySize       = 0;
   Rsa                 = NULL;
   SignedHash          = NULL;
   SignedHashSize      = 0;
   Status              = EFI_UNSUPPORTED;
-  if (HashType & HASH_SIGNED_FLAG) {
-    SignedHash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA) + HashSize;
-    SignedHashSize = Signature->length - sizeof (SIGNATURE_DATA) - HashSize;
-  }
 
   //
   // Sanity checks
@@ -152,15 +135,52 @@ SignedHashCheck (
     Status = EFI_INVALID_PARAMETER;
     goto Exit;
   }
-  if ((ImageBuffer == NULL) || (Signature == NULL)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Buffer is NULL!\n", __FUNCTION__, __LINE__));
-    Status = EFI_INVALID_PARAMETER;
+
+  //
+  // Get binary image size
+  //
+  ImageSize = GetImageSize (LibraryIndex);
+  if (ImageSize == 0) {
+    //
+    // Oops!
+    //
+    Status = EFI_NOT_FOUND;
     goto Exit;
   }
+
+  //
+  // Get $Eeprom$ structure
+  //
+  Size   = 0;
+  Status = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromHeader, &Size);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
+    Status = EFI_VOLUME_CORRUPTED;
+    goto Exit;
+  }
+  Crc32Size = EepromHeader->crclength;
   if (Crc32Size == 0) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Buffer size is 0!\n", __FUNCTION__, __LINE__));
     Status = EFI_INVALID_PARAMETER;
     goto Exit;
+  }
+
+  //
+  // Get $PromSig structure
+  //
+  Size   = 0;
+  Status = GetEepromStructure (LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, (UINT8 **) &Signature, &Size);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
+    Status = EFI_VOLUME_CORRUPTED;
+    goto Exit;
+  }
+  Hash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
+  HashType = Signature->hashtype;
+  HashSize = mHashSizeLookup[HashType & HASH_TYPE_MASK];
+  if (HashType & EEPROM_SIGNATURE_TYPE_SIGNED) {
+    SignedHash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA) + HashSize;
+    SignedHashSize = Signature->length - sizeof (SIGNATURE_DATA) - HashSize;
   }
   if (HashType == 0) {
     //
@@ -186,6 +206,26 @@ SignedHashCheck (
   }
 
   //
+  // Get binary image
+  //
+  ImageBuffer = EepromAllocatePool (ImageSize);
+  if (ImageBuffer == NULL) {
+    //
+    // Failed to allocate pool
+    //
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to allocate pool for Buffer!\n", __FUNCTION__, __LINE__));
+    Status = EFI_OUT_OF_RESOURCES;
+    goto Exit;
+  }
+  Status = ReadEeprom (LibraryIndex, 0, &ImageSize, ImageBuffer, &EepromInfo);
+  if (EFI_ERROR (Status)) {
+    //
+    // Oops!!!
+    //
+    goto Exit;
+  }
+
+  //
   // Clear existing NvStorage variable if it exists. gEepromVariableGuid:L"PromSig-#"
   //
   Status = SetEepromVariable (LibraryIndex, NULL, 0);
@@ -198,12 +238,12 @@ SignedHashCheck (
   // Figure out what hash is being used
   //
   switch (HashType & HASH_TYPE_MASK) {
-    case HASH_NONE:
+    case EEPROM_SIGNATURE_TYPE_NONE:
       //
       // Nothing to do. Bail.
       //
       break;
-    case HASH_MD5:
+    case EEPROM_SIGNATURE_TYPE_MD5:
       //
       // MD5 hashing
       //
@@ -221,7 +261,7 @@ SignedHashCheck (
       }
       HashSize = MD5_DIGEST_SIZE;
       break;
-    case HASH_SHA1:
+    case EEPROM_SIGNATURE_TYPE_SHA1:
       //
       // SHA1 hashing
       //
@@ -239,7 +279,7 @@ SignedHashCheck (
       }
       HashSize = SHA1_DIGEST_SIZE;
       break;
-    case HASH_SHA256:
+    case EEPROM_SIGNATURE_TYPE_SHA256:
       //
       // SHA256 hashing
       //
@@ -257,7 +297,7 @@ SignedHashCheck (
       }
       HashSize = SHA256_DIGEST_SIZE;
       break;
-    case HASH_SHA384:
+    case EEPROM_SIGNATURE_TYPE_SHA384:
       //
       // SHA384 hashing
       //
@@ -275,7 +315,7 @@ SignedHashCheck (
       }
       HashSize = SHA384_DIGEST_SIZE;
       break;
-    case HASH_SHA512:
+    case EEPROM_SIGNATURE_TYPE_SHA512:
       //
       // SHA512 hashing
       //
@@ -306,7 +346,7 @@ SignedHashCheck (
   //
   // Does this have a signed hash?
   //
-  if ((HashType & HASH_SIGNED_FLAG) != HASH_SIGNED_FLAG) {
+  if ((HashType & EEPROM_SIGNATURE_TYPE_SIGNED) != EEPROM_SIGNATURE_TYPE_SIGNED) {
     //
     // Nope. Bail.
     //
@@ -382,7 +422,10 @@ Exit:
   if (Rsa != NULL) {
     RsaFree (Rsa);
   }
-  PublicKey = EepromFreePool (PublicKey);
+  EepromHeader = EepromFreePool (EepromHeader);
+  ImageBuffer  = EepromFreePool (ImageBuffer);
+  PublicKey    = EepromFreePool (PublicKey);
+  Signature    = EepromFreePool (Signature);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   } else if (HashType != 0) {

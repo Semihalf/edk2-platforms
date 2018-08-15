@@ -102,6 +102,27 @@ Exit:
   return Status;
 }
 
+UINTN
+EFIAPI
+DisplayStackPointer (
+  IN   CHAR8    *Function,
+  IN   UINTN     LineNumber
+  )
+{
+  EFI_HOB_HANDOFF_INFO_TABLE   *Hob;
+  UINTN                         Temp;
+
+  Hob  = GetHobList ();
+  Temp = 0;
+  if ((Hob != NULL) & (mEepromDataLibDebugFlag)) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeTop    = %08x\n", __FUNCTION__, __LINE__, Hob->EfiFreeMemoryTop));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeBottom = %08x\n", __FUNCTION__, __LINE__, Hob->EfiFreeMemoryBottom));
+    Temp = (UINTN) Hob->EfiFreeMemoryBottom;
+  }
+
+  return Temp;
+}
+
 //
 // Desc:        Dumps the EEPROM memory allocation status.
 // Variables:   HobPointer     Pointer to the EEPROM memory allocation HOB

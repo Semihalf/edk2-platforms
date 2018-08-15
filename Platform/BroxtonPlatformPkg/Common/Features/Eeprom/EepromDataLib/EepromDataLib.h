@@ -72,6 +72,11 @@ typedef struct {
 } EEPROM_ALLOCATION_STRUCT;
 
 ////
+//// Externs
+////
+extern EEPROM_DATA_LIBRARY_INDEX    mEepromDataLibIndex[];
+
+////
 //// Functions
 ////
 //

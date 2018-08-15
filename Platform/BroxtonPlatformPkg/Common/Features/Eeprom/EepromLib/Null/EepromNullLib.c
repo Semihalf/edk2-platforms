@@ -42,7 +42,7 @@ GetImageSize (
   IN       UINT8      LibraryIndex
   )
 {
-  return EFI_UNSUPPORTED;
+  return 0;
 }
 
 EFI_STATUS
@@ -60,8 +60,7 @@ GetNextEepromStructure (
 UINT8
 EFIAPI
 GetValidEepromLibrary (
-  IN       BOOLEAN   CopyToMemory,
-  IN       BOOLEAN   MemoryInitialized
+  IN       BOOLEAN   CopyToMemory
   )
 {
   return EEPROM_NULL;

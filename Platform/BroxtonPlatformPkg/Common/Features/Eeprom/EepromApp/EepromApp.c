@@ -85,7 +85,7 @@ ShellAppMain (
     //
     // Skip this if we are doing a scan.
     //
-    Print (L"- GetValidEepromLibrary() = %a\n", mEepromLibraryString[GetValidEepromLibrary (TRUE, TRUE)]);
+    Print (L"- GetValidEepromLibrary() = %a\n", mEepromLibraryString[GetValidEepromLibrary (TRUE)]);
   } else {
     // Scanning
     Status = ScanOption (&ProgramInfo);
@@ -546,7 +546,7 @@ DumpHumanOption (
   IN PROGRAM_INFO    *ProgramInfo
   )
 {
-  CHAR8                   AsciiData[16];
+  CHAR8                   AsciiData[32];
   VOID                   *Buffer;
   UINT32                  BufferSize;
   UINT32                  count;
@@ -648,7 +648,7 @@ DumpHumanOption (
       //
       // Check for $AcpiTbl
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$AcpiTbl", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_ACPI_TABLE_SIGNATURE, 8) == 0) {
         ACPI_TABLE   *AcpiTable;
         AcpiTable = (ACPI_TABLE *) Buffer;
         Ptr       = (UINT8 *) Buffer + sizeof (ACPI_TABLE);
@@ -657,7 +657,7 @@ DumpHumanOption (
       //
       // Check for $BrdInfo
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$BrdInfo", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_BOARD_INFO_SIGNATURE, 8) == 0) {
         BOARD_INFO_TABLE   *BoardInfo;
         BoardInfo = (BOARD_INFO_TABLE *) Buffer;
         ZeroMem (AsciiData, 17);
@@ -673,10 +673,10 @@ DumpHumanOption (
         Print (L"Fab ID              = %08x\n", BoardInfo->fabid);
         Print (L"EC ID               = %08x\n", BoardInfo->ecid);
         Print (L"Board type          = ");
-        if (BoardInfo->boardtype == 0) {
+        if (BoardInfo->boardtype == EEPROM_BOARD_TYPE_REDBOX) {
           Print (L"Main board (RedBox)\n");
         } else
-        if (BoardInfo->boardtype == 1) {
+        if (BoardInfo->boardtype == EEPROM_BOARD_TYPE_PLUGIN) {
           Print (L"Plug-in board\n");
         } else
         {
@@ -686,7 +686,7 @@ DumpHumanOption (
       //
       // Check for $EeprMap
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$EeprMap", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_MAP_SIGNATURE, 8) == 0) {
         EEPROM_MAP          *EepromMap;
         EEPROM_MAP_RECORD   *MapRecord;
         EepromMap = (EEPROM_MAP *) Buffer;
@@ -709,13 +709,13 @@ DumpHumanOption (
           Print (L"[%02x] - Unknown\n", EepromMap->master);
         }
         Print (L"I2C speed           = ");
-        if (EepromMap->speed == 1) {
+        if (EepromMap->speed == EEPROM_SPEED_STANDARD) {
           Print (L"100KHz (Standard speed)\n");
         } else
-        if (EepromMap->speed == 2) {
+        if (EepromMap->speed == EEPROM_SPEED_FAST) {
           Print (L"400KHz (Fast speed)\n");
         } else
-        if (EepromMap->speed == 3) {
+        if (EepromMap->speed == EEPROM_SPEED_HIGH) {
           Print (L"3.4MHz (High speed)\n");
         } else
         {
@@ -740,7 +740,7 @@ DumpHumanOption (
       //
       // Check for $Eeprom$ structure
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$Eeprom$", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_HEADER_SIGNATURE, 8) == 0) {
         EEPROM_HEADER   *EepromHeader;
         EepromHeader = (EEPROM_HEADER *) Buffer;
         Print (L"Image length        = %08x\n", EepromHeader->structlength);
@@ -751,7 +751,7 @@ DumpHumanOption (
       //
       // Check for $GpioDat
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$GpioDat", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_GPIO_SIGNATURE, 8) == 0) {
         GPIO_DATA_HEADER   *GpioHeader;
         GPIO_DATA_RECORD   *GpioRecord;
         GpioHeader = (GPIO_DATA_HEADER *) Buffer;
@@ -769,19 +769,19 @@ DumpHumanOption (
           Print (L"   - GPIO OR data   = %08x\n", GpioRecord->ordata);
           Print (L"   - GPIO data size = %08x\n", GpioRecord->datasize);
           Print (L"   - GPIO data type = ");
-          if (GpioRecord->datasize == 0) {
+          if (GpioRecord->datasize == EEPROM_GPIO_TYPE_IO) {
             Print (L"IO\n");
           } else
-          if (GpioRecord->datasize == 1) {
+          if (GpioRecord->datasize == EEPROM_GPIO_TYPE_MMIO) {
             Print (L"MMIO\n");
           } else
-          if (GpioRecord->datasize == 2) {
+          if (GpioRecord->datasize == EEPROM_GPIO_TYPE_PCI) {
             Print (L"PCI\n");
           } else
-          if (GpioRecord->datasize == 3) {
+          if (GpioRecord->datasize == EEPROM_GPIO_TYPE_PCIE) {
             Print (L"PCIe\n");
           } else
-          if (GpioRecord->datasize == 4) {
+          if (GpioRecord->datasize == EEPROM_GPIO_TYPE_PAD_OFFSET) {
             Print (L"PAD offset\n");
           } else
           {
@@ -796,7 +796,7 @@ DumpHumanOption (
       //
       // Check for $HdCodec
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$HdCodec", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_HDA_CODEC_SIGNATURE, 8) == 0) {
         HDA_CODEC   *HdaCodec;
         HdaCodec = (HDA_CODEC *) Buffer;
         Ptr      = (UINT8 *) Buffer + sizeof (HDA_CODEC);
@@ -805,7 +805,7 @@ DumpHumanOption (
       //
       // Check for $Logo$
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$Logo$", 6) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_LOGO_DATA_SIGNATURE, 6) == 0) {
         LOGO_DATA   *LogoData;
         LogoData = (LOGO_DATA *) Buffer;
         Ptr      = (UINT8 *) Buffer + sizeof (LOGO_DATA);
@@ -814,7 +814,7 @@ DumpHumanOption (
       //
       // Check for $MacInfo
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$MacInfo", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_NIC_INFO_SIGNATURE, 8) == 0) {
         NIC_INFO   *NicInfo;
         NicInfo = (NIC_INFO *) Buffer;
         ZeroMem (AsciiData, 9);
@@ -828,50 +828,54 @@ DumpHumanOption (
       //
       // Check for $MemCnfg
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$MemCnfg", 8) == 0) {
-        UINT8         Slot;
-        MEMORY_SPD   *MemoryData;
-        MemoryData = (MEMORY_SPD *) Buffer;
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_MEMORY_DATA_SIGNATURE, 8) == 0) {
+        UINT8          Slot;
+        MEMORY_DATA   *MemoryData;
+        MemoryData = (MEMORY_DATA *) Buffer;
         Print (L"SPD slot flags      = %04x\n", MemoryData->spdslot);
-        for (Slot = 0; Slot < 16; Slot++) {
-          if (MemoryData->spdslot & (1 << Slot)) {
-            Print (L"  - Slot %d support.\n", Slot + 1);
+        if (MemoryData->spdslot == 0) {
+          Print (L"  - SMIP binary.\n");
+        } else {
+          for (Slot = 0; Slot < 16; Slot++) {
+            if (MemoryData->spdslot & (1 << Slot)) {
+              Print (L"  - Slot %d support.\n", Slot + 1);
+            }
           }
         }
-        Ptr = (UINT8 *) Buffer + sizeof (MEMORY_SPD);
+        Ptr = (UINT8 *) Buffer + sizeof (MEMORY_DATA);
         if (ProgramInfo->VerboseFlag) DumpParagraph (Ptr, (MemoryData->length - (Ptr - (UINT8 *) Buffer)));
       } else
       //
       // Check for $PromSig
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$PromSig", 8) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_SIGNATURE_SIGNATURE, 8) == 0) {
         UINT16            HashType;
         SIGNATURE_DATA   *SignatureData;
         SignatureData = (SIGNATURE_DATA *) Buffer;
         Hash          = (UINT8 *) Buffer + sizeof (SIGNATURE_DATA);
         HashType = (SignatureData->hashtype & 0x7FFF);
         Print (L"Hash type           = ");
-        if (HashType == HASH_NONE) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_NONE) {
           Print (L"None\n");
           HashSize = 0;
         } else
-        if (HashType == HASH_MD5) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_MD5) {
           Print (L"MD5\n");
           HashSize = MD5DigestSize;
         } else
-        if (HashType == HASH_SHA1) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_SHA1) {
           Print (L"SHA1\n");
           HashSize = SHA1DigestSize;
         } else
-        if (HashType == HASH_SHA256) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_SHA256) {
           Print (L"SHA256\n");
           HashSize = SHA256DigestSize;
         } else
-        if (HashType == HASH_SHA384) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_SHA384) {
           Print (L"SHA384\n");
           HashSize = SHA384DigestSize;
         } else
-        if (HashType == HASH_SHA512) {
+        if (HashType == EEPROM_SIGNATURE_TYPE_SHA512) {
           Print (L"SHA512\n");
           HashSize = SHA512DigestSize;
         } else
@@ -912,7 +916,7 @@ DumpHumanOption (
       //
       // Check for $uCode$
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$uCode$", 7) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_MICROCODE_SIGNATURE, 7) == 0) {
         MICROCODE   *MicrocodeData;
         MicrocodeData = (MICROCODE *) Buffer;
         Ptr      = (UINT8 *) Buffer + sizeof (MICROCODE);
@@ -921,7 +925,7 @@ DumpHumanOption (
       //
       // Check for $Video$
       //
-      if (AsciiStrnCmp (GenericHeader->signature, "$Video$", 7) == 0) {
+      if (AsciiStrnCmp (GenericHeader->signature, EEPROM_VIDEO_DATA_SIGNATURE, 7) == 0) {
         VIDEO_DATA   *VideoData;
         VideoData = (VIDEO_DATA *) Buffer;
         Ptr       = (UINT8 *) Buffer + sizeof (VIDEO_DATA);

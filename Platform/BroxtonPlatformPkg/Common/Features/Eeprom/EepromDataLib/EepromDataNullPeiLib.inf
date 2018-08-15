@@ -15,15 +15,18 @@
 
 [Defines]
   INF_VERSION                    = 0x00010017
-  BASE_NAME                      = EepromDataNullLib
-  FILE_GUID                      = 5FFC9D08-59AD-41EE-B237-6BDE9B900A73
+  BASE_NAME                      = EepromDataNullPeiLib
+  FILE_GUID                      = F4A687F7-BC3C-4BFB-AB8E-EA6599B2F62F
   VERSION_STRING                 = 1.0
   MODULE_TYPE                    = BASE
-  LIBRARY_CLASS                  = EepromDataNullLib
+  LIBRARY_CLASS                  = EepromDataNullPeiLib
   CONSTRUCTOR                    = EepromDataNullInitConstructor
 
 [Depex]
   TRUE
+
+[Guids]
+  gEepromVariableGuid
 
 [LibraryClasses]
   BaseLib
@@ -37,7 +40,7 @@
   EepromDataLib.c
   EepromDataLib.h
   EepromDataNullLibConstructor.c
-  MemoryAllocation.c
+  MemoryAllocationPei.c
   Null/EepromDataNullLib.c
   Null/EepromDataNullLib.h
 

@@ -22,11 +22,12 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
 #include <Library/EepromDataLib.h>
+#include <Library/I2cLib.h>
+#include <Library/EepromPlatformLib.h>
 #include <Library/PrintLib.h>
 #include <Library/TimerLib.h>
 
 #include <EepromStruct.h>
-#include "I2cLib.h"
 
 //
 // Defines

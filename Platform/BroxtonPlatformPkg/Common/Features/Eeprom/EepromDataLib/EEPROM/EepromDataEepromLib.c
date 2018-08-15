@@ -378,7 +378,7 @@ FillEepromMap (
     // Sanity check EEPROM contents
     //
     AsciiSPrint (AsciiBuffer, 32, "%8a", (CHAR8 *) Ptr);
-    if (AsciiStrnCmp (AsciiBuffer, "$Eeprom$", 0x08) != 0) {
+    if (AsciiStrnCmp (AsciiBuffer, EEPROM_HEADER_SIGNATURE, 0x08) != 0) {
       //
       // Not a vallid EEPROM image. Bail.
       //
@@ -406,7 +406,7 @@ FillEepromMap (
     AsciiSPrint (AsciiBuffer, 32, "%8a", EepromHeader->signature);
     AsciiBuffer[8] = 0;
     if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Structure = %a @ 0x%08x\n", __FUNCTION__, __LINE__, AsciiBuffer, EepromHeader));
-    if (AsciiStrnCmp (EepromHeader->signature, "$EeprMap", 0x08) != 0) {
+    if (AsciiStrnCmp (EepromHeader->signature, EEPROM_MAP_SIGNATURE, 0x08) != 0) {
       //
       // This is not our structure. Skip to next structure.
       //
@@ -924,6 +924,20 @@ EFI_STATUS
 EFIAPI
 LoadEepromMap (VOID)
 {
+//KES:    //
+//KES:    // Initialize variables
+//KES:    //
+//KES:    gEepromParts         = (EEPROM_PART_INFO *) (UINTN) PcdGet64 (PcdEepromParts);
+//KES:    gEepromPartsHeadLink = (LIST_ENTRY *) (UINTN) PcdGet64 (PcdEepromPartsHeadLink);
+//KES:
+//KES:    //
+//KES:    // Load from HOB if present
+//KES:    //
+//KES:    if (PcdGetBool (PcdEepromMapHobValid)) {
+//KES:      //
+//KES:      // HOB is valid, load it into memory.
+//KES:      //
+//KES:    }
 
   return EFI_SUCCESS;
 }
@@ -1226,7 +1240,7 @@ ScanI2cBusForImages (
     //
     if (mEepromDataLibDebugFlag &&((index % 0x10) == 0)) DEBUG ((DEBUG_INFO, "."));
     Status = I2cReadPages (I2cBus, index, 0, sizeof (EEPROM_HEADER), (UINT8 *) &EepromHeader);
-    if (!EFI_ERROR (Status) && (AsciiStrnCmp (EepromHeader.signature, "$Eeprom$", 0x08) == 0)) {
+    if (!EFI_ERROR (Status) && (AsciiStrnCmp (EepromHeader.signature, EEPROM_HEADER_SIGNATURE, 0x08) == 0)) {
       //
       // Update array and count, since this devices starts with $Eeprom$
       //

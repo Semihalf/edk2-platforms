@@ -19,6 +19,7 @@
 #include <Uefi.h>
 
 #include <EepromStruct.h>
+#include <Library/EepromDataLib.h>
 
 
 ////
@@ -28,28 +29,8 @@
 
 
 ////
-//// Enums
-////
-typedef enum {
-  HASH_NONE        = 0,
-  HASH_MD5         = 1,
-  HASH_SHA1        = 2,
-  HASH_SHA256      = 3,
-  HASH_SHA384      = 4,
-  HASH_SHA512      = 5
-} EEPROM_HASH_TYPE;
-
-
-////
 //// Functions
 ////
-UINTN
-EFIAPI
-DisplayStackPointer (
-  IN   CHAR8    *Function,
-  IN   UINTN     LineNumber
-  );
-
 EFI_STATUS
 EFIAPI
 EraseEeprom (
@@ -83,8 +64,7 @@ GetNextEepromStructure (
 UINT8
 EFIAPI
 GetValidEepromLibrary (
-  IN       BOOLEAN   CopyToMemory,
-  IN       BOOLEAN   MemoryInitialized
+  IN       BOOLEAN   CopyToMemory
   );
 
 BOOLEAN

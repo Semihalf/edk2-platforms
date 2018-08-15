@@ -32,7 +32,7 @@
   BaseLib
   BaseMemoryLib
   DebugLib
-  GpioLib
+  EepromPlatformLib
   HobLib
   MemoryAllocationLib
   PcdLib
@@ -53,8 +53,6 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromMemorySize
   gPlatformModuleTokenSpaceGuid.PcdEepromParts
   gPlatformModuleTokenSpaceGuid.PcdEepromPartsHeadLink
-  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress   ## SOMETIMES_CONSUMES
-  gEfiBxtTokenSpaceGuid.PcdPmcGcrBaseAddress          ## SOMETIMES_CONSUMES
 
 [Protocols]
   gEfiLoadedImageProtocolGuid
@@ -63,12 +61,11 @@
 [Sources]
   EepromDataLib.c
   EepromDataLib.h
+  EepromDataLibConstructor.c
   MemoryAllocation.c
   EEPROM/EepromDataEepromLib.c
   EEPROM/EepromDataEepromLib.h
   EEPROM/HobData.c
-  EEPROM/I2cLib.c
-  EEPROM/I2cLib.h
   FV/EepromDataFvLib.c
   FV/EepromDataFvLib.h
   FV/GetImage.c

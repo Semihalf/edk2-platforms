@@ -13,8 +13,8 @@
 #
 ##
 
-Version: 1.00
-Dated:   07-02-2018
+Version: 1.10
+Dated:   07-31-2018
 
 - The first 4KB of the EEPROM data MUST be accessible from I2C bus
   gPlatformModuleTokenSpaceGuid.PcdEepromBus, address
@@ -75,6 +75,7 @@ Dated:   07-02-2018
 
 - GPIO data records are applied in order. IE - Start at the beginning and apply the records
   in order.
+  WARNING: Care must be exercised to ensure that non-whitelisted data is not programmed.
 
 - If characters in a Signature[8] or a Label[16] don't fill the entire allocated length,
   append string with $ as a sentinel value. IE - Signature[8] : "$uCode" shall be "$uCode$"
@@ -165,6 +166,7 @@ Offset | Length |   Label   | Default value | Description
  0x2A  | 0x01   | BusNumber | 0x00          | I2C Device Bus
  0x2B  | 0x01   | Master    | 0x00          | Set to 1 if EEPROM is master, 0 otherwise
  0x2C  | 0x01   | Speed     | 0x00          | The speed the EEPROM part should run at
+       |        |           |               |  0 - Unknown
        |        |           |               |  1 - 100KHz (Standard speed)
        |        |           |               |  2 - 400KHz (Fast speed)
        |        |           |               |  3 - 3.4MHz (High speed)
@@ -179,6 +181,24 @@ Offset | Length |   Label   | Default value | Description
     0x14  | 0x04   | Offset    | 0x00000000    | Offset into EEPROM address space
     0x18  | 0x01   | Address   | 0x00          | I2C Device address, 7-bit
     0x19  | 0x07   | Reserved  | 0x0000        | Reserved for future info
+
+FPGA info structure
+Offset | Length |   Label   | Default value | Description
+=======+========+===========+===============+==============================================
+ 0x00  | 0x08   | Signature | "$FPGAnfo"    | Marks the beginning of the FPGA Info structure
+ 0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
+ 0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
+ 0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
+ 0x10  | 0x01   | DataType  | 0x00          | How is the data getting to the FPGA?
+       |        |           |               |  0 - Unknown
+       |        |           |               |  1 - UART
+       |        |           |               |  2 - I2C
+       |        |           |               |  3 - SPI
+       |        |           |               |  4 - PCI
+ 0x11  | 0x01   | DevNum    | 0x00          | Device the FPGA connected to
+ 0x12  | 0x01   | FuncNum   | 0x00          | Function/chip select the FPGA connected to
+ 0x13  | 0x0D   | Reserved  | 0x00          | Reserved for future info
+ 0x20  | ????   | FpgaData  | 0x00          | FPGA bitstream
 
 GPIO data structure
 Offset | Length |   Label   | Default value | Description
@@ -232,18 +252,19 @@ Offset | Length |   Label   | Default value | Description
  0x10  | 0x10   | Reserved  | 0x00          | Reserved for future info
  0x20  | ????   | LogoData  | 0x00          | Logo data
 
-Memory SPD structure
+Memory data structure
 Offset | Length |   Label   | Default value | Description
 =======+========+===========+===============+==============================================
- 0x00  | 0x08   | Signature | "$MemCnfg"    | Marks the beginning of the memory SPD structure
+ 0x00  | 0x08   | Signature | "$MemCnfg"    | Marks the beginning of the memory data structure
  0x08  | 0x02   | VerMajor  | 0x0001        | Version, major
  0x0A  | 0x02   | VerMinor  | 0x0000        | Version, minor
  0x0C  | 0x04   | Length    | 0x0000????    | Length in bytes of this structure
- 0x10  | 0x02   | SpdSlot   | 0x0000        | Which slot this SPD data belongs to in bit flag format
+ 0x10  | 0x02   | SpdSlot   | 0x0000        | Which slot this memory data belongs to in bit flag format
+       |        |           |               | - 0x0000 - SMIP data
        |        |           |               | - 0x0001 - This is for Slot 1 only
        |        |           |               | - 0x0005 - This is for Slot 1 & 3 only
  0x12  | 0x0E   | Reserved  | 0x00          | Reserved for future info
- 0x20  | ????   | SpdData   | 0x00          | SPD data for memory
+ 0x20  | ????   | MemData   | 0x00          | Memory data
 
 NIC info structure
 Offset | Length |   Label   | Default value | Description

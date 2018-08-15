@@ -17,6 +17,23 @@
 
 #include <Library/MemoryAllocationLib.h>
 
+UINTN
+EFIAPI
+DisplayStackPointer (
+  IN   CHAR8    *Function,
+  IN   UINTN     LineNumber
+  )
+{
+  UINT8   *Temp;
+
+  Temp = AllocatePool (1);
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeBottom = %08x\n", __FUNCTION__, __LINE__, Temp));
+  }
+
+  return (UINTN) Temp;
+}
+
 //
 // Desc:        Copies the contents of an existing memory pool into a new memory pool of equal or greater size.
 // Variables:   Size           Size of the pool to copy existing pool into

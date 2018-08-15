@@ -23,7 +23,6 @@
 #include <Library/BaseLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
-#include <Library/EepromDataLib.h>
 #include <Library/EepromLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PrintLib.h>
@@ -34,7 +33,6 @@
 ////
 //// Defines
 ////
-#define   HASH_SIGNED_FLAG             (1 << 15)
 #define   HASH_TYPE_MASK               0x00FF
 #define   MAX_HASH_TYPE                5
 #define   MAX_DIGEST_SIZE              SHA512_DIGEST_SIZE
@@ -53,7 +51,7 @@
 ////
 EFI_STATUS
 EFIAPI
-CalculateCrc32 (
+EepromCalculateCrc32 (
   IN     UINT8    *Data,
   IN     UINTN     DataSize,
   IN OUT UINT32   *CrcOut
@@ -66,10 +64,7 @@ EepromLibNemToMemory (VOID);
 EFI_STATUS
 EFIAPI
 SignedHashCheck (
-  IN       UINT8             LibraryIndex,
-  IN       UINT8            *ImageBuffer,
-  IN       UINT32            Crc32Size,
-  IN       SIGNATURE_DATA   *Signature
+  IN       UINT8             LibraryIndex
   );
 
 #endif // _EEPROM_LIB_COMMON_

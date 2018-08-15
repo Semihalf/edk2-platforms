@@ -67,6 +67,13 @@ typedef struct {
 ////
 //// Functions
 ////
+UINTN
+EFIAPI
+DisplayStackPointer (
+  IN   CHAR8    *Function,
+  IN   UINTN     LineNumber
+  );
+
 //
 // Desc:        Copies the contents of an existing memory pool into a new memory pool of equal or greater size.
 // Variables:   Size           Size of the pool to copy existing pool into

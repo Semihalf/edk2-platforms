@@ -72,7 +72,7 @@ GetEepromDataHobData (VOID)
           //
           // Yep. Copy existing buffer to larger buffer.
           //
-          Buffer = EepromAllocateCopyPool (PcdGet32 (PcdEepromMemorySize) + BlockSize, (UINT8 *) PcdGet64 (PcdEepromMemoryPointer));
+          Buffer = EepromAllocateCopyPool (PcdGet32 (PcdEepromMemorySize) + BlockSize, (UINT8 *) (UINTN) PcdGet64 (PcdEepromMemoryPointer));
           if (Buffer == NULL) {
             DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Unable to allocate buffer!\n", __FUNCTION__, __LINE__));
             Status = EFI_OUT_OF_RESOURCES;

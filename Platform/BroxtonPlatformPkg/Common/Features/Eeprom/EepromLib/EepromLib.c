@@ -61,19 +61,59 @@ InitializeCrc32Table (
   UINTN   Index;
   UINT32  Value;
 
-  for (TableEntry = 0; TableEntry < 256; TableEntry++) {
-    Value = ReverseBits ((UINT32) TableEntry);
-    for (Index = 0; Index < 8; Index++) {
-      if ((Value & 0x80000000) != 0) {
-        Value = (Value << 1) ^ 0x04C11DB7;
-      } else {
-        Value = Value << 1;
+  if (!mCrcInitFlag) {
+    for (TableEntry = 0; TableEntry < 256; TableEntry++) {
+      Value = ReverseBits ((UINT32) TableEntry);
+      for (Index = 0; Index < 8; Index++) {
+        if ((Value & 0x80000000) != 0) {
+          Value = (Value << 1) ^ 0x04C11DB7;
+        } else {
+          Value = Value << 1;
+        }
       }
+      mCrcTable[TableEntry] = ReverseBits (Value);
     }
-
-    mCrcTable[TableEntry] = ReverseBits (Value);
+    mCrcInitFlag = TRUE;
   }
-  mCrcInitFlag = TRUE;
+}
+
+UINT32
+EFIAPI
+StartCrc32 (VOID)
+{
+  // Table initialized?
+  InitializeCrc32Table ();
+
+  return 0xFFFFFFFF;
+}
+
+UINT32
+EFIAPI
+AddToCrc32 (
+  IN   VOID     *Data,
+  IN   UINTN     DataSize,
+  IN   UINT32    Crc
+  )
+{
+  UINT32   Crc32;
+  UINTN    Index;
+  UINT8   *Ptr;
+
+  Crc32 = Crc;
+  Ptr   = (UINT8 *) Data;
+  for (Index = 0; Index < DataSize; Index++) {
+    Crc32 = (Crc32 >> 8) ^ mCrcTable[(UINT8) Crc32 ^ Ptr[Index]];
+  }
+  return Crc32;
+}
+
+UINT32
+EFIAPI
+FinishCrc32 (
+  IN   UINT32   Crc32
+  )
+{
+  return (Crc32 ^ 0xFFFFFFFF);
 }
 
 /*++
@@ -87,7 +127,7 @@ Arguments:
   Data        - The buffer contaning the data to be processed
   DataSize    - The size of data to be processed
   CrcOut      - A pointer to the caller allocated UINT32 that on
-                contains the CRC32 checksum of Data
+                exits, contains the CRC32 checksum of Data
 
 Returns:
 
@@ -97,15 +137,13 @@ Returns:
 --*/
 EFI_STATUS
 EFIAPI
-CalculateCrc32 (
+EepromCalculateCrc32 (
   IN     UINT8    *Data,
   IN     UINTN     DataSize,
   IN OUT UINT32   *CrcOut
   )
 {
-  UINT32  Crc;
-  UINTN   Index;
-  UINT8   *Ptr;
+  UINT32    Crc32;
 
   if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
@@ -114,15 +152,9 @@ CalculateCrc32 (
     return EFI_INVALID_PARAMETER;
   }
 
-  // Table initialized?
-  if (!mCrcInitFlag) InitializeCrc32Table ();
-
-  Crc = 0xFFFFFFFF;
-  for (Index = 0, Ptr = Data; Index < DataSize; Index++, Ptr++) {
-    Crc = (Crc >> 8) ^ mCrcTable[(UINT8) Crc ^ *Ptr];
-  }
-
-  *CrcOut = Crc ^ 0xFFFFFFFF;
+  Crc32   = StartCrc32 ();
+  Crc32   = AddToCrc32 (Data, DataSize, Crc32);
+  *CrcOut = FinishCrc32 (Crc32);
 
   return EFI_SUCCESS;
 }
@@ -319,7 +351,7 @@ GetImageSize (
   Size = sizeof (EEPROM_HEADER);
   ZeroMem (&EepromHeader, Size);
   Status = ReadEeprom (LibraryIndex, 0, &Size, (UINT8 *) &EepromHeader, &EepromInfo);
-  if (EFI_ERROR (Status) || (AsciiStrnCmp (EepromHeader.signature, "$Eeprom$", 8) != 0)) {
+  if (EFI_ERROR (Status) || (AsciiStrnCmp (EepromHeader.signature, EEPROM_HEADER_SIGNATURE, 8) != 0)) {
     //
     // Oops!
     //
@@ -430,7 +462,7 @@ GetNextEepromStructure (
     Status = EFI_END_OF_FILE;
     goto Exit;
   }
-  
+
   //
   // Read in the next header
   //
@@ -502,8 +534,7 @@ Exit:
 UINT8
 EFIAPI
 GetValidEepromLibrary (
-  IN       BOOLEAN   CopyToMemory,
-  IN       BOOLEAN   MemoryInitialized
+  IN       BOOLEAN   CopyToMemory
   )
 {
   UINT8                  *EepromAutoList;
@@ -542,9 +573,8 @@ GetValidEepromLibrary (
   // Display current stack pointer
   //
   DisplayStackPointer (__FUNCTION__, __LINE__);
-
   //
-  // Loop thru PcdEepromAutoPriority looking for a validated image.
+  // Loop thru PcdEepromAutoPriority looking for a previously validated image.
   //
   index = 0;
   while (EepromAutoList[index] != 0xFF) {
@@ -569,15 +599,7 @@ GetValidEepromLibrary (
     //
     index++;
   }
-  //
-  // Check to see if we need to validate and copy into memory
-  //
-  if (!CopyToMemory) {
-    //
-    // Nope. Bail.
-    //
-    goto Exit;
-  }
+
   //
   // Display current stack pointer
   //
@@ -609,6 +631,7 @@ GetValidEepromLibrary (
       index++;
     }
   }
+
   //
   // Display current stack pointer
   //
@@ -646,13 +669,13 @@ GetValidEepromLibrary (
     // Get BoardInfo records
     //
     Size = 0;
-    Status = GetEepromStructure (EEPROM_EEPROM, "$BrdInfo", (UINT8 **) &EepromBoardInfo, &Size);
+    Status = GetEepromStructure (EEPROM_EEPROM, EEPROM_BOARD_INFO_SIGNATURE, (UINT8 **) &EepromBoardInfo, &Size);
     if (EFI_ERROR (Status) || (Size == 0) || (EepromBoardInfo == NULL)) {
       DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get EEPROM Board Info structure! (%r)\n", __FUNCTION__, __LINE__, Status));
       Library = EEPROM_FV;
     } else {
       Size = 0;
-      Status = GetEepromStructure (EEPROM_FV, "$BrdInfo", (UINT8 **) &FvBoardInfo, &Size);
+      Status = GetEepromStructure (EEPROM_FV, EEPROM_BOARD_INFO_SIGNATURE, (UINT8 **) &FvBoardInfo, &Size);
       if (EFI_ERROR (Status) || (Size == 0) || (FvBoardInfo == NULL)) {
         DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get FV Board Info structure! (%r)\n", __FUNCTION__, __LINE__, Status));
         Library = EEPROM_EEPROM;
@@ -670,13 +693,13 @@ GetValidEepromLibrary (
           // Get EepromHeader records
           //
           Size = 0;
-          Status = GetEepromStructure (EEPROM_EEPROM, "$Eeprom$", (UINT8 **) &EepromEepromHeader, &Size);
+          Status = GetEepromStructure (EEPROM_EEPROM, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromEepromHeader, &Size);
           if (EFI_ERROR (Status) || (Size == 0) || (EepromEepromHeader == NULL)) {
             DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get EEPROM header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
             Library = EEPROM_FV;
           } else {
             Size = 0;
-            Status = GetEepromStructure (EEPROM_FV, "$Eeprom$", (UINT8 **) &FvEepromHeader, &Size);
+            Status = GetEepromStructure (EEPROM_FV, EEPROM_HEADER_SIGNATURE, (UINT8 **) &FvEepromHeader, &Size);
             if (EFI_ERROR (Status) || (Size == 0) || (FvEepromHeader == NULL)) {
               DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get FV header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
               Library = EEPROM_EEPROM;
@@ -711,10 +734,14 @@ GetValidEepromLibrary (
   // Display current stack pointer
   //
   DisplayStackPointer (__FUNCTION__, __LINE__);
+
   //
-  // If we don't have memory, then bail so we don't take up all of the stack space in NEM.
+  // Check to see if we need to copy into memory and not in PEI
   //
-  if (!MemoryInitialized) {
+  if (!CopyToMemory || InPeiPhase ()) {
+    //
+    // Nope. Bail.
+    //
     goto Exit;
   }
   //
@@ -793,19 +820,18 @@ ValidateEeprom (
   IN       UINT8    LibraryIndex
   )
 {
+  UINT32                  BufferSize;
   UINT32                  Count;
   UINT32                  Crc32;
   UINT32                  Crc32Size;
   EEPROM_HEADER          *EepromHeader;
   EEPROM_FUNCTION_INFO    EepromInfo;
-  UINT8                  *Hash;
   UINT32                  HashSize;
-  UINT16                  HashType;
   UINT8                  *ImageBuffer;
   UINT32                  ImageSize;
-  SIGNATURE_DATA         *Signature;
-  UINT8                  *SignedHash;
-  UINT32                  SignedHashSize;
+  UINT32                  Offset;
+  UINT32                  OriginalCrc32;
+  UINT32                  Size;
   EFI_STATUS              Status;
   GENERIC_HEADER         *Structure;
   INTN                    Test;
@@ -821,10 +847,7 @@ ValidateEeprom (
   EepromInfo.Bus          = PcdGet8 (PcdEepromBus);
   EepromInfo.Address      = PcdGet8 (PcdEepromAddress);
   EepromInfo.LibraryIndex = EEPROM_EEPROM;
-  Hash                    = NULL;
   ImageBuffer             = NULL;
-  SignedHash              = NULL;
-  SignedHashSize          = 0;
   Status                  = EFI_SUCCESS;
   Structure               = NULL;
 
@@ -848,117 +871,133 @@ ValidateEeprom (
     Status = EFI_NOT_FOUND;
     goto Exit;
   }
-  //
-  // Get a buffer to hold the image
-  //
-  ImageBuffer = EepromAllocatePool (ImageSize);
-  if (ImageBuffer == NULL) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Unable to allocate 0x%08x bytes for the image buffer!\n", __FUNCTION__, __LINE__, ImageSize));
-    Status = EFI_OUT_OF_RESOURCES;
-    goto Exit;
-  }
-  //
-  // Read in the image
-  //
-  Status = ReadEeprom (LibraryIndex, 0, &ImageSize, ImageBuffer, &EepromInfo);
-  if (EFI_ERROR (Status)) {
-    //
-    // Oops!!!
-    //
-    goto Exit;
-  }
-  EepromHeader = (EEPROM_HEADER *) ImageBuffer;
+
   //
   // Verify structure order
   //
-  Count     = 0;
-  Structure = (GENERIC_HEADER *) ImageBuffer;
-  while ((UINT8 *) Structure < (UINT8 *) (ImageBuffer + ImageSize)) {
-    //
-    // Increment count
-    //
-    Count++;
-    //
-    // Sanity check header
-    //
-    if (Count == 1) {
+  Count  = 0;
+  Offset = 0;
+  Status = EFI_SUCCESS;
+  while (!EFI_ERROR (Status) && (Offset < ImageSize)) {
+    Status = GetNextEepromStructure (LibraryIndex, &Offset, (UINT8 **) &ImageBuffer, &BufferSize);
+    if (!EFI_ERROR (Status)) {
       //
-      // First structure must be $Eeprom$
+      // Increment count
       //
-      Test = AsciiStrnCmp (Structure->signature, "$Eeprom$", 8);
+      Count++;
+      Structure = (GENERIC_HEADER *) ImageBuffer;
       //
-      // Set CRC32 size
+      // Sanity check header
       //
-      Crc32Size = EepromHeader->crclength;
-    } else if (Count == 2) {
-      //
-      // Second structure must be $EeprMap
-      //
-      Test = AsciiStrnCmp (Structure->signature, "$EeprMap", 8);
-    } else if (Count == 3) {
-      //
-      // Third structure must be $BrdInfo
-      //
-      Test = AsciiStrnCmp (Structure->signature, "$BrdInfo", 8);
-    } else {
-      //
-      // All header signatures begin with $
-      //
-      Test = AsciiStrnCmp (Structure->signature, "$", 0x01);
-    }
-    if (Test != 0) {
-      //
-      // Sanity check failed! Bail.
-      //
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
-      Status = EFI_VOLUME_CORRUPTED;
-      goto Exit;
-    }
-    if (AsciiStrnCmp (Structure->signature, "$PromSig", 8) == 0) {
-      //
-      // Check if this is the last structure
-      //
-      Signature = (SIGNATURE_DATA *) Structure;
-      HashSize  = Signature->length - sizeof (SIGNATURE_DATA);
-      Hash      = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
-      HashType  = Signature->hashtype;
-      if (((UINT8 *) Signature - ImageBuffer) + Signature->length + (Structure->length % 0x10) != ImageSize) {
+      if (Count == 1) {
         //
-        // Oops! $PromSig is not the last structure.
+        // First structure must be $Eeprom$
         //
-        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: $PromSig structure is not the last structure!\n", __FUNCTION__, __LINE__));
+        Test = AsciiStrnCmp (Structure->signature, EEPROM_HEADER_SIGNATURE, 8);
+      } else if (Count == 2) {
+        //
+        // Second structure must be $EeprMap
+        //
+        Test = AsciiStrnCmp (Structure->signature, EEPROM_MAP_SIGNATURE, 8);
+      } else if (Count == 3) {
+        //
+        // Third structure must be $BrdInfo
+        //
+        Test = AsciiStrnCmp (Structure->signature, EEPROM_BOARD_INFO_SIGNATURE, 8);
+      } else {
+        //
+        // All header signatures begin with $
+        //
+        Test = AsciiStrnCmp (Structure->signature, "$", 0x01);
+      }
+      if (Test != 0) {
+        //
+        // Sanity check failed! Bail.
+        //
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
         Status = EFI_VOLUME_CORRUPTED;
         goto Exit;
       }
+      if (AsciiStrnCmp (Structure->signature, EEPROM_SIGNATURE_SIGNATURE, 8) == 0) {
+        //
+        // Check if this is the last structure
+        //
+        HashSize = Structure->length - sizeof (SIGNATURE_DATA);
+        if (Offset < ImageSize) {
+          //
+          // Oops! $PromSig is not the last structure.
+          //
+          DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: $PromSig structure is not the last structure!\n", __FUNCTION__, __LINE__));
+          Status = EFI_VOLUME_CORRUPTED;
+          goto Exit;
+        }
+      }
     }
-    //
-    // Get next structure on paragraph boundary
-    //
-    Structure = (GENERIC_HEADER *) ((UINT8 *) Structure + Structure->length + (Structure->length % 0x10));
   }
+  ImageBuffer = EepromFreePool (ImageBuffer);
+
   //
-  // Verify CRC32
+  // Get $Eeprom$ structure
   //
-  Crc32 = EepromHeader->crc32;
-  EepromHeader->crc32 = 0;
-  CalculateCrc32 (ImageBuffer, Crc32Size, &EepromHeader->crc32);
-  if (EepromHeader->crc32 != Crc32) {
-    //
-    // Oops!
-    //
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: CRC32 check failed! [%08x:%08x]\n", __FUNCTION__, __LINE__, EepromHeader->crc32, Crc32));
-    Status = EFI_SECURITY_VIOLATION;
+  Size   = 0;
+  Status = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromHeader, &Size);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
+    Status = EFI_VOLUME_CORRUPTED;
     goto Exit;
   }
   //
+  // Start CRC32 calculations with $Eeprom$
+  //
+  OriginalCrc32 = EepromHeader->crc32;
+  Crc32Size     = EepromHeader->crclength;
+  EepromHeader->crc32 = 0;
+  Crc32  = StartCrc32 ();
+  Crc32  = AddToCrc32 (EepromHeader, Size, Crc32);
+  Offset = Size;
+  //
+  // Add the rest of the binary
+  //
+  Size = 1024;
+  ImageBuffer = EepromAllocatePool (Size);
+  if (ImageBuffer == NULL) {
+    //
+    // Failed to allocate pool
+    //
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to allocate pool for Buffer!\n", __FUNCTION__, __LINE__));
+    Status = EFI_OUT_OF_RESOURCES;
+    goto Exit;
+  }
+  Status = EFI_SUCCESS;
+  while (!EFI_ERROR (Status) && (Offset < Crc32Size)) {
+    if ((Offset + Size) > Crc32Size) {
+      Size = Crc32Size - Offset;
+    }
+    Status  = ReadEeprom (LibraryIndex, Offset, &Size, ImageBuffer, &EepromInfo);
+    Offset += Size;
+    if (!EFI_ERROR (Status)) {
+      Crc32 = AddToCrc32 (ImageBuffer, Size, Crc32);
+    }
+  }
+  Crc32 = FinishCrc32 (Crc32);
+  if (OriginalCrc32 != Crc32) {
+    //
+    // Oops!
+    //
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: CRC32 check failed! [%08x:%08x]\n", __FUNCTION__, __LINE__, OriginalCrc32, Crc32));
+    Status = EFI_SECURITY_VIOLATION;
+    goto Exit;
+  }
+  EepromHeader = EepromFreePool (EepromHeader);
+
+  //
   // Verify hash
   //
-  Status = EFI_SUCCESS;
   if (HashSize > 0) {
     //
     // Check hash
     //
-    Status = SignedHashCheck (LibraryIndex, ImageBuffer, Crc32Size, Signature);
+    Status = SignedHashCheck (LibraryIndex);
     if (EFI_ERROR (Status) && (Status != EFI_MEDIA_CHANGED)) {
       DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to verify the hash!\n", __FUNCTION__, __LINE__));
       goto Exit;
@@ -969,7 +1008,8 @@ Exit:
   //
   // Free resources
   //
-  ImageBuffer = EepromFreePool (ImageBuffer);
+  EepromHeader = EepromFreePool (EepromHeader);
+  ImageBuffer  = EepromFreePool (ImageBuffer);
   if (EFI_ERROR (Status) && (Status != EFI_MEDIA_CHANGED)) {
     gImageValidFlag[LibraryIndex] = FALSE;
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));

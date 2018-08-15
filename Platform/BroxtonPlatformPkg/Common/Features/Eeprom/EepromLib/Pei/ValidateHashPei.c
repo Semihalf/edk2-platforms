@@ -20,27 +20,6 @@
 #include <Library/PeiServicesLib.h>
 #include <Ppi/ReadOnlyVariable2.h>
 
-UINTN
-EFIAPI
-DisplayStackPointer (
-  IN   CHAR8    *Function,
-  IN   UINTN     LineNumber
-  )
-{
-  EFI_HOB_HANDOFF_INFO_TABLE   *Hob;
-  UINTN                         Temp;
-  
-  Hob  = GetHobList ();
-  Temp = 0;
-  if ((Hob != NULL) & (mEepromDataLibDebugFlag)) {
-    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeTop    = %08x\n", __FUNCTION__, __LINE__, Hob->EfiFreeMemoryTop));
-    DEBUG ((DEBUG_INFO, "%a (#%4d) - INFO: FreeBottom = %08x\n", __FUNCTION__, __LINE__, Hob->EfiFreeMemoryBottom));
-    Temp = (UINTN) Hob->EfiFreeMemoryBottom;
-  }
-
-  return Temp;
-}
-
 EFI_STATUS
 EFIAPI
 GetEepromVariable (
@@ -165,26 +144,16 @@ InPeiPhase (VOID)
 EFI_STATUS
 EFIAPI
 SignedHashCheck (
-  IN       UINT8             LibraryIndex,
-  IN       UINT8            *ImageBuffer,
-  IN       UINT32            Crc32Size,
-  IN       SIGNATURE_DATA   *Signature
+  IN       UINT8             LibraryIndex
   )
 {
-  UINT8             *Hash;
-  UINT32             HashSize;
-  EFI_STATUS         Status;
-  UINT8             *Variable;
-  UINT32             VariableSize;
-
-  //
-  // Initialize variables
-  //
-  Hash         = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
-  HashSize     = Signature->length - sizeof (SIGNATURE_DATA);
-  Status       = EFI_UNSUPPORTED;
-  Variable     = NULL;
-  VariableSize = 0;
+  UINT8                  *Hash;
+  UINT32                  HashSize;
+  SIGNATURE_DATA         *Signature;
+  UINT32                  Size;
+  EFI_STATUS              Status;
+  UINT8                  *Variable;
+  UINT32                  VariableSize;
 
   //
   // Sanity checks
@@ -194,22 +163,25 @@ SignedHashCheck (
     Status = EFI_INVALID_PARAMETER;
     goto Exit;
   }
-  if (Signature == NULL) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Buffer is NULL!\n", __FUNCTION__, __LINE__));
-    Status = EFI_INVALID_PARAMETER;
+
+  //
+  // Get $PromSig structure
+  //
+  Size   = 0;
+  Status = GetEepromStructure (LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, (UINT8 **) &Signature, &Size);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
+    Status = EFI_VOLUME_CORRUPTED;
     goto Exit;
   }
-  if (Signature->hashtype == 0) {
-    //
-    // Nothing to do. Bail.
-    //
-    Status = EFI_SUCCESS;
-    goto Exit;
-  }
+  Hash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
+  HashSize = Signature->length - sizeof (SIGNATURE_DATA);
 
   //
   // Get stored hash
   //
+  Variable     = NULL;
+  VariableSize = 0;
   Status = GetEepromVariable (LibraryIndex, &Variable, &VariableSize);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get variable! [%r]\n", __FUNCTION__, __LINE__, Status));
@@ -245,7 +217,11 @@ SignedHashCheck (
   }
 
 Exit:
-  Variable = EepromFreePool (Variable);
+  //
+  // Clear resources
+  //
+  Signature = EepromFreePool (Signature);
+  Variable  = EepromFreePool (Variable);
   return Status;
 }
 
