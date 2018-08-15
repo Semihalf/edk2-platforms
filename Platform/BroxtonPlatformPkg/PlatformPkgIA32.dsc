@@ -1,7 +1,7 @@
 ## @file
 #  Platform description.
 #
-#  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -162,6 +162,22 @@
 #
 ################################################################################
 #[BuildOptions.Common]
+
+#
+# Force PE/COFF sections to be aligned at 4KB boundaries to support page level
+# protection of DXE_RUNTIME_DRIVER modules
+#
+[BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
+  MSFT:*_*_*_DLINK_FLAGS = /ALIGN:4096
+  GCC:*_*_*_DLINK_FLAGS = -z common-page-size=0x1000
+
+#
+# Force PE/COFF sections to be aligned at 4KB boundaries to support page level
+# protection of DXE_SMM_DRIVER/SMM_CORE modules
+#
+[BuildOptions.common.EDKII.DXE_SMM_DRIVER, BuildOptions.common.EDKII.SMM_CORE]
+  MSFT:*_*_*_DLINK_FLAGS = /ALIGN:4096
+  GCC:*_*_*_DLINK_FLAGS = -z common-page-size=0x1000
 
 [BuildOptions.Common.EDKII]
    !include $(PLATFORM_NAME)/PlatformDsc/BuildOptions.EDKII.dsc
