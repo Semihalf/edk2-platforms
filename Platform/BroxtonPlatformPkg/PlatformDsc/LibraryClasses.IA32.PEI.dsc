@@ -1,7 +1,7 @@
 ## @file
 #  IA32 PEI Library Classes Description.
 #
-#  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -43,7 +43,7 @@
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/PeiCryptLib.inf
   SerialPortLib|$(PLATFORM_PACKAGE_COMMON)/Library/BaseSerialPortLib/BaseSerialPortLib.inf
 !if $(SOURCE_DEBUG_ENABLE) == TRUE
-  DebugAgentLib|SourceLevelDebugPkg/Library/DebugAgent/SecPeiDebugAgentLib.inf 
+  DebugAgentLib|SourceLevelDebugPkg/Library/DebugAgent/SecPeiDebugAgentLib.inf
 
 !else
   DebugAgentLib|MdeModulePkg/Library/DebugAgentLibNull/DebugAgentLibNull.inf
@@ -63,4 +63,12 @@
 
   DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   Tcg2PhysicalPresenceLib|SecurityPkg/Library/PeiTcg2PhysicalPresenceLib/PeiTcg2PhysicalPresenceLib.inf
+
+  #
+  # EEPROM binary libs
+  #
+  BaseCryptLib      | CryptoPkg/Library/BaseCryptLib/PeiCryptLib.inf
+  EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataPeiLib.inf
+  EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromPeiLib.inf
+  EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformPeiLib.inf
 

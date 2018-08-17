@@ -30,7 +30,7 @@
   MdeModulePkg/Universal/PCD/Dxe/Pcd.inf {
     <LibraryClasses>
       PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
 
 !if $(SOURCE_DEBUG_ENABLE) == TRUE

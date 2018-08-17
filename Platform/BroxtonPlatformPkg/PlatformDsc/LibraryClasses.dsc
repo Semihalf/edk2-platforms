@@ -1,7 +1,7 @@
 ## @file
 #  Library classes Description.
 #
-#  Copyright (c) 2018, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -275,3 +275,13 @@
    UefiBootManagerLib | MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
    PlatformBootManagerLib | $(PLATFORM_PACKAGE_COMMON)/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
    BootLogoLib | MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
+
+  #
+  # EEPROM binary libs
+  #
+  BaseCryptLib      | CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
+  EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataLib.inf
+  EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromLib.inf
+  EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformLib.inf
+  I2cLib            | $(PLATFORM_SI_PACKAGE)/SouthCluster/Library/I2cLib/I2cLib.inf
+

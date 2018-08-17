@@ -1,7 +1,7 @@
 ## @file
 #  Platform Dynamic Pcd Description.
 #
-#  Copyright (c) 2016 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -60,4 +60,24 @@
   # a platform-specific method (e.g. Button pressed) in a actual platform in early boot phase.<BR><BR>
   # @Prompt A physical presence user status
   gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|TRUE
+
+  ##
+  ## EEPROM binary PCDs
+  ##
+  ## Used to store the EEPROM memory buffer pointer
+  gPlatformModuleTokenSpaceGuid.PcdEepromMemoryPointer|0
+  ## Used to store the EEPROM memory buffer size
+  gPlatformModuleTokenSpaceGuid.PcdEepromMemorySize|0
+  ## Used to store the EEPROM data library valid flags
+  gPlatformModuleTokenSpaceGuid.PcdEepromLibraryValid|{0x00, 0x00, 0x00, 0x00}
+  ## Flag to indicate that a HOB exists with EEPROM_MEMORY data
+  gPlatformModuleTokenSpaceGuid.PcdEepromMemoryHobPresent|FALSE
+  ## Pointer to the Part head link
+  gPlatformModuleTokenSpaceGuid.PcdEepromPartsHeadLink|0
+  ## Pointer to the Parts table
+  gPlatformModuleTokenSpaceGuid.PcdEepromParts|0
+  ## Flag to tell if EEPROM Map is in memory
+  gPlatformModuleTokenSpaceGuid.PcdEepromInMemoryFlag|0
+  ## Flag to tell if EEPROM Map is in HOB
+  gPlatformModuleTokenSpaceGuid.PcdEepromMapHobValid|0
 

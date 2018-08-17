@@ -1,7 +1,7 @@
 /** @file
   This library provides the BxtP GPIO library definitions.
 
-  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -22,6 +22,7 @@
 #define GPIO_NORTHWEST_COMMUNITY_LENGTH 0x764
 #define GPIO_WEST_COMMUNITY_LENGTH      0x674
 #define GPIO_SOUTHWEST_COMMUNITY_LENGTH 0x654
+#define GPIO_SOUTH_COMMUNITY_LENGTH     0
 
 // GPIO pad and offset definition as GPIO HAS
 // North community GPIO pad definition
@@ -254,13 +255,13 @@
 #define SW_GPIO_170           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x0090    //SDIO_D3
 #define SW_GPIO_171           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x0098    //SDIO_CMD
 #define SW_GPIO_172           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00A0    //SDCARD_CLK
-#define SW_GPIO_179           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00D8    //SDCARD_CMD
 #define SW_GPIO_173           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00A8    //SDCARD_CLK_FB
 #define SW_GPIO_174           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00B0    //SDCARD_D0
 #define SW_GPIO_175           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00B8    //SDCARD_D1
 #define SW_GPIO_176           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00C0    //SDCARD_D2
 #define SW_GPIO_177           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00C8    //SDCARD_D3
 #define SW_GPIO_178           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00D0    //SDCARD_CD_B
+#define SW_GPIO_179           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00D8    //SDCARD_CMD
 #define SW_GPIO_186           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00E0    //SDCARD_LVL_WP
 #define SW_GPIO_182           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00E8    //EMMC0_STROBE
 #define SW_GPIO_183           (((UINT32)GPIO_MMIO_OFFSET_SW)<<16)+GPIO_PADBAR+0x00F0    //SDIO_PWR_DOWN_B

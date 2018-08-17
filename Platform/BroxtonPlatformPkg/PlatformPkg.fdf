@@ -260,12 +260,12 @@
     SECTION UI = "IntelGopVbt1"
   }
   
-  # VBT For Minnowboard 3 Next (File Guid is gPeiMinnow3NextVbtGuid)
+  # VBT For Minnowboard 3 Module (File Guid is gPeiMinnow3ModuleVbtGuid)
   FILE FREEFORM = 1F9CBB42-107E-46A4-A2CB-92F586F9FB31 {
-    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Next/Vbt/VbtBxtMipi.bin
+    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Vbt/VbtBxtMipi.bin
     SECTION UI = "IntelGopVbt1"
   }
-    
+
   # VBT For Benson Glacier (File Guid is gPeiBensonGlacierVbtGuid)
   FILE FREEFORM = BFDE308E-2D5A-4CA7-AA76-19938AAAE4DA {
     SECTION RAW = $(PLATFORM_NAME)/Board/BensonGlacier/Vbt/VbtBxtMipi.bin
@@ -365,6 +365,9 @@ APRIORI PEI {
   INF $(PLATFORM_PACKAGE_COMMON)/SampleCode/IntelFsp2WrapperPkg/FspmWrapperPeim/FspmWrapperPeim.inf
   INF  RuleOverride = RESET_VECTOR USE = IA32 BroxtonSiPkg/Cpu/ResetVector/Vtf1/Bin/ResetVector.inf
 
+  FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile) {
+    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/MB3-Eeprom.bin
+  }
 [FV.FVIBBL]
   BlockSize          = $(FLASH_BLOCK_SIZE)
   FvAlignment        = 16         #FV alignment and FV attributes setting.
@@ -432,6 +435,9 @@ APRIORI DXE {
 !if $(SOURCE_DEBUG_ENABLE) == TRUE
   INF  SourceLevelDebugPkg/DebugAgentDxe/DebugAgentDxe.inf
 !endif
+  FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromPublicKeyFile) {
+    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/RSA-keys/MB3-public.bin
+  }
 
   INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   INF MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
