@@ -138,9 +138,9 @@ echo.
 echo %SpiAccessControl%
 echo   Generating SPI Image...
 mkdir BIOS_COMPONENTS
-copy /y /b %BIOS_Names%\IBBL.Fv .\BIOS_COMPONENTS
-copy /y /b %BIOS_Names%\IBB.Fv .\BIOS_COMPONENTS
-copy /y /b %BIOS_Names%\OBB.Fv .\BIOS_COMPONENTS
+copy /y /b %BIOS_Names%\IBBL.Fv      .\BIOS_COMPONENTS
+copy /y /b %BIOS_Names%\IBB.Fv       .\BIOS_COMPONENTS
+copy /y /b %BIOS_Names%\OBB.Fv       .\BIOS_COMPONENTS
 copy /y /b %BIOS_Names%\NvStorage.Fv .\BIOS_COMPONENTS
 
 if %BoardId%==BG (
@@ -151,8 +151,8 @@ if %BoardId%==BG (
   ) else (
     copy /y /b ..\..\..\Board\BensonGlacier\IFWI\FAB_A\SpiChunk1.bin .
     copy /y /b ..\..\..\Board\BensonGlacier\IFWI\FAB_A\SpiChunk2.bin .
-    copy /y /b ..\..\..\Board\BensonGlacier\IFWI\FAB_A\SpiChunk3.bin .  
-  )  
+    copy /y /b ..\..\..\Board\BensonGlacier\IFWI\FAB_A\SpiChunk3.bin .
+  )
   copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
 
 ) else if %BoardId%==AG (
@@ -161,7 +161,7 @@ if %BoardId%==BG (
   copy /y /b ..\..\..\Board\AuroraGlacier\IFWI\FAB_A\SpiChunk3.bin .
 
   copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
-  
+
 ) else if %BoardId%==MN (
          if %FabId%==B (
            copy /y /b ..\..\..\Board\MinnowBoard3\IFWI\FAB_B\SpiChunk1.bin .
@@ -175,10 +175,10 @@ if %BoardId%==BG (
            copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
          )
 ) else if %BoardId%==MX (
-           copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk1.bin .
-           copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk2.bin .
-           copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk3.bin .
-           copy /y /b ..\..\..\Board\MinnowBoard3Next\IFWI\FAB_A\SpiChunk1SpiAccessControl.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk1.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk2.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk3.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk1SpiAccessControl.bin .
            if %SpiAccessControl% EQU 0 (
              copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
            ) else (

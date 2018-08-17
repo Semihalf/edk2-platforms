@@ -1,5 +1,7 @@
 /** @file
-  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
+  I2C library instance.
+
+  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -11,39 +13,12 @@
 
 **/
 
-#ifndef _I2C_LIB_H_
-#define _I2C_LIB_H_
+#include "I2cLibNull.h"
+
+BOOLEAN   gI2cDebugFlag = FALSE;
 
 ////
-//// Header files
-////
-#include <Uefi.h>
-
-
-////
-//// Defines
-////
-#define   I2C_WRITE_TIMEOUT           5
-#define   FIFO_WRITE_DELAY            5
-#define   I2C_ROUTINE_DELAY           10
-#define   INVALID_I2C_ADDRESS         0xFF
-#define   MAX_I2C_ADDRESS             0x7F
-#define   MAX_I2C_BUS                 7
-
-
-////
-//// Enums
-////
-typedef enum {
-  Standard_Speed = 1,
-  Fast_Speed     = 2,
-  High_Speed     = 3,
-  Max_Speed      = 3
-} I2C_SPEED_ENUM;
-
-
-////
-//// Functions
+//// Public I2C functions
 ////
 //
 //  Desc:   Initializes the controller and returns the MMIO base address
@@ -61,12 +36,26 @@ I2cInit (
   IN       UINT16    Address,
   IN       UINT8     Speed,
   IN OUT   UINT32   *I2cBaseAddress
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
+//
+//  Desc:   Polls the I2C controller with reads until it responds.
+//  Input:  I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: EFI_SUCCESS           - Initialization completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//
 EFI_STATUS
 I2cPoll (
   IN       UINT32     I2cBaseAddress
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 //
 //  Desc:   Read a byte from the I2C controller
@@ -84,11 +73,18 @@ I2cRead (
   IN OUT   UINT8     *Data,
   IN       BOOLEAN    Start,
   IN       BOOLEAN    End
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 //
 //  Desc:   Resets the I2C controller into a known good state
 //  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Bus                   - I2C controller, 0 based
+//          Address               - 7-bit slave address
+//          Speed                 - Uses the I2C_SPEED_ENUM enum to set the controller speed
 //  Output: EFI_SUCCESS           - Write completed successfully
 //          EFI_DEVICE_ERROR      - I2C controller error
 //          EFI_INVALID_PARAMETER - Invalid input parameter
@@ -99,18 +95,36 @@ I2cReset (
   IN       UINT8     Bus,
   IN       UINT16    Address,
   IN       UINT8     Speed
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
+//
+//  Desc:   Write a byte to the I2C controller
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Data                  - Data from the I2C controller
+//          Start                 - Send start bit?
+//          End                   - Send end bit?
+//  Output: EFI_SUCCESS           - Write completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
 EFI_STATUS
 I2cSendCommand (
   IN       UINT32     I2cBaseAddress,
   IN       UINT32    *Data,
   IN       BOOLEAN    Start,
   IN       BOOLEAN    End
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 //
-//  Desc:   Set I2C slave offset
+//  Desc:   Set I2C target slave offset
 //  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
 //          Offset                - Pointer to offset data
 //          Size                  - Size of the offset data
@@ -123,7 +137,11 @@ I2cSetOffset (
   IN       UINT32     I2cBaseAddress,
   IN       UINT8     *Offset,
   IN       UINT8      Size
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 //
 //  Desc:   Write a byte to the I2C controller
@@ -141,7 +159,11 @@ I2cWrite (
   IN       UINT8      Data,
   IN       BOOLEAN    Start,
   IN       BOOLEAN    End
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Read bytes from I2C Device
@@ -168,7 +190,11 @@ ByteReadI2C_Basic (
   OUT UINT8        *ReadBuffer,
   IN  UINT8        Start,
   IN  UINT8        End
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Write bytes to I2C Device
@@ -195,7 +221,11 @@ ByteWriteI2C_Basic (
   IN  UINT8        *WriteBuffer,
   IN  UINT8        Start,
   IN  UINT8        End
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Read bytes from I2C Device
@@ -217,7 +247,11 @@ ByteReadI2C (
   IN  UINT8        Offset,
   IN  UINTN        ReadBytes,
   OUT UINT8        *ReadBuffer
-  );
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Write bytes to I2C Device
@@ -239,7 +273,9 @@ ByteWriteI2C (
   IN  UINT8        Offset,
   IN  UINTN        WriteBytes,
   IN  UINT8        *WriteBuffer
-  );
-
-#endif  // _I2C_LIB_H_
+  )
+{
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 

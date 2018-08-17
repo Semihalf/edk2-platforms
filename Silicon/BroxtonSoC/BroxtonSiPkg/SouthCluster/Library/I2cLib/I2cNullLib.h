@@ -1,7 +1,5 @@
 /** @file
-  Timer instance for I2C Pei Library.
-
-  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -13,11 +11,20 @@
 
 **/
 
-#include <PiPei.h>
-#include "I2CAccess.h"
-#include "I2CDelayPei.h"
-#include <Library/DebugLib.h>
-#include <Library/PeiServicesTablePointerLib.h>
-#include <Ppi/Stall.h>
+#ifndef _I2C_COMMON_NULL_H_
+#define _I2C_COMMON_NULL_H_
+////
+//// Header files
+////
+#include <Uefi.h>
 
+#include <Library/DebugLib.h>
+#include <Library/I2cLib.h>
+
+//
+// Externs
+//
+extern BOOLEAN   gI2cDebugFlag;
+
+#endif // _I2C_COMMON_NULL_H_
 

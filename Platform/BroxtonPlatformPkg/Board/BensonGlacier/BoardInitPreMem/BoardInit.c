@@ -1,7 +1,7 @@
 /** @file
   Board Init driver.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -74,9 +74,9 @@ BensonGlacierPreMemInit (
   DEBUG ((EFI_D_INFO,  "This is Benson Glacier board.\n"));
   
   Status = BensonGetFabId (PeiServices, &FabId);
-  if (FabId == 1) {
+  if (FabId == FAB_ID_B) {
     DEBUG ((EFI_D_INFO,  "This is Benson Glacier FAB B.\n"));
-  } else if (FabId == 0) {
+  } else if (FabId == FAB_ID_A) {
     DEBUG ((EFI_D_INFO,  "This is Benson Glacier FAB A.\n"));
   }
   

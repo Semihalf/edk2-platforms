@@ -15,7 +15,7 @@
 
 #include <Uefi.h>
 #include <Library/BaseMemoryLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/GpioLib.h>
 #include <Guid/PlatformInfo.h>
 #include "PlatformId.h"
@@ -134,7 +134,7 @@ BensonGetFabId(
   GpioPadWrite (CommAndOffset + BXT_GPIO_PAD_CONF1_OFFSET, padConfg1.padCnf1);
 
 
-  *FabId = (UINT8) (((GpioPadRead (GetCommOffset (NORTH, 0x0F0) + BXT_GPIO_PAD_CONF0_OFFSET) & BIT1) >> 1));
+  *FabId = (UINT8) (((GpioPadRead (GetCommOffset (NORTH, 0x0F0) + BXT_GPIO_PAD_CONF0_OFFSET) & BIT1) >> 1)) + 1;
 
   DEBUG ((EFI_D_INFO,  "FabId: %02X\n", *FabId));
 

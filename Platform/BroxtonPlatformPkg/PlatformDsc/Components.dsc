@@ -48,7 +48,7 @@
       MpInitLib|UefiCpuPkg/Library/MpInitLib/DxeMpInitLib.inf
       DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
-  
+
   UefiCpuPkg/CpuS3DataDxe/CpuS3DataDxe.inf
   UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf
@@ -182,8 +182,8 @@
   MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
   MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
   PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf {
-    <PcdsFixedAtBuild>     
-      gPcAtChipsetPkgTokenSpaceGuid.PcdMinimalValidYear|2017 
+    <PcdsFixedAtBuild>
+      gPcAtChipsetPkgTokenSpaceGuid.PcdMinimalValidYear|2018
   }
   MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
 
@@ -193,7 +193,7 @@
       NULL|$(PLATFORM_NAME)/Board/LeafHill/BoardInitDxe/BoardInitDxe.inf
       NULL|$(PLATFORM_NAME)/Board/BensonGlacier/BoardInitDxe/BoardInitDxe.inf
       NULL|$(PLATFORM_NAME)/Board/AuroraGlacier/BoardInitDxe/BoardInitDxe.inf
-      NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Next/BoardInitDxe/BoardInitDxe.inf
+      NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Module/BoardInitDxe/BoardInitDxe.inf
       NULL|$(PLATFORM_NAME)/Board/UP2/BoardInitDxe/BoardInitDxe.inf
   }
 
@@ -504,27 +504,27 @@
 
   MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Usb/UsbMouseDxe/UsbMouseDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf  {
    <LibraryClasses>
-      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf 
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf {
     <BuildOptions>
@@ -563,6 +563,7 @@
   #
   $(PLATFORM_PACKAGE_COMMON)/Application/FirmwareUpdate/FirmwareUpdate.inf
   MdeModulePkg/Application/VariableInfo/VariableInfo.inf
+  $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromApp/EepromApp.inf
   
   #
   # VT-d for DMA Protection

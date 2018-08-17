@@ -2,7 +2,7 @@
   Multiplatform initialization header file.
   This file includes package header files, library classes.
 
-  Copyright (c) 2010 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -53,7 +53,7 @@
 #include <Library/DebugLib.h>
 #include <Library/GpioLib.h>
 #include <Library/HobLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/IoLib.h>
 #include <Library/PcdLib.h>
 #include <Library/SteppingLib.h>

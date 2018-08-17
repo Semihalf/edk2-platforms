@@ -1,7 +1,7 @@
 /** @file
   Source code file for Platform Init Pre-Memory PEI module.
 
-  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -53,7 +53,7 @@
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PerformanceLib.h>
 #include <Library/MtrrLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/PmicLib.h>
 #include <Library/PeiVariableCacheLib.h>
 #include <Library/PeiSiPolicyLib.h>

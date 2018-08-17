@@ -1,8 +1,7 @@
 /** @file
-  Dxe library for I2C bus driver.
+  I2C library instance.
 
-@copyright
- Copyright (c) 1999 - 2018 Intel Corporation. All rights reserved
+  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -11,44 +10,15 @@
 
   THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
   WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+
 **/
 
-#include <Library/DebugLib.h>
-#include <Library/I2CLib.h>
-#include <Library/TimerLib.h>
-#include <PlatformBaseAddresses.h>
-#include <SaAccess.h>
-#include <ScAccess.h>
-#include <ScRegs/RegsI2c.h>
+#include "I2cLib.h"
 
-#pragma pack(push, 1)
-typedef struct _LPSS_PCI_DEVICE_INFO {
-  UINTN        Segment;
-  UINTN        BusNum;
-  UINTN        DeviceNum;
-  UINTN        FunctionNum;
-  UINTN        Bar0;
-  UINTN        Bar1;
-} LPSS_PCI_DEVICE_INFO;
-
-typedef enum {
-  Standard_Speed = 1,
-  Fast_Speed = 2,
-  High_Speed = 3,
-} I2C_SPEED;
-
-typedef struct _LPSS_I2C_CLOCK_SCL_INFO {
-  UINT8        I2c_Speed;
-  UINT16       SS_SCL_HCNT;
-  UINT16       SS_SCL_LCNT;
-  UINT16       FS_SCL_HCNT;
-  UINT16       FS_SCL_LCNT;
-  UINT16       HS_SCL_HCNT;
-  UINT16       HS_SCL_LCNT;
-} LPSS_I2C_CLOCK_SCL_INFO;
-#pragma pack(pop)
-
-LPSS_PCI_DEVICE_INFO  mLpssPciDeviceList[] = {
+//
+// List of I2C controllers
+//
+I2C_LPSS_PCI_DEVICE_INFO  mI2cLpssPciDeviceList[] = {
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C0, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*0), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*0) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C1, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*1), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*1) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C2, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*2), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*2) + LPSS_I2C_TMP_BAR1_OFFSET},
@@ -56,165 +26,118 @@ LPSS_PCI_DEVICE_INFO  mLpssPciDeviceList[] = {
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C4, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*4), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*4) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C5, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*5), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*5) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C6, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*6), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*6) + LPSS_I2C_TMP_BAR1_OFFSET},
-  {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C7, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7) + LPSS_I2C_TMP_BAR1_OFFSET},
+  {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C7, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7) + LPSS_I2C_TMP_BAR1_OFFSET}
 };
+#define I2C_LPSS_PCI_DEVICE_NUMBER  (sizeof (mI2cLpssPciDeviceList) / sizeof (I2C_LPSS_PCI_DEVICE_INFO))
 
-#define LPSS_PCI_DEVICE_NUMBER  sizeof(mLpssPciDeviceList)/sizeof(LPSS_PCI_DEVICE_INFO)
-
+//
+// List of I2C controller clock values
+//
 LPSS_I2C_CLOCK_SCL_INFO  mLPSS_I2C_CLOCK_SCL_INFO[] = {
-  {Fast_Speed, 0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
-  {Fast_Speed, 0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
-  {Fast_Speed, 0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
-  {High_Speed, 0x244, 0x2DA, 0x1E, 0x3C, 0x06, 0x13},
-  {High_Speed, 0x244, 0x2DA, 0x1E, 0x50, 0x06, 0x13},
-  {Fast_Speed, 0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
-  {Fast_Speed, 0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
-  {Fast_Speed, 0x244, 0x2D0, 0x70, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
+  {0x244, 0x2DA, 0x1E, 0x3C, 0x06, 0x13},
+  {0x244, 0x2DA, 0x1E, 0x50, 0x06, 0x13},
+  {0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x70, 0xC8, 0x06, 0x13}
+};
+#define LPSS_I2C_CLOCK_SCL_INFO_NUMBER  (sizeof (mLPSS_I2C_CLOCK_SCL_INFO) / sizeof (LPSS_I2C_CLOCK_SCL_INFO))
+
+//
+// List of I2C controller PAD settings
+//
+BXT_GPIO_PAD_INIT  mI2C_LPSS_PAD_INFO[] = {
+  BXT_GPIO_PAD_CONF (L"GPIO_124 LPSS_I2C0_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0000, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_125 LPSS_I2C0_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0008, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_126 LPSS_I2C1_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0010, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_127 LPSS_I2C1_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0018, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_128 LPSS_I2C2_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0020, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_129 LPSS_I2C2_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0028, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_130 LPSS_I2C3_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0030, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_131 LPSS_I2C3_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0038, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_132 LPSS_I2C4_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0040, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_133 LPSS_I2C4_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0048, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_134 LPSS_I2C5_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0050, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_135 LPSS_I2C5_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0058, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_136 LPSS_I2C6_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0060, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_137 LPSS_I2C6_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0068, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_138 LPSS_I2C7_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0070, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_139 LPSS_I2C7_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0078, WEST)
 };
 
-#define LPSS_I2C_CLOCK_SCL_INFO_NUMBER  sizeof(mLPSS_I2C_CLOCK_SCL_INFO)/sizeof(LPSS_I2C_CLOCK_SCL_INFO)
+BOOLEAN   gI2cDebugFlag = FALSE;
 
-
-/**
-  Program LPSS I2C PCI controller's BAR0 and enable memory decode.
-
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
-
-  @retval EFI_SUCCESS           - I2C controller's BAR0 is programmed and memory decode enabled.
-  @retval EFI_NOT_READY         - I2C controller's is not exist or its function has been disabled.
-**/
-EFI_STATUS
-ProgramPciLpssI2C (
-  IN UINT8        BusNo
+////
+//// Internal I2C functions
+////
+//
+//  Desc:   Clears the interrupts on this I2C controller
+//  Input:  I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: NA
+//
+VOID
+I2cClearInterrupts (
+  IN UINT32       I2cBaseAddress
   )
 {
-  UINTN  PciMmBase=0;
-  UINT32 I2CBar0;
-  UINT32 I2CBar1;
-  UINT32 PmcBase;
-  UINT32 D32;
-  UINT32 I2cPortDisable[] = {
-    B_PMC_FUNC_DIS_LPSS_I2C0,
-    B_PMC_FUNC_DIS_LPSS_I2C1,
-    B_PMC_FUNC_DIS_LPSS_I2C2,
-    B_PMC_FUNC_DIS_LPSS_I2C3,
-    B_PMC_FUNC_DIS_LPSS_I2C4,
-    B_PMC_FUNC_DIS_LPSS_I2C5,
-    B_PMC_FUNC_DIS_LPSS_I2C6,
-    B_PMC_FUNC_DIS_LPSS_I2C7
-  };
-
-  DEBUG ((DEBUG_INFO, "ProgramPciLpssI2C() Start\n"));
-
-  //
-  // Check PMC disable register
-  //
-  PmcBase = PMC_BASE_ADDRESS;
-  D32     = MmioRead32 (PmcBase + R_PMC_FUNC_DIS);
-
-  if (D32 == 0xFFFFFFFF) {
-    DEBUG ((DEBUG_INFO, "ProgramPciLpssI2C() PMC disable register not available. [%08x]\n", PMC_BASE_ADDRESS));
-  } else {
-    if ((D32 & I2cPortDisable[BusNo]) != 0) {
-      // This I2C port is disabled. Turn it on.
-      D32 &= ~I2cPortDisable[BusNo];
-      MmioWrite32 (PmcBase + R_PMC_FUNC_DIS, D32);
-      DEBUG ((DEBUG_INFO, "ProgramPciLpssI2C() enable I2C controller #%x\n", BusNo));
-      // Make sure it took.
-      if (D32 != MmioRead32 (PmcBase + R_PMC_FUNC_DIS)) {
-        DEBUG ((DEBUG_ERROR, "ProgramPciLpssI2C() failed to enable I2C controller #%x [%08x:%08x]\n", BusNo, D32, MmioRead32 (PmcBase + R_PMC_FUNC_DIS)));
-        return EFI_DEVICE_ERROR;
-      }
-    }
-  }
-
-  DEBUG ((DEBUG_INFO, "ProgramPciLpssI2C()------------BusNo=%x\n", BusNo));
-
-  PciMmBase = MmPciAddress (
-                mLpssPciDeviceList[BusNo].Segment,
-                mLpssPciDeviceList[BusNo].BusNum,
-                mLpssPciDeviceList[BusNo].DeviceNum,
-                mLpssPciDeviceList[BusNo].FunctionNum,
-                0
-                );
-  DEBUG ((DEBUG_INFO, "Program Pci Lpss I2C Device  %x %x %x PciMmBase:%x\n", \
-      mLpssPciDeviceList[BusNo].BusNum, \
-      mLpssPciDeviceList[BusNo].DeviceNum, \
-      mLpssPciDeviceList[BusNo].FunctionNum, PciMmBase));
-
-  //
-  // Check if device present
-  //
-  if (MmioRead32 (PciMmBase) != 0xFFFFFFFF) {
-    if ((MmioRead32 (PciMmBase + R_LPSS_IO_STSCMD) & B_LPSS_IO_STSCMD_MSE)) {
-      //
-      // In Pei stage, we always disable Bus master, and memory space enabling for BAR re-programming
-      // In DXE stage, will read existing BAR value instead of re-programming
-      //
-      I2CBar0 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;
-      I2CBar1 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR1) & B_LPSS_IO_BAR_BA;
-      if ((I2CBar0 != (UINT32)mLpssPciDeviceList[BusNo].Bar0) || (I2CBar1 != (UINT32)mLpssPciDeviceList[BusNo].Bar1)) {
-        mLpssPciDeviceList[BusNo].Bar0 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;     // get the address allocated.
-        mLpssPciDeviceList[BusNo].Bar1 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR1) & B_LPSS_IO_BAR_BA;
-        DEBUG ((DEBUG_INFO, "Get bar0:0x%x bar1:0x%x\n", mLpssPciDeviceList[BusNo].Bar0, mLpssPciDeviceList[BusNo].Bar1));
-      }
-    } else {
-      //
-      // Program BAR 0
-      //
-      ASSERT (((mLpssPciDeviceList[BusNo].Bar0 & B_LPSS_IO_BAR_BA) == mLpssPciDeviceList[BusNo].Bar0) && (mLpssPciDeviceList[BusNo].Bar0 != 0));
-      MmioWrite32 ((UINTN) (PciMmBase + R_LPSS_IO_BAR), (UINT32) (mLpssPciDeviceList[BusNo].Bar0 & B_LPSS_IO_BAR_BA));
-      //
-      // Program BAR 1
-      //
-      ASSERT (((mLpssPciDeviceList[BusNo].Bar1 & B_LPSS_IO_BAR1_BA) == mLpssPciDeviceList[BusNo].Bar1) && (mLpssPciDeviceList[BusNo].Bar1 != 0));
-      MmioWrite32 ((UINTN) (PciMmBase + R_LPSS_IO_BAR1), (UINT32) (mLpssPciDeviceList[BusNo].Bar1 & B_LPSS_IO_BAR1_BA));
-      //
-      // Bus Master Enable & Memory Space Enable
-      //
-      MmioOr32 ((UINTN) (PciMmBase + R_LPSS_IO_STSCMD), (UINT32) (B_LPSS_IO_STSCMD_BME | B_LPSS_IO_STSCMD_MSE));
-      ASSERT (MmioRead32 (mLpssPciDeviceList[BusNo].Bar0) != 0xFFFFFFFF);
-    }
-
-    //
-    // Release Resets
-    //
-    MmioWrite32 (mLpssPciDeviceList[BusNo].Bar0 + R_LPSS_IO_MEM_RESETS, B_LPSS_IO_MEM_HC_RESET_REL | B_LPSS_IO_MEM_iDMA_RESET_REL);
-
-    DEBUG ((DEBUG_INFO, "ProgramPciLpssI2C() Programmed()\n"));
-    return EFI_SUCCESS;
-  } else {
-     DEBUG ((DEBUG_ERROR, "Pci Lpss I2C Device  %x %x %x is not existing!\n",
-       mLpssPciDeviceList[BusNo].BusNum,
-       mLpssPciDeviceList[BusNo].DeviceNum,
-       mLpssPciDeviceList[BusNo].FunctionNum));
-
-     return EFI_NOT_READY;
-  }
+  MmioRead32 (I2cBaseAddress + R_IC_CLR_INTR);
+  return;
 }
 
-/**
-  Disable I2C host controller
-
-  @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
-
-  @retval EFI_SUCCESS           - I2C host controller is completely inactive.
-  @retval EFI_NOT_READY         - I2C host controller is still in an enabled state.
-**/
-EFI_STATUS
-I2cDisable (
-  IN UINTN        I2CBaseAddress
+//
+//  Desc:   Clears the TX Abort on this I2C controller
+//  Input:  I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: NA
+//
+VOID
+I2cClearTxAbort (
+  IN UINT32       I2cBaseAddress
   )
 {
-  UINT32 NumTries = 10000;  // 0.1 seconds
+  MmioRead32 (I2cBaseAddress + R_IC_CLR_TX_ABRT);
+  return;
+}
 
-  MmioWrite32 (I2CBaseAddress + R_IC_ENABLE, 0);
-  while (0 != ( MmioRead32 ( I2CBaseAddress + R_IC_ENABLE_STATUS) & 1)) {
+//
+//  Desc:   Disable this I2C controller
+//  Input:  I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: Status                - EFI_SUCCESS   - I2C host controller is completely inactive
+//                                  EFI_NOT_READY - I2C host controller is still in an enabled state
+//
+EFI_STATUS
+I2cDisable (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT32       NumTries;
+  EFI_STATUS   Status;
+
+  //
+  // Initialize variables
+  //
+  Status = EFI_SUCCESS;
+
+  //
+  // Disable I2C controller
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_ENABLE, 0);
+  NumTries = 10000;   // 0.1 seconds
+  while (0 != (MmioRead32 (I2cBaseAddress + R_IC_ENABLE_STATUS) & 0x03)) {
     MicroSecondDelay (10);
     NumTries --;
-    if (0 == NumTries) return EFI_NOT_READY;
+    if (0 == NumTries) {
+      Status = EFI_NOT_READY;
+      goto Exit;
+    }
   }
-  return EFI_SUCCESS;
+
+Exit:
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
 }
 
 /**
@@ -227,18 +150,183 @@ I2cDisable (
 **/
 EFI_STATUS
 I2cEnable (
-  IN UINTN        I2CBaseAddress
+  IN UINT32       I2cBaseAddress
   )
 {
-  UINT32 NumTries = 10000;  // 0.1 seconds
+  UINT32       NumTries;
+  EFI_STATUS   Status;
 
-  MmioWrite32 (I2CBaseAddress + R_IC_ENABLE, 1);
-  while (0 == (MmioRead32 (I2CBaseAddress + R_IC_ENABLE_STATUS) & 1)) {
+  //
+  // Initialize variables
+  //
+  NumTries = 10000;   // 0.1 seconds
+  Status   = EFI_SUCCESS;
+
+  //
+  // Enable I2C controller
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_ENABLE, I2C_ENABLE_ENABLE);
+  while (I2C_ENABLE_ENABLE != (MmioRead32 (I2cBaseAddress + R_IC_ENABLE_STATUS) & I2C_ENABLE_ENABLE)) {
     MicroSecondDelay (10);
     NumTries --;
-    if (0 == NumTries) return EFI_NOT_READY;
+    if (0 == NumTries) {
+      Status = EFI_NOT_READY;
+      goto Exit;
+    }
   }
-  return EFI_SUCCESS;
+
+Exit:
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+UINT16
+I2cGetTxAbortStatus (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT16   TxAbortStatus;
+
+  if (I2cBaseAddress == 0) {
+    TxAbortStatus = 0xFFFF;
+  } else {
+    TxAbortStatus = (UINT16) (MmioRead32 (I2cBaseAddress + R_IC_TX_ABRT_SOURCE) & 0xFFFF);
+  }
+  return TxAbortStatus;
+}
+
+/**
+  Get I2C controller raw interrupt status
+
+  @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
+
+  @retval UINT16                - Raw interrupt status bit flags
+**/
+UINT16
+I2cGetRawStatus (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT16   RawStatus;
+
+  if (I2cBaseAddress == 0) {
+    RawStatus = 0xFFFF;
+  } else {
+    RawStatus = (UINT16) (MmioRead32 (I2cBaseAddress + R_IC_RAW_INTR_STAT) & 0x3FFF);
+  }
+
+  return RawStatus;
+}
+
+/**
+  Get I2C controller RX FIFO count
+
+  @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
+
+  @retval UINT16                - RX FIFO count
+**/
+UINT16
+I2cGetRxFifo (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT16   RxFifo;
+
+  if (I2cBaseAddress == 0) {
+    RxFifo = 0xFFFF;
+  } else {
+    RxFifo = (UINT16) (MmioRead32 (I2cBaseAddress + R_IC_RXFLR) & 0x01FF);
+  }
+
+  return RxFifo;
+}
+
+/**
+  Get I2C controller status
+
+  @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
+
+  @retval UINT16                - Status bit flags
+**/
+UINT16
+I2cGetStatus (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT16   I2cStatus;
+
+  if (I2cBaseAddress == 0) {
+    I2cStatus = 0xFFFF;
+  } else {
+    I2cStatus = (UINT16) (MmioRead32 (I2cBaseAddress + R_IC_STATUS) & 0x007F);
+  }
+
+  return I2cStatus;
+}
+
+/**
+  Get I2C controller TX FIFO count
+
+  @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
+
+  @retval UINT16                - TX FIFO count
+**/
+UINT16
+I2cGetTxFifo (
+  IN UINT32       I2cBaseAddress
+  )
+{
+  UINT16   TxFifo;
+
+  if (I2cBaseAddress == 0) {
+    TxFifo = 0xFFFF;
+  } else {
+    TxFifo = (UINT16) (MmioRead32 (I2cBaseAddress + R_IC_TXFLR) & 0x01FF);
+  }
+
+  return TxFifo;
+}
+
+EFI_STATUS
+I2cProgramPad (
+  IN   UINT8   Bus
+  )
+{
+  UINT8        index;
+  EFI_STATUS   Status;
+
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PADs for bus #%d\n", __FUNCTION__, __LINE__, Bus));
+
+  //
+  // Initialize variables
+  //
+  Status = EFI_SUCCESS;
+
+  //
+  // Sanity checks
+  //
+  if (Bus > MAX_I2C_BUS) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+
+  //
+  // Program SDA/SCL
+  //
+  for (index = 0; index < 2; index++) {
+    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PAD %s\n", __FUNCTION__, __LINE__, mI2C_LPSS_PAD_INFO[(Bus * 2) + index].pad_name));
+    GpioPadConfigTable (1, &mI2C_LPSS_PAD_INFO[(Bus * 2) + index]);
+  }
+
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+
+Exit:
+  return Status;
 }
 
 /**
@@ -253,190 +341,843 @@ I2cEnable (
   KHz.  However if the desired frequency is 400 KHz and the controller only
   supports 1 MHz and 100 KHz then this routine would return EFI_UNSUPPORTED.
 
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
+  @param[in]  Bus               - I2C Bus number to which the I2C device has been connected
   @param[in]  I2CBaseAddress    - BAR0 address of I2C host controller
-  @param[out] I2cMode           - I2C operation mode.
-                                  Standard Speed: 100 KHz
-                                  Fast Speed    : 400 KHz
-                                  High Speed    : 3.4 MHz
 
   @retval EFI_SUCCESS           - The bus frequency was set successfully.
 **/
 EFI_STATUS
-I2cBusFrequencySet (
-  IN  UINT8   BusNo,
-  IN  UINTN   I2CBaseAddress,
-  OUT UINT16  *I2cMode
+I2cSetBusFrequency (
+  IN  UINT8    Bus,
+  IN  UINT32   I2cBaseAddress
   )
 {
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet bus: %d\r\n", BusNo));
-  ASSERT ((BusNo < LPSS_I2C_CLOCK_SCL_INFO_NUMBER));
+  EFI_STATUS   Status;
+
+  //
+  // Initialize variables
+  //
+  Status = EFI_SUCCESS;
+
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet bus: %d\n", __FUNCTION__, __LINE__, Bus));
+  ASSERT ((Bus < LPSS_I2C_CLOCK_SCL_INFO_NUMBER));
   //
   //  Set the 100 KHz clock divider according to SV result and I2C spec
   //
-  MmioWrite32 (I2CBaseAddress + R_IC_SS_SCL_HCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].SS_SCL_HCNT);
-  MmioWrite32 (I2CBaseAddress + R_IC_SS_SCL_LCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].SS_SCL_LCNT);
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet R_IC_SS_SCL_HCNT: 0x%08X, R_IC_SS_SCL_LCNT: 0x%08X\r\n",\
-         MmioRead32 (I2CBaseAddress + R_IC_SS_SCL_HCNT), MmioRead32 (I2CBaseAddress + R_IC_SS_SCL_LCNT)));
+  MmioWrite32 (I2cBaseAddress + R_IC_SS_SCL_HCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].SS_SCL_HCNT);
+  MmioWrite32 (I2cBaseAddress + R_IC_SS_SCL_LCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].SS_SCL_LCNT);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SS_SCL_HCNT: 0x%08X, R_IC_SS_SCL_LCNT: 0x%08X\r\n",
+                       __FUNCTION__,
+                       __LINE__,
+                       MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_HCNT),
+                       MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_LCNT)));
   //
   //  Set the 400 KHz clock divider according to SV result and I2C spec
   //
-  MmioWrite32 (I2CBaseAddress + R_IC_FS_SCL_HCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].FS_SCL_HCNT);
-  MmioWrite32 (I2CBaseAddress + R_IC_FS_SCL_LCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].FS_SCL_LCNT);
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet R_IC_FS_SCL_HCNT: 0x%08X, R_IC_FS_SCL_LCNT: 0x%08X\r\n",\
-         MmioRead32 (I2CBaseAddress + R_IC_FS_SCL_HCNT), MmioRead32 (I2CBaseAddress + R_IC_FS_SCL_LCNT)));
+  MmioWrite32 (I2cBaseAddress + R_IC_FS_SCL_HCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].FS_SCL_HCNT);
+  MmioWrite32 (I2cBaseAddress + R_IC_FS_SCL_LCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].FS_SCL_LCNT);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_FS_SCL_HCNT: 0x%08X, R_IC_FS_SCL_LCNT: 0x%08X\r\n",
+                       __FUNCTION__,
+                       __LINE__,
+                       MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_HCNT),
+                       MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_LCNT)));
   //
   //  Set the 3.4MHz clock divider according to SV result and I2C spec
   //
-  MmioWrite32 (I2CBaseAddress + R_IC_HS_SCL_HCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].HS_SCL_HCNT);
-  MmioWrite32 (I2CBaseAddress + R_IC_HS_SCL_LCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[BusNo].HS_SCL_LCNT);
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet R_IC_HS_SCL_HCNT: 0x%08X, R_IC_HS_SCL_LCNT: 0x%08X\r\n",\
-         MmioRead32 (I2CBaseAddress + R_IC_HS_SCL_HCNT), MmioRead32 (I2CBaseAddress + R_IC_HS_SCL_LCNT)));
+  MmioWrite32 (I2cBaseAddress + R_IC_HS_SCL_HCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[Bus].HS_SCL_HCNT);
+  MmioWrite32 (I2cBaseAddress + R_IC_HS_SCL_LCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[Bus].HS_SCL_LCNT);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_HS_SCL_HCNT: 0x%08X, R_IC_HS_SCL_LCNT: 0x%08X\r\n",
+                       __FUNCTION__,
+                       __LINE__,
+                       MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_HCNT),
+                       MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_LCNT)));
 
-  switch (mLPSS_I2C_CLOCK_SCL_INFO[BusNo].I2c_Speed) {
-    case Standard_Speed:
-      MmioWrite32 ( I2CBaseAddress + R_IC_SDA_HOLD, (UINT16)0x06); //100K
-      *I2cMode = V_SPEED_STANDARD;
-      DEBUG ((DEBUG_INFO, "I2cBusFrequencySet I2cMode: 0x%04X\r\n", *I2cMode));
-      break;
+  //
+  // Set hold register
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_SDA_HOLD, (UINT16) 0x06);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SDA_HOLD: 0x%08X\r\n", __FUNCTION__, __LINE__, MmioRead32 (I2cBaseAddress + R_IC_SDA_HOLD)));
 
-    case Fast_Speed:
-      MmioWrite32 ( I2CBaseAddress + R_IC_SDA_HOLD, (UINT16)0x06); //400K
-      *I2cMode = V_SPEED_FAST;
-      DEBUG ((DEBUG_INFO, "I2cBusFrequencySet I2cMode: 0x%04X\r\n", *I2cMode));
-      break;
-
-    case High_Speed:
-      MmioWrite32 ( I2CBaseAddress + R_IC_SDA_HOLD, (UINT16)0x06); //3.4M
-      *I2cMode = V_SPEED_HIGH;
-      DEBUG ((DEBUG_INFO, "I2cBusFrequencySet I2cMode: 0x%04X\r\n", *I2cMode));
-      break;
-
-    default:
-      MmioWrite32 ( I2CBaseAddress + R_IC_SDA_HOLD, (UINT16)0x06); //400K
-      *I2cMode = V_SPEED_FAST;
-      DEBUG ((DEBUG_INFO, "I2cBusFrequencySet I2cMode: 0x%04X\r\n", *I2cMode));
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
-
-  //
-  //  Select the frequency counter
-  //  Enable restart condition,
-  //  Enable master FSM, disable slave FSM
-  //
-  *I2cMode |= B_IC_RESTART_EN | B_IC_SLAVE_DISABLE | B_MASTER_MODE;
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet R_IC_SDA_HOLD: 0x%08X\r\n", MmioRead32 (I2CBaseAddress + R_IC_SDA_HOLD)));
-  DEBUG ((DEBUG_INFO, "I2cBusFrequencySet I2cMode: 0x%04X\r\n", *I2cMode));
-
-  return EFI_SUCCESS;
+  return Status;
 }
 
 /**
-  Initializes the host controller to execute I2C commands.
+  Program LPSS I2C PCI controller's BAR0 and enable memory decode.
 
-  @param[in]  BusNo               - I2C Bus number to which the I2C device has been connected
-  @param[in]  SlaveAddress        - Slave address of the I2C device
-  @param[out] I2CBaseAddress      - Return BAR0 address of I2C host controller
+  @param[in]  Bus               - I2C Bus number to which the I2C device has been connected
 
-  @retval  EFI_SUCCESS            - Initialization on the I2C host controller completed.
-  @retval  EFI_INVALID_PARAMETER  - Invalid slave address
-  @retval  EFI_DEVICE_ERROR       - Operation failed, device error
-  @retval  Others                 - Failed to initialize I2C host controller
+  @retval EFI_SUCCESS           - I2C controller's BAR0 is programmed and memory decode enabled.
+  @retval EFI_NOT_READY         - I2C controller's is not exist or its function has been disabled.
+  @retval EFI_DEVICE_ERROR      - I2C controller can't be enabled.
 **/
 EFI_STATUS
-I2CInit (
-  IN  UINT8    BusNo,
-  IN  UINT16   SlaveAddress,
-  OUT UINTN    *I2CBaseAddress
+ProgramPciLpssI2C (
+  IN UINT8        Bus
   )
 {
-  EFI_STATUS Status;
-  UINT32     NumTries;
-  UINT16     I2cMode;
-  UINTN      PciMmBase;
-  UINTN      BaseAddress;
+  UINT32       Data32;
+  UINT32       I2CBar0;
+  UINT32       I2CBar1;
+  UINTN        PciMmBase;
+  UINT32       PmcBase;
+  EFI_STATUS   Status;
+  UINT32       I2cPortDisable[] = {
+    B_PMC_FUNC_DIS_LPSS_I2C0,
+    B_PMC_FUNC_DIS_LPSS_I2C1,
+    B_PMC_FUNC_DIS_LPSS_I2C2,
+    B_PMC_FUNC_DIS_LPSS_I2C3,
+    B_PMC_FUNC_DIS_LPSS_I2C4,
+    B_PMC_FUNC_DIS_LPSS_I2C5,
+    B_PMC_FUNC_DIS_LPSS_I2C6,
+    B_PMC_FUNC_DIS_LPSS_I2C7
+  };
 
   //
-  //  Verify the parameters
+  // Initialize variables
   //
-  if (1023 < SlaveAddress) {
-    Status = EFI_INVALID_PARAMETER;
-    DEBUG ((DEBUG_INFO, "I2cStartRequest Exit with Status %r\r\n", Status));
-    return Status;
+  PciMmBase = 0;
+  Status    = EFI_SUCCESS;
+
+  //
+  // Set PADs to I2C mode
+  //
+  I2cProgramPad (Bus);
+
+  //
+  // Check PMC disable register
+  //
+  PmcBase = PMC_BASE_ADDRESS;
+  Data32  = MmioRead32 (PmcBase + R_PMC_FUNC_DIS);
+
+  if (Data32 == 0xFFFFFFFF) {
+    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() PMC disable register not available. [%08x]\n", __FUNCTION__, __LINE__, PMC_BASE_ADDRESS));
+  } else {
+    if ((Data32 & I2cPortDisable[Bus]) != 0) {
+      // This I2C port is disabled. Turn it on.
+      Data32 &= ~I2cPortDisable[Bus];
+      MmioWrite32 (PmcBase + R_PMC_FUNC_DIS, Data32);
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() enable I2C controller #%x\n", __FUNCTION__, __LINE__, Bus));
+      // Make sure it took.
+      if (Data32 != MmioRead32 (PmcBase + R_PMC_FUNC_DIS)) {
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C() failed to enable I2C controller #%x [%08x:%08x]\n",
+            __FUNCTION__,
+            __LINE__,
+            Bus,
+            Data32,
+            MmioRead32 (PmcBase + R_PMC_FUNC_DIS)));
+        Status = EFI_DEVICE_ERROR;
+        goto Exit;
+      }
+    }
   }
 
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C()------------BusNo=%x\n", __FUNCTION__, __LINE__, Bus));
+
   PciMmBase = MmPciAddress (
-                mLpssPciDeviceList[BusNo].Segment,
-                mLpssPciDeviceList[BusNo].BusNum,
-                mLpssPciDeviceList[BusNo].DeviceNum,
-                mLpssPciDeviceList[BusNo].FunctionNum,
+                mI2cLpssPciDeviceList[Bus].Segment,
+                mI2cLpssPciDeviceList[Bus].BusNum,
+                mI2cLpssPciDeviceList[Bus].DeviceNum,
+                mI2cLpssPciDeviceList[Bus].FunctionNum,
                 0
                 );
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Program Pci Lpss I2C Device  %x %x %x PciMmBase:%x\n",
+                       __FUNCTION__,
+                       __LINE__,
+                       mI2cLpssPciDeviceList[Bus].BusNum,
+                       mI2cLpssPciDeviceList[Bus].DeviceNum,
+                       mI2cLpssPciDeviceList[Bus].FunctionNum, PciMmBase));
 
+  //
+  // Check if device present
+  //
+  if (MmioRead32 (PciMmBase) != 0xFFFFFFFF) {
+    if ((MmioRead32 (PciMmBase + R_LPSS_IO_STSCMD) & B_LPSS_IO_STSCMD_MSE)) {
+      //
+      // In Pei stage, we always disable Bus master, and memory space enabling for BAR re-programming
+      // In DXE stage, will read existing BAR value instead of re-programming
+      //
+      I2CBar0 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;
+      I2CBar1 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR1) & B_LPSS_IO_BAR_BA;
+      if ((I2CBar0 != (UINT32) mI2cLpssPciDeviceList[Bus].Bar0) || (I2CBar1 != (UINT32) mI2cLpssPciDeviceList[Bus].Bar1)) {
+        mI2cLpssPciDeviceList[Bus].Bar0 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;     // get the address allocated.
+        mI2cLpssPciDeviceList[Bus].Bar1 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR1) & B_LPSS_IO_BAR_BA;
+        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Get bar0:0x%x bar1:0x%x\n",
+                             __FUNCTION__,
+                             __LINE__,
+                             mI2cLpssPciDeviceList[Bus].Bar0,
+                             mI2cLpssPciDeviceList[Bus].Bar1));
+      }
+    } else {
+      //
+      // Program BAR 0
+      //
+      ASSERT (((mI2cLpssPciDeviceList[Bus].Bar0 & B_LPSS_IO_BAR_BA) == mI2cLpssPciDeviceList[Bus].Bar0) && (mI2cLpssPciDeviceList[Bus].Bar0 != 0));
+      MmioWrite32 ((UINTN) (PciMmBase + R_LPSS_IO_BAR), (UINT32) (mI2cLpssPciDeviceList[Bus].Bar0 & B_LPSS_IO_BAR_BA));
+      //
+      // Program BAR 1
+      //
+      ASSERT (((mI2cLpssPciDeviceList[Bus].Bar1 & B_LPSS_IO_BAR1_BA) == mI2cLpssPciDeviceList[Bus].Bar1) && (mI2cLpssPciDeviceList[Bus].Bar1 != 0));
+      MmioWrite32 ((UINTN) (PciMmBase + R_LPSS_IO_BAR1), (UINT32) (mI2cLpssPciDeviceList[Bus].Bar1 & B_LPSS_IO_BAR1_BA));
+      //
+      // Bus Master Enable & Memory Space Enable
+      //
+      MmioOr32 ((UINTN) (PciMmBase + R_LPSS_IO_STSCMD), (UINT32) (B_LPSS_IO_STSCMD_BME | B_LPSS_IO_STSCMD_MSE));
+      ASSERT (MmioRead32 (mI2cLpssPciDeviceList[Bus].Bar0) != 0xFFFFFFFF);
+    }
+
+    //
+    // Release Resets
+    //
+    MmioWrite32 (mI2cLpssPciDeviceList[Bus].Bar0 + R_LPSS_IO_MEM_RESETS, B_LPSS_IO_MEM_HC_RESET_REL | B_LPSS_IO_MEM_iDMA_RESET_REL);
+
+    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() Programmed()\n", __FUNCTION__, __LINE__));
+    Status = EFI_SUCCESS;
+    goto Exit;
+  } else {
+     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Pci Lpss I2C Device  %x %x %x does not exist!\n",
+       __FUNCTION__,
+       __LINE__,
+       mI2cLpssPciDeviceList[Bus].BusNum,
+       mI2cLpssPciDeviceList[Bus].DeviceNum,
+       mI2cLpssPciDeviceList[Bus].FunctionNum));
+
+     Status = EFI_NOT_READY;
+     goto Exit;
+  }
+
+Exit:
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+////
+//// Public I2C functions
+////
+//
+//  Desc:   Initializes the controller and returns the MMIO base address
+//  Input:  Bus                   - I2C controller, 0 based
+//          Address               - 7-bit slave address
+//          Speed                 - Uses the I2C_SPEED_ENUM enum to set the controller speed
+//          I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: EFI_SUCCESS           - Initialization completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cInit (
+  IN       UINT8     Bus,
+  IN       UINT16    Address,
+  IN       UINT8     Speed,
+  IN OUT   UINT32   *I2cBaseAddress
+  )
+{
+  UINT32       BaseAddress;
+  UINTN        PciMmBase;
+  EFI_STATUS   Status;
+
+  //
+  //  Sanity checks
+  //
+  if (Bus > MAX_I2C_BUS) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+  if (Address > MAX_I2C_ADDRESS) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+  if (Speed > Max_Speed) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+  if (I2cBaseAddress == NULL) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+
+  //
+  // Initialize variables
+  //
+  *I2cBaseAddress = 0;
+
+  //
+  // Get current MMIO base address
+  //
+  PciMmBase = MmPciAddress (
+                mI2cLpssPciDeviceList[Bus].Segment,
+                mI2cLpssPciDeviceList[Bus].BusNum,
+                mI2cLpssPciDeviceList[Bus].DeviceNum,
+                mI2cLpssPciDeviceList[Bus].FunctionNum,
+                0
+                );
   BaseAddress = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%08x:0x%08x \n", __FUNCTION__, __LINE__, BaseAddress, (UINT32) mI2cLpssPciDeviceList[Bus].Bar0));
 
   //
   // Skip reinit if targeting the same I2C bus
   //
-  if (BaseAddress == mLpssPciDeviceList[BusNo].Bar0) {
-    MmioWrite32 (BaseAddress + R_IC_TAR, SlaveAddress);
-    *I2CBaseAddress = BaseAddress;
-    return EFI_SUCCESS;
+  if (BaseAddress == (UINT32) mI2cLpssPciDeviceList[Bus].Bar0) {
+    MmioWrite32 (BaseAddress + R_IC_TAR, Address);
+    *I2cBaseAddress = BaseAddress;
+    Status = EFI_SUCCESS;
+    goto Exit;
   }
 
-  Status = ProgramPciLpssI2C (BusNo);
-  if (Status != EFI_SUCCESS) {
-    DEBUG((DEBUG_ERROR, "ProgramPciLpssI2C failed ! %r\r\n", Status));
-    return Status;
+  //
+  // Program I2C controller
+  //
+  Status = ProgramPciLpssI2C (Bus);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C failed! %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
   }
 
-  BaseAddress = (UINT32) mLpssPciDeviceList[BusNo].Bar0;
-  DEBUG ((DEBUG_INFO, "I2CBaseAddress = 0x%x \n", BaseAddress));
+  //
+  // Retrieve I2C MMIO base address
+  //
+  BaseAddress = (UINT32) mI2cLpssPciDeviceList[Bus].Bar0;
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%x \n", __FUNCTION__, __LINE__, BaseAddress));
 
-  NumTries = 10000; // 1 seconds
-  while ((STAT_MST_ACTIVITY == (MmioRead32 (BaseAddress + R_IC_STATUS) & STAT_MST_ACTIVITY))) {
+  //
+  // Reset controller
+  //
+  Status = I2cReset (BaseAddress, Bus, Address, Speed);
+  if (EFI_ERROR (Status)) {
+    goto Exit;
+  }
+
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+
+  //
+  // Pass out MMIO base
+  //
+  *I2cBaseAddress = BaseAddress;
+  Status = EFI_SUCCESS;
+
+Exit:
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Polls the I2C controller with reads until it responds.
+//  Input:  I2cBaseAddress        - Pointer to the MMIO base address for the I2C controller
+//  Output: EFI_SUCCESS           - Initialization completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//
+EFI_STATUS
+I2cPoll (
+  IN       UINT32     I2cBaseAddress
+  )
+{
+  EFI_STATUS   Status;
+  UINT16       Timeout;
+  UINT8        Value;
+
+  //
+  // Use a read to poll the slave
+  //
+  Status  = EFI_DEVICE_ERROR;
+  Timeout = 0;
+  while (EFI_ERROR (Status) && Timeout < 1000) {
     MicroSecondDelay (10);
-    NumTries --;
+    Status = I2cRead (I2cBaseAddress, &Value, TRUE, TRUE);
+    Timeout++;
+  }
+
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Read a byte from the I2C controller
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Data                  - Pointer to where to store the data
+//          Start                 - Send start bit?
+//          End                   - Send end bit?
+//  Output: EFI_SUCCESS           - Read completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cRead (
+  IN       UINT32     I2cBaseAddress,
+  IN OUT   UINT8     *Data,
+  IN       BOOLEAN    Start,
+  IN       BOOLEAN    End
+  )
+{
+  UINT32      Data32;
+  EFI_STATUS  Status;
+
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+
+  //
+  // Sanity checks
+  //
+  if (Data == NULL) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+
+  //
+  // Send CMD for read
+  //
+  Data32 = B_READ_CMD;
+  Status = I2cSendCommand (I2cBaseAddress, &Data32, Start, End);
+  *Data  = (UINT8) (Data32 & 0xFF);
+
+Exit:
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Display error messages
+  //
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Resets the I2C controller into a known good state
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Bus                   - I2C controller, 0 based
+//          Address               - 7-bit slave address
+//          Speed                 - Uses the I2C_SPEED_ENUM enum to set the controller speed
+//  Output: EFI_SUCCESS           - Write completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cReset (
+  IN       UINT32    I2cBaseAddress,
+  IN       UINT8     Bus,
+  IN       UINT16    Address,
+  IN       UINT8     Speed
+  )
+{
+  UINT16       I2cMode;
+  UINT32       NumTries;
+  EFI_STATUS   Status;
+
+  //
+  // Wait for master activity to stop
+  //
+  NumTries = 10000; // 1 seconds
+  while ((STAT_MST_ACTIVITY == (I2cGetStatus (I2cBaseAddress) & STAT_MST_ACTIVITY))) {
+    MicroSecondDelay (10);
+    NumTries--;
     if (0 == NumTries) {
-      DEBUG ((DEBUG_ERROR, "Try timeout\r\n"));
-      return EFI_DEVICE_ERROR;
+      DEBUG ((DEBUG_ERROR, "%a(#%4d) - Try timeout\n", __FUNCTION__, __LINE__));
+      Status = EFI_DEVICE_ERROR;
+      goto Exit;
+    }
+  }
+  //
+  // Abort controller
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_ENABLE, I2C_ENABLE_ABORT);
+  MicroSecondDelay (10 * I2C_ROUTINE_DELAY);
+  //
+  // Disable I2C controller
+  //
+  Status = I2cDisable (I2cBaseAddress);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cDisable Status = %r\n", __FUNCTION__, __LINE__, Status));
+  if (EFI_ERROR (Status)) {
+    goto Exit;
+  }
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Set I2C controller speed
+  //
+  I2cSetBusFrequency (Bus, I2cBaseAddress); // Set I2cMode
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  switch (Speed) {
+    case Standard_Speed:
+      //100K
+      I2cMode = V_SPEED_STANDARD;
+      break;
+
+    case Fast_Speed:
+      //400K
+      I2cMode = V_SPEED_FAST;
+      break;
+
+    case High_Speed:
+      //3.4M
+      I2cMode = V_SPEED_HIGH;
+      break;
+
+    default:
+      //400K
+      I2cMode = V_SPEED_FAST;
+  }
+  I2cMode |= B_IC_RESTART_EN | B_IC_SLAVE_DISABLE | B_MASTER_MODE;
+  //
+  // Set slave address
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_INTR_MASK, 0x0);
+  if (Address > MAX_I2C_ADDRESS) {
+    Address = (Address & 0x3FF) | IC_TAR_10BITADDR_MASTER;
+  }
+  MmioWrite32 (I2cBaseAddress + R_IC_TAR, Address);
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Set RX & TX FIFO full threshold to 1 byte
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_RX_TL, 0);
+  MmioWrite32 (I2cBaseAddress + R_IC_TX_TL, 0);
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Set I2C Mode
+  //
+  MmioWrite32 (I2cBaseAddress + R_IC_CON, I2cMode);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cMode: 0x%04x\r\n", __FUNCTION__, __LINE__, I2cMode));
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Enable I2C controller
+  //
+  Status = I2cEnable (I2cBaseAddress);
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cEnable Status = %r\n", __FUNCTION__, __LINE__, Status));
+  if (EFI_ERROR (Status)) {
+    goto Exit;
+  }
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Clear TX abort
+  //
+  I2cClearTxAbort (I2cBaseAddress);
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Clear interrupts
+  //
+  I2cClearInterrupts (I2cBaseAddress);
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+
+Exit:
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Write a byte to the I2C controller
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Data                  - Data from the I2C controller
+//          Start                 - Send start bit?
+//          End                   - Send end bit?
+//  Output: EFI_SUCCESS           - Write completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cSendCommand (
+  IN       UINT32     I2cBaseAddress,
+  IN       UINT32    *Data,
+  IN       BOOLEAN    Start,
+  IN       BOOLEAN    End
+  )
+{
+  BOOLEAN     CommandSent;
+  UINT32      Count;
+  UINT32      CountOut;
+  UINT32      Data32;
+  BOOLEAN     ReadFlag;
+  EFI_STATUS  Status;
+  UINT16      TxAbortStatus;
+
+  //
+  // Initialize variables
+  //
+  CommandSent = FALSE;
+  Count       = 0;
+  CountOut    = 0x00000100;
+  Status      = EFI_NOT_READY;
+  if ((*Data & B_READ_CMD) == B_READ_CMD) {
+    ReadFlag = TRUE;
+  } else {
+    ReadFlag = FALSE;
+  }
+
+  //
+  // Send a command byte
+  //
+  while (CountOut-- > 0) {
+    //
+    // Check for NACK
+    //
+    if ((I2cGetRawStatus (I2cBaseAddress) & I2C_INTR_TX_ABRT) != 0) {
+      TxAbortStatus = I2cGetTxAbortStatus (I2cBaseAddress);
+      DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+      //
+      // Clear TX Abort
+      //
+      I2cClearTxAbort (I2cBaseAddress);
+      MicroSecondDelay (I2C_WRITE_TIMEOUT);
+      //
+      // Clear interrupts
+      //
+      I2cClearInterrupts (I2cBaseAddress);
+      MicroSecondDelay (I2C_WRITE_TIMEOUT);
+      //
+      // Set status
+      //
+      if (TxAbortStatus & (I2C_ABRT_7B_ADDR_NOACK | I2C_ABRT_10ADDR1_NOACK | I2C_ABRT_10ADDR2_NOACK)) {
+        DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
+        Status = EFI_NO_RESPONSE;
+      } else {
+        Status = EFI_DEVICE_ERROR;
+      }
+      goto Exit;
+    }
+    //
+    // Determine if another byte was received and we were expecting it
+    //
+    if (((I2cGetStatus (I2cBaseAddress) & STAT_RFNE) != 0) && ReadFlag) {
+      *Data = MmioRead32 (I2cBaseAddress + R_IC_DATA_CMD) & 0xFF;
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%02x was received [%d:%d]\n", __FUNCTION__, __LINE__, *Data, Start, End));
+      MicroSecondDelay (FIFO_WRITE_DELAY);
+      //
+      // Now empty the RX FIFO if stop bit set
+      //
+      while (End && ((I2cGetStatus (I2cBaseAddress) & STAT_RFNE) == STAT_RFNE)) {
+        MmioRead32 (I2cBaseAddress + R_IC_DATA_CMD);
+        MicroSecondDelay (FIFO_WRITE_DELAY);
+      }
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+      Status = EFI_SUCCESS;
+      goto Exit;
+    }
+    //
+    // Wait for room in TX buffer
+    //
+    if ((I2cGetStatus (I2cBaseAddress) & STAT_TFNF) == 0) {
+      MicroSecondDelay (FIFO_WRITE_DELAY);
+      continue;
+    }
+    if (!CommandSent) {
+      //
+      // Send CMD
+      //
+      Data32 = *Data;
+      if (Start) Data32 |= B_CMD_RESTART;
+      if (End)   Data32 |= B_CMD_STOP;
+      MmioWrite32 (I2cBaseAddress + R_IC_DATA_CMD, Data32);
+      CommandSent = TRUE;
+    }
+    //
+    // Add a small delay to work around some odd behavior being seen.  Without this delay bytes get dropped.
+    //
+    MicroSecondDelay (I2C_WRITE_TIMEOUT);
+    //
+    // Time out check for write CMD
+    //
+    while (!ReadFlag) {
+      if ((I2cGetRawStatus (I2cBaseAddress) & I2C_INTR_TX_ABRT) != 0) {
+        TxAbortStatus = I2cGetTxAbortStatus (I2cBaseAddress);
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
+        //
+        // Clear TX Abort
+        //
+        I2cClearTxAbort (I2cBaseAddress);
+        MicroSecondDelay (I2C_WRITE_TIMEOUT);
+        //
+        // Clear interrupts
+        //
+        I2cClearInterrupts (I2cBaseAddress);
+        MicroSecondDelay (I2C_WRITE_TIMEOUT);
+        //
+        // Set status
+        //
+        if (TxAbortStatus & (I2C_ABRT_7B_ADDR_NOACK | I2C_ABRT_10ADDR1_NOACK | I2C_ABRT_10ADDR2_NOACK)) {
+          DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
+          Status = EFI_NO_RESPONSE;
+        } else {
+          Status = EFI_DEVICE_ERROR;
+        }
+      }
+      if (I2cGetTxFifo (I2cBaseAddress) == 0) {
+        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%04x was sent [%d:%d]\n", __FUNCTION__, __LINE__, Data32, Start, End));
+        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+        Status = EFI_SUCCESS;
+        goto Exit;
+      }
+      MicroSecondDelay (I2C_WRITE_TIMEOUT);
+      if (Count++ < 1024) { //to avoid sys hung without ul-pmc device on RVP
+        continue; //Waiting the last request to get data and make (ReceiveDataEnd > ReadBuffer) =TRUE.
+      } else {
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - hardware timeout, 1024 times try!\n", __FUNCTION__, __LINE__));
+        Status = EFI_TIMEOUT;
+        goto Exit;
+      }
     }
   }
 
-  Status = I2cDisable(BaseAddress);
-  DEBUG ((DEBUG_INFO, "I2cDisable Status = %r\r\n", Status));
-  I2cBusFrequencySet(BusNo, BaseAddress, &I2cMode); // Set I2cMode
-
-  MmioWrite32 (BaseAddress + R_IC_INTR_MASK, 0x0);
-  if (0x7f < SlaveAddress) {
-    SlaveAddress = (SlaveAddress & 0x3ff) | IC_TAR_10BITADDR_MASTER;
+  //
+  // Check for count out
+  //
+  if (CountOut == 0) {
+    Status = EFI_TIMEOUT;
   }
-  MmioWrite32 (BaseAddress + R_IC_TAR, SlaveAddress);
-  MmioWrite32 (BaseAddress + R_IC_RX_TL, 0);
-  MmioWrite32 (BaseAddress + R_IC_TX_TL, 0);
-  MmioWrite32 (BaseAddress + R_IC_CON, I2cMode);
-  Status = I2cEnable(BaseAddress);
 
-  DEBUG((DEBUG_INFO, "I2cEnable Status = %r\r\n", Status));
-  MmioRead32 (BaseAddress + R_IC_CLR_TX_ABRT);
-  *I2CBaseAddress = BaseAddress;
-  return EFI_SUCCESS;
+Exit:
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Display error messages
+  //
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r   [%x]\n", __FUNCTION__, __LINE__, Status, CountOut));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Set I2C target slave offset
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Offset                - Pointer to offset data
+//          Size                  - Size of the offset data
+//  Output: EFI_SUCCESS           - Write completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cSetOffset (
+  IN       UINT32     I2cBaseAddress,
+  IN       UINT8     *Offset,
+  IN       UINT8      Size
+  )
+{
+  UINT8        index;
+  EFI_STATUS   Status;
+
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+
+  //
+  //  Sanity checks
+  //
+  if (Offset == NULL) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+  if (Size == 0) {
+    Status = EFI_INVALID_PARAMETER;
+    goto Exit;
+  }
+  //
+  // Set offset
+  //
+  for (index = 0; index < Size; index++) {
+    if (index == 0) {
+      //
+      // First byte of the offset
+      //
+      Status = I2cWrite (I2cBaseAddress, Offset[index], TRUE, FALSE);
+    } else {
+      Status = I2cWrite (I2cBaseAddress, Offset[index], FALSE, FALSE);
+    }
+    if (EFI_ERROR (Status)) {
+      goto Exit;
+    }
+    //
+    // Pause a bit
+    //
+    MicroSecondDelay (I2C_WRITE_TIMEOUT);
+  }
+
+Exit:
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Display error messages
+  //
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
+}
+
+//
+//  Desc:   Write a byte to the I2C controller
+//  Input:  I2cBaseAddress        - MMIO base address for the I2C controller
+//          Data                  - Data from the I2C controller
+//          Start                 - Send start bit?
+//          End                   - Send end bit?
+//  Output: EFI_SUCCESS           - Write completed successfully
+//          EFI_DEVICE_ERROR      - I2C controller error
+//          EFI_INVALID_PARAMETER - Invalid input parameter
+//
+EFI_STATUS
+I2cWrite (
+  IN       UINT32     I2cBaseAddress,
+  IN       UINT8      Data,
+  IN       BOOLEAN    Start,
+  IN       BOOLEAN    End
+  )
+{
+  UINT32      Data32;
+  EFI_STATUS  Status;
+
+  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+
+  //
+  // Send CMD for write
+  //
+  Data32 = Data;
+  Status = I2cSendCommand (I2cBaseAddress, &Data32, Start, End);
+  //
+  // Pause a bit
+  //
+  MicroSecondDelay (I2C_ROUTINE_DELAY);
+  //
+  // Display error messages
+  //
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  }
+  return Status;
 }
 
 /**
   Read bytes from I2C Device
   This is actual I2C hardware operation function.
 
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
-  @param[in]  SlaveAddress      - Slave address of the I2C device (7-bit)
-  @param[in]  ReadBytes         - Number of bytes to be read
-  @param[out] ReadBuffer        - Address to which the value read has to be stored
-  @param[in]  Start             - It controls whether a RESTART is issued before the byte is sent or received.
-  @param[in]  End               - It controls whether a STOP is issued after the byte is sent or received.
+  @param[in]  BusNo                 I2C Bus number to which the I2C device has been connected
+  @param[in]  SlaveAddress          Slave address of the I2C device (7-bit)
+  @param[in]  ReadBytes             Number of bytes to be read
+  @param[out] ReadBuffer            Address to which the value read has to be stored
+  @param[in]  Start                 It controls whether a RESTART is issued before the byte is sent or received.
+  @param[in]  End                   It controls whether a STOP is issued after the byte is sent or received.
 
-  @retval EFI_SUCCESS           - The byte value read successfully
-  @retval EFI_DEVICE_ERROR      - Operation failed
-  @retval EFI_TIMEOUT           - Hardware retry timeout
-  @retval Others                - Failed to read a byte via I2C
+  @retval     EFI_SUCCESS           The byte value read successfully
+  @retval     EFI_DEVICE_ERROR      Operation failed
+  @retval     EFI_TIMEOUT           Hardware retry timeout
+  @retval     Others                Failed to read a byte via I2C
+
 **/
 EFI_STATUS
 ByteReadI2C_Basic (
@@ -448,104 +1189,51 @@ ByteReadI2C_Basic (
   IN  UINT8        End
   )
 {
-  EFI_STATUS  Status;
-  UINT32      I2cStatus;
-  UINT16      ReceiveData;
-  UINT8       *ReceiveDataEnd;
-  UINT8       *ReceiveRequest;
-  UINT16      raw_intr_stat;
-  UINT32      Count = 0;
-  UINTN       I2CBaseAddress;
-  UINT8       *ReadPtr;
+  UINT32              I2cBaseAddress;
+  UINTN               index;
+  EFI_STATUS          Status;
 
   //
-  // Read should always after write, so, base address should already be initialized, then get base address directly
+  // Init I2C controller
   //
-  I2CBaseAddress = (UINT32) mLpssPciDeviceList[BusNo].Bar0;
-  DEBUG ((DEBUG_INFO, "mLpssPciDeviceList returned base address = 0x%08x\n", I2CBaseAddress));
-
-  Status = EFI_SUCCESS;
-
-  ReceiveDataEnd = &ReadBuffer [ReadBytes];
-  ReadPtr = ReadBuffer;
-  if (ReadBytes) {
-    ReceiveRequest = ReadBuffer;
-    //DEBUG((DEBUG_INFO,"Read: ---------------%d bytes to RX\r\n", ReceiveDataEnd - ReceiveRequest));
-
-    while ((ReceiveDataEnd > ReceiveRequest) || (ReceiveDataEnd > ReadPtr)) {
+  Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
+  }
+  //
+  // Read from I2C device
+  //
+  for (index = 0; index < ReadBytes; index++) {
+    Status = I2cRead (I2cBaseAddress, &ReadBuffer[index], Start, End);
+    if (EFI_ERROR (Status)) {
       //
-      // Check for NACK
+      // Something went wrong. Bail from this for loop.
       //
-      raw_intr_stat = (UINT16)MmioRead32 (I2CBaseAddress + R_IC_RAW_INTR_STAT);
-      if (0 != (raw_intr_stat & I2C_INTR_TX_ABRT)) {
-        MmioRead32 (I2CBaseAddress + R_IC_CLR_TX_ABRT);
-        Status = EFI_DEVICE_ERROR;
-        DEBUG ((DEBUG_ERROR, "TX ABRT ,%d bytes hasn't been transferred\r\n", ReceiveDataEnd - ReceiveRequest));
-        break;
-      }
-      
-      //
-      // Determine if another byte was received
-      //
-      I2cStatus = (UINT16)MmioRead32 (I2CBaseAddress + R_IC_STATUS);
-      if (0 != (I2cStatus & STAT_RFNE)) {
-        ReceiveData = (UINT16)MmioRead32 (I2CBaseAddress + R_IC_DATA_CMD);
-        *ReadPtr++ = (UINT8)ReceiveData;
-        DEBUG ((DEBUG_INFO, "MmioRead32 ,1 byte 0x:%x is received\r\n", ReceiveData));
-      }
-
-      if (ReceiveDataEnd == ReceiveRequest) {
-        MicroSecondDelay (FIFO_WRITE_DELAY);
-        Count++;
-        if (Count < 1024) { // sys hung  avoid no ul-pmc device
-          continue; // Waiting the last request to get data and make (ReceiveDataEnd > ReadBuffer) =TRUE.
-        } else {
-          break;
-        }
-      }
-      //
-      // Wait until a read request will fit
-      //
-      if (0 == (I2cStatus & STAT_TFNF)) {
-        MicroSecondDelay (10);
-        continue;
-      }
-      //
-      // Issue the next read request
-      //
-      if (End && Start) {
-        MmioWrite32 (I2CBaseAddress + R_IC_DATA_CMD, B_READ_CMD|B_CMD_RESTART|B_CMD_STOP);
-      } else if (!End && Start) {
-        MmioWrite32 (I2CBaseAddress + R_IC_DATA_CMD, B_READ_CMD|B_CMD_RESTART);
-      } else if (End && !Start) {
-        MmioWrite32 (I2CBaseAddress + R_IC_DATA_CMD, B_READ_CMD|B_CMD_STOP);
-      } else if (!End && !Start) {
-        MmioWrite32 (I2CBaseAddress + R_IC_DATA_CMD, B_READ_CMD);
-      }
-      MicroSecondDelay (FIFO_WRITE_DELAY); //wait after send cmd
-
-      ReceiveRequest += 1;
+      DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cRead() = %r\n", __FUNCTION__, __LINE__, Status));
+      break;
     }
   }
+Exit:
   return Status;
-
 }
 
 /**
   Write bytes to I2C Device
   This is actual I2C hardware operation function.
 
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
-  @param[in]  SlaveAddress      - Slave address of the I2C device (7-bit)
-  @param[in]  WriteBytes        - Number of bytes to be written
-  @param[in]  WriteBuffer       - Address to which the byte value has to be written
-  @param[in]  Start             - It controls whether a RESTART is issued before the byte is sent or received.
-  @param[in]  End               - It controls whether a STOP is issued after the byte is sent or received.
+  @param[in]  BusNo                 I2C Bus number to which the I2C device has been connected
+  @param[in]  SlaveAddress          Slave address of the I2C device (7-bit)
+  @param[in]  WriteBytes            Number of bytes to be written
+  @param[in]  WriteBuffer           Address to which the byte value has to be written
+  @param[in]  Start                 It controls whether a RESTART is issued before the byte is sent or received.
+  @param[in]  End                   It controls whether a STOP is issued after the byte is sent or received.
 
-  @retval EFI_SUCCESS           - The byte value written successfully
-  @retval EFI_DEVICE_ERROR      - Operation failed
-  @retval EFI_TIMEOUT           - Hardware retry timeout
-  @retval Others                - Failed to write a byte via I2C
+  @retval     EFI_SUCCESS           The byte value written successfully
+  @retval     EFI_DEVICE_ERROR      Operation failed
+  @retval     EFI_TIMEOUT           Hardware retry timeout
+  @retval     Others                Failed to write a byte via I2C
+
 **/
 EFI_STATUS
 ByteWriteI2C_Basic (
@@ -557,104 +1245,47 @@ ByteWriteI2C_Basic (
   IN  UINT8        End
   )
 {
-  UINT16      Data16;
-  EFI_STATUS  Status;
-  UINT32      I2cStatus;
-  UINT8       *TransmitPtr;
-  UINT8       *TransmitEnd;
-  UINT16      raw_intr_stat;
-  UINT32      Count=0;
-  UINTN       I2CBaseAddress;
+  UINT32              I2cBaseAddress;
+  UINTN               index;
+  EFI_STATUS          Status;
 
-  Status = I2CInit (BusNo, SlaveAddress, &I2CBaseAddress);
-  if (Status != EFI_SUCCESS) {
-    DEBUG ((DEBUG_ERROR, "I2CInit failed ! %r\r\n", Status));
-    return Status;
+  //
+  // Init I2C controller
+  //
+  Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
   }
-  DEBUG ((DEBUG_INFO, "I2CInit returned base address = 0x%08x\n", I2CBaseAddress));
-  
-  TransmitPtr = WriteBuffer;
-  TransmitEnd = &WriteBuffer [WriteBytes];
-  if (WriteBytes) {
-    raw_intr_stat = (UINT16)MmioRead32 (I2CBaseAddress + R_IC_RAW_INTR_STAT);
-    if (0 != (raw_intr_stat & I2C_INTR_TX_ABRT)) {
-      MmioRead32 (I2CBaseAddress + R_IC_CLR_TX_ABRT);
-      DEBUG ((DEBUG_ERROR, "%a(#%d) - raw_intr_stat = %04x\n", __FUNCTION__, __LINE__, TransmitEnd, TransmitPtr, raw_intr_stat));
+  //
+  // Write to I2C device
+  //
+  for (index = 0; index < WriteBytes; index++) {
+    Status = I2cWrite (I2cBaseAddress, WriteBuffer[index], Start, End);
+    if (EFI_ERROR (Status)) {
+      //
+      // Something went wrong. Bail from this for loop.
+      //
+      DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cWrite() = %r\n", __FUNCTION__, __LINE__, Status));
+      break;
     }
-
-    //DEBUG ((DEBUG_INFO, "Write: --------------%d bytes to TX\r\n", TransmitEnd - WriteBuffer));
-    while (TransmitEnd > TransmitPtr) {
-      I2cStatus = MmioRead32 (I2CBaseAddress + R_IC_STATUS);
-      raw_intr_stat = (UINT16)MmioRead32 (I2CBaseAddress + R_IC_RAW_INTR_STAT);
-      if (0 != (raw_intr_stat & I2C_INTR_TX_ABRT)) {
-        MmioRead32 (I2CBaseAddress + R_IC_CLR_TX_ABRT);
-        Status = EFI_DEVICE_ERROR;
-        DEBUG ((DEBUG_ERROR, "%a(#%d) - TX ABRT TransmitEnd:0x%x WritePtr:0x%x\r\n", __FUNCTION__, __LINE__, TransmitEnd, TransmitPtr));
-        break;
-      }
-      if (0 == (I2cStatus & STAT_TFNF)) {
-        MicroSecondDelay (FIFO_WRITE_DELAY);
-        continue;
-      }
-
-      Data16 = (UINT16) *TransmitPtr;
-      if (End && Start) {
-        Data16 |= (B_CMD_RESTART | B_CMD_STOP);
-      } else if (!End && Start) {
-        Data16 |= B_CMD_RESTART;
-      } else if (End && !Start) {
-        Data16 |= B_CMD_STOP;
-      }
-      Data16 = MmioWrite16 (I2CBaseAddress + R_IC_DATA_CMD, Data16);
-      TransmitPtr++;
-
-      //
-      // Add a small delay to work around some odd behavior being seen.  Without this delay bytes get dropped.
-      //
-      MicroSecondDelay (FIFO_WRITE_DELAY);
-      //
-      // Time out
-      //
-      while (1) {
-        raw_intr_stat = MmioRead16 (I2CBaseAddress + R_IC_RAW_INTR_STAT);
-        if (0 != ( raw_intr_stat & I2C_INTR_TX_ABRT)) {
-          MmioRead16 (I2CBaseAddress + R_IC_CLR_TX_ABRT);
-          Status = EFI_DEVICE_ERROR;
-          DEBUG ((DEBUG_ERROR, "TX ABRT TransmitEnd:0x%x WriteBuffer:0x%x\r\n", TransmitEnd, WriteBuffer));
-        }
-        if (0 == MmioRead16(I2CBaseAddress + R_IC_TXFLR)) break;
-
-        MicroSecondDelay (FIFO_WRITE_DELAY);
-        Count++;
-        if (Count < 1024) { //to avoid sys hung without ul-pmc device on RVP
-          continue; //Waiting the last request to get data and make (ReceiveDataEnd > ReadBuffer) =TRUE.
-        } else {
-          DEBUG ((DEBUG_ERROR, "hardware timeout, 1024 times try!\r\n"));
-          Status = EFI_TIMEOUT;
-          break;
-        }
-      }//while( 1 )
-
-    }
-
   }
-  if (EFI_ERROR (Status))
-    DEBUG ((DEBUG_ERROR, "I2cStartRequest Exit with Status %r\r\n", Status));
-
+Exit:
   return Status;
 }
 
 /**
   Read bytes from I2C Device
 
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
-  @param[in]  SlaveAddress      - Slave address of the I2C device (7-bit)
-  @param[in]  Offset            - Register offset from which the data has to be read
-  @param[in]  ReadBytes         - Number of bytes to be read
-  @param[out] ReadBuffer        - Address to which the value read has to be stored
+  @param[in]  BusNo               I2C Bus number to which the I2C device has been connected
+  @param[in]  SlaveAddress        Slave address of the I2C device (7-bit)
+  @param[in]  Offset              Register offset from which the data has to be read
+  @param[in]  ReadBytes           Number of bytes to be read
+  @param[out] ReadBuffer          Address to which the value read has to be stored
 
-  @retval EFI_SUCCESS           - Read bytes from I2C device successfully
-  @retval Others                - Return status depends on ByteReadI2C_Basic
+  @retval     EFI_SUCCESS         Read bytes from I2C device successfully
+  @retval     Others              Return status depends on ByteReadI2C_Basic
+
 **/
 EFI_STATUS
 ByteReadI2C (
@@ -665,33 +1296,47 @@ ByteReadI2C (
   OUT UINT8        *ReadBuffer
   )
 {
+  UINT32              I2cBaseAddress;
   EFI_STATUS          Status;
 
-  //DEBUG ((EFI_D_INFO, "ByteReadI2C:---offset:0x%x\n",Offset));
-  Status = ByteWriteI2C_Basic (BusNo, SlaveAddress, 1, &Offset, TRUE, FALSE);
-  if (!EFI_ERROR (Status)) {
-    Status = ByteReadI2C_Basic (BusNo, SlaveAddress, ReadBytes, ReadBuffer, TRUE, TRUE);
-  } else {
-    DEBUG ((DEBUG_ERROR, "ByteReadI2C/ByteWriteI2C_Basic: %r\n", Status));
-  }
+  //
+  // Init I2C controller
+  //
+  Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "ByteReadI2C: %r\n", Status));
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
+  }
+  //
+  // Set offset
+  //
+  Status = I2cSetOffset (I2cBaseAddress, &Offset, 1);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
+    goto Exit;
+  }
+  Status = ByteReadI2C_Basic (BusNo, SlaveAddress, ReadBytes, ReadBuffer, TRUE, TRUE);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteReadI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
   }
 
+Exit:
   return Status;
 }
 
 /**
   Write bytes to I2C Device
 
-  @param[in]  BusNo             - I2C Bus number to which the I2C device has been connected
-  @param[in]  SlaveAddress      - Slave address of the I2C device (7-bit)
-  @param[in]  Offset            - Register offset from which the data has to be read
-  @param[in]  WriteBytes        - Number of bytes to be written
-  @param[in]  WriteBuffer       - Address to which the byte value has to be written
+  @param[in]  BusNo               I2C Bus number to which the I2C device has been connected
+  @param[in]  SlaveAddress        Slave address of the I2C device (7-bit)
+  @param[in]  Offset              Register offset from which the data has to be read
+  @param[in]  WriteBytes          Number of bytes to be written
+  @param[in]  WriteBuffer         Address to which the byte value has to be written
 
-  @retval EFI_SUCCESS           - Write bytes to I2C device successfully
-  @retval Others                - Return status depends on ByteWriteI2C_Basic
+  @retval     EFI_SUCCESS         Write bytes to I2C device successfully
+  @retval     Others              Return status depends on ByteWriteI2C_Basic
+
 **/
 EFI_STATUS
 ByteWriteI2C (
@@ -702,18 +1347,32 @@ ByteWriteI2C (
   IN  UINT8        *WriteBuffer
   )
 {
+  UINT32              I2cBaseAddress;
   EFI_STATUS          Status;
 
-  //DEBUG ((EFI_D_INFO, "ByteWriteI2C:---offset/bytes/buf:0x%x,0x%x,0x%x,0x%x\n",Offset,WriteBytes,WriteBuffer,*WriteBuffer));
-  Status = ByteWriteI2C_Basic (BusNo, SlaveAddress, 1, &Offset, TRUE, FALSE);
-  if (!EFI_ERROR (Status)) {
-    Status = ByteWriteI2C_Basic (BusNo, SlaveAddress, WriteBytes, WriteBuffer, FALSE, TRUE);
-  } else {
-    DEBUG ((DEBUG_ERROR, "ByteWriteI2C/ByteWriteI2C_Basic: %r\n", Status));
-  }
+  //
+  // Init I2C controller
+  //
+  Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "ByteWriteI2C: %r\n", Status));
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
+  }
+  //
+  // Set offset
+  //
+  Status = I2cSetOffset (I2cBaseAddress, &Offset, 1);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
+    goto Exit;
+  }
+  Status = ByteWriteI2C_Basic (BusNo, SlaveAddress, WriteBytes, WriteBuffer, FALSE, TRUE);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteWriteI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
+    goto Exit;
   }
 
+Exit:
   return Status;
 }
+

@@ -53,7 +53,7 @@
 #include <Library/DebugLib.h>
 #include <Library/GpioLib.h>
 #include <Library/HobLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/IoLib.h>
 #include <Library/PcdLib.h>
 #include <Library/SteppingLib.h>

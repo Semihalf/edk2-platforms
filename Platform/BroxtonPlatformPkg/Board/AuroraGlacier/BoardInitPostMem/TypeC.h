@@ -23,7 +23,7 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/GpioLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 
 //
 // Parade Tech PS8750 TypeC MUX

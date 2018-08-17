@@ -1,7 +1,7 @@
 /** @file
   Gpio setting for multiplatform before Memory init.
 
-  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -78,7 +78,7 @@ BXT_GPIO_PAD_INIT  SignsOfLifeGpio[] =
   //
   //                  Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,  Wake_Enabled ,Term_H_L,Inverted, GPI_ROUT, IOSstae, IOSTerm,     MMIO_Offset,      Community
   //
-  BXT_GPIO_PAD_CONF(L"GPIO_26",                  M0   ,    GPO   , GPIO_D,  LO    ,   NA       , Wake_Disabled, P_NONE ,   NA    ,    NA,     NA   ,DisPuPd,    GPIO_PADBAR+0x00D0,  NORTH), // MB3N - SATA_LED
+  BXT_GPIO_PAD_CONF(L"GPIO_26",                  M0   ,    GPO   , GPIO_D,  LO    ,   NA       , Wake_Disabled, P_NONE ,   NA    ,    NA,     NA   ,DisPuPd,    GPIO_PADBAR+0x00D0,  NORTH), // MB3M - SATA_LED
 };
 
 //
@@ -173,8 +173,8 @@ BXT_GPIO_PAD_INIT  UartGpio [] =
   //
   //                   Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L, Inverted,GPI_ROUT,IOSstae, IOSTerm,   MMIO_Offset,      Community
   //
-  BXT_GPIO_PAD_CONF(L"GPIO_38 LPSS_UART0_RXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0130, NORTH),     // SOC_UART1_TXD
-  BXT_GPIO_PAD_CONF(L"GPIO_39 LPSS_UART0_TXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0138, NORTH),     // SOC_UART1_RXD
+  BXT_GPIO_PAD_CONF(L"GPIO_38 LPSS_UART0_RXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0130, NORTH),     // SOC_UART0_TXD
+  BXT_GPIO_PAD_CONF(L"GPIO_39 LPSS_UART0_TXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0138, NORTH),     // SOC_UART0_RXD
   BXT_GPIO_PAD_CONF(L"GPIO_42 LPSS_UART1_RXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0150, NORTH),     // SOC_UART1_TXD
   BXT_GPIO_PAD_CONF(L"GPIO_43 LPSS_UART1_TXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0158, NORTH),     // SOC_UART1_RXD
   BXT_GPIO_PAD_CONF(L"GPIO_46 LPSS_UART2_RXD",   M1   ,    NA    ,  NA   ,  NA    ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,     NA   ,     NA, GPIO_PADBAR+0x0170, NORTH),     // SOC_UART2_TXD

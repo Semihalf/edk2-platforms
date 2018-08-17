@@ -19,7 +19,7 @@
 
 #include <PiPei.h>
 
-#include <Guid/PlatformInfo_Aplk.h>
+#include <Guid/PlatformInfo.h>
 
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>

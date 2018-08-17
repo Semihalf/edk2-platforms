@@ -75,9 +75,9 @@ AuroraGlacierPreMemInit (
   
   
   Status = AuroraGetFabId (PeiServices, &FabId);
-  if (FabId == 1) {
+  if (FabId == FAB_ID_B) {
     DEBUG ((EFI_D_INFO,  "This is Aurora Glacier FAB B.\n"));
-  } else if (FabId == 0) {
+  } else if (FabId == FAB_ID_A) {
     DEBUG ((EFI_D_INFO,  "This is Aurora Glacier FAB A.\n"));
   }
   

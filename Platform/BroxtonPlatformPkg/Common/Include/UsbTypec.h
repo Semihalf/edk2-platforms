@@ -1,5 +1,5 @@
 /** @file
-  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -18,7 +18,7 @@
 #include <Library/TimerLib.h>
 #include <Library/IoLib.h>
 
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Guid/SetupVariable.h>
 #include <Library/PmicLib.h>
 #include <Library/GpioLib.h>

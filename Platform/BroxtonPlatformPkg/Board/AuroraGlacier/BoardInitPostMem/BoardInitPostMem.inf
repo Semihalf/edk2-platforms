@@ -42,7 +42,7 @@
   IoLib
   SteppingLib
   GpioLib
-  I2cLibPei
+  I2cLib
   TimerLib
 
 [Packages]

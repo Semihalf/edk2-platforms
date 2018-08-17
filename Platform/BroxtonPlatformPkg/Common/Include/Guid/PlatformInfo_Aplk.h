@@ -159,9 +159,9 @@ typedef struct {
 
 typedef enum {
   BOARD_ID_UP2             = 0x01,     // UP2
-  BOARD_ID_MINNOW_NEXT     = 0x03,     // Minnow Board Next
+  BOARD_ID_MINNOW_MODULE   = 0x03,     // Minnow Board v3 Module
   BOARD_ID_LFH_CRB         = 0x07,     // Leaf Hill
-  BOARD_ID_MINNOW          = 0x0F,     // Minnow Board
+  BOARD_ID_MINNOW          = 0x0F,     // Minnow Board v3
   BOARD_ID_BENSON          = 0x0C,     // Benson Glacier
   BOARD_ID_AURORA          = 0x0E,     // Aurora Glacier
   BOARD_ID_APL_UNKNOWN     = 0xFF

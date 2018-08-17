@@ -15,7 +15,7 @@
 
 #include <Uefi.h>
 #include <Library/BaseMemoryLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/GpioLib.h>
 #include <Guid/PlatformInfo.h>
 #include "PlatformId.h"

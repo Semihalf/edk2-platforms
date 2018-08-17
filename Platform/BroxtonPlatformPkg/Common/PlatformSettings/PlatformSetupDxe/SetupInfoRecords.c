@@ -1,7 +1,7 @@
 /** @file
   To retrieve various platform info data for Setup menu.
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -25,7 +25,7 @@
 #include <Protocol/CpuInfo.h>
 #include <Library/IoLib.h>
 #include <Library/PlatformSecureDefaultsLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 #include <Library/PmcIpcLib.h>
 #include <CpuAccess.h>
 #include <Library/SteppingLib.h>

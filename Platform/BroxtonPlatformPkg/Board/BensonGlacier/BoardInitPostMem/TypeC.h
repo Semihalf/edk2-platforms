@@ -2,7 +2,7 @@
   Multiplatform initialization header file.
   This file includes package header files, library classes.
 
-  Copyright (c) 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2017 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -23,7 +23,7 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/GpioLib.h>
-#include <Library/I2CLib.h>
+#include <Library/I2cLib.h>
 
 //
 // Parade Tech PS8750 TypeC MUX
