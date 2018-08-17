@@ -80,12 +80,13 @@
     <LibraryClasses>
       !if $(UP2_BOARD) == TRUE
         NULL|$(PLATFORM_NAME)/Board/UP2/BoardInitPreMem/BoardInitPreMem.inf
-      !else 
+      !elseif $(MINNOW3_MODULE_BOARD) == TRUE
+        NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Module/BoardInitPreMem/BoardInitPreMem.inf
+     !else
         NULL|$(PLATFORM_NAME)/Board/MinnowBoard3/BoardInitPreMem/BoardInitPreMem.inf
         NULL|$(PLATFORM_NAME)/Board/LeafHill/BoardInitPreMem/BoardInitPreMem.inf
         NULL|$(PLATFORM_NAME)/Board/BensonGlacier/BoardInitPreMem/BoardInitPreMem.inf
         NULL|$(PLATFORM_NAME)/Board/AuroraGlacier/BoardInitPreMem/BoardInitPreMem.inf
-        NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Next/BoardInitPreMem/BoardInitPreMem.inf
       !endif
       BaseCryptLib|CryptoPkg/Library/BaseCryptLib/PeiCryptLib.inf
       CpuPolicyLib|$(PLATFORM_SI_PACKAGE)/Cpu/Library/PeiCpuPolicyLibPreMem/PeiCpuPolicyLibPreMem.inf
@@ -119,13 +120,16 @@
 
   $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformPostMemPei/PlatformPostMemPei.inf {
      <LibraryClasses>
+     !if $(UP2_BOARD) == TRUE
        NULL|$(PLATFORM_NAME)/Board/UP2/BoardInitPostMem/BoardInitPostMem.inf
+     !elseif $(MINNOW3_MODULE_BOARD) == TRUE
+       NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Module/BoardInitPostMem/BoardInitPostMem.inf
+     !else
        NULL|$(PLATFORM_NAME)/Board/MinnowBoard3/BoardInitPostMem/BoardInitPostMem.inf
        NULL|$(PLATFORM_NAME)/Board/LeafHill/BoardInitPostMem/BoardInitPostMem.inf
        NULL|$(PLATFORM_NAME)/Board/BensonGlacier/BoardInitPostMem/BoardInitPostMem.inf
        NULL|$(PLATFORM_NAME)/Board/AuroraGlacier/BoardInitPostMem/BoardInitPostMem.inf
-       NULL|$(PLATFORM_NAME)/Board/MinnowBoard3Next/BoardInitPostMem/BoardInitPostMem.inf
-       I2cLibPei|$(PLATFORM_SI_PACKAGE)/SouthCluster/Library/I2CLibPei/I2CLibPei.inf
+     !endif
     <PcdsPatchableInModule>
       gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x803805c6
   }

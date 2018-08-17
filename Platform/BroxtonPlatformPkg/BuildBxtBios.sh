@@ -45,6 +45,7 @@ RVVP_BIOS_ENABLE=FALSE
 RVV_BIOS_ENABLE=FALSE
 SrcDebug=FALSE
 UP2_BOARD=FALSE
+MINNOW3_MODULE_BOARD=FALSE
 
 ## Clean up previous build files.
 if [ -e $(pwd)/EDK2.log ]; then
@@ -156,6 +157,7 @@ if [ $BoardId == "MN" ]; then
 elif [ $BoardId == "MX" ]; then
   BOARD_ID=M3MO
   echo BOARD_ID = M3MODUL >> $WORKSPACE/Conf/BiosId.env
+  MINNOW3_MODULE_BOARD=TRUE
 elif [ $BoardId == "BG" ]; then
   BOARD_ID=BEN1
   echo BOARD_ID = BENSONV >> $WORKSPACE/Conf/BiosId.env
@@ -184,16 +186,17 @@ fi
 touch $Build_Macros
 
 ## Output platform specific build macros to DefineAtBuildMacros.dsc
-echo DEFINE ENBDT_PF_BUILD      = $ENBDT_PF_BUILD   >> $Build_Macros
-echo DEFINE TABLET_PF_BUILD     = $TABLET_PF_BUILD  >> $Build_Macros
-echo DEFINE BYTI_PF_BUILD       = $BYTI_PF_BUILD    >> $Build_Macros
-echo DEFINE CSLE_ENABLE         = $CSLE_ENABLE      >> $Build_Macros
-echo DEFINE VP_BIOS_ENABLE      = $VP_BIOS_ENABLE   >> $Build_Macros
-echo DEFINE SV_BIOS_ENABLE      = $SV_BIOS_ENABLE   >> $Build_Macros
-echo DEFINE PPV_BIOS_ENABLE     = $PPV_BIOS_ENABLE  >> $Build_Macros
-echo DEFINE RVVP_BIOS_ENABLE    = $RVVP_BIOS_ENABLE >> $Build_Macros
-echo DEFINE RVV_BIOS_ENABLE     = $RVV_BIOS_ENABLE  >> $Build_Macros
-echo DEFINE UP2_BOARD           = $UP2_BOARD        >> $Build_Macros
+echo DEFINE ENBDT_PF_BUILD       = $ENBDT_PF_BUILD           >> $Build_Macros
+echo DEFINE TABLET_PF_BUILD      = $TABLET_PF_BUILD          >> $Build_Macros
+echo DEFINE BYTI_PF_BUILD        = $BYTI_PF_BUILD            >> $Build_Macros
+echo DEFINE CSLE_ENABLE          = $CSLE_ENABLE              >> $Build_Macros
+echo DEFINE VP_BIOS_ENABLE       = $VP_BIOS_ENABLE           >> $Build_Macros
+echo DEFINE SV_BIOS_ENABLE       = $SV_BIOS_ENABLE           >> $Build_Macros
+echo DEFINE PPV_BIOS_ENABLE      = $PPV_BIOS_ENABLE          >> $Build_Macros
+echo DEFINE RVVP_BIOS_ENABLE     = $RVVP_BIOS_ENABLE         >> $Build_Macros
+echo DEFINE RVV_BIOS_ENABLE      = $RVV_BIOS_ENABLE          >> $Build_Macros
+echo DEFINE UP2_BOARD            = $UP2_BOARD                >> $Build_Macros
+echo DEFINE MINNOW3_MODULE_BOARD = $MINNOW3_MODULE_BOARD     >> $Build_Macros
 
 if [ $Arch == "IA32" ]; then
   echo DEFINE X64_CONFIG = FALSE      >> $Build_Macros

@@ -86,7 +86,7 @@
   
   gUefiCpuPkgTokenSpaceGuid.PcdCpuSmmStackSize|0x3000
   
-  !if $(UP2_BOARD) == TRUE || $(MODULE_BOARD) == TRUE
+  !if $(UP2_BOARD) == TRUE || $(MINNOW3_MODULE_BOARD) == TRUE
     gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|0
   !else 
     gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|2

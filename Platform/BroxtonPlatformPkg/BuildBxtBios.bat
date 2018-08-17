@@ -62,6 +62,7 @@ set APLK_SETUP_ENABLE_BUILD=FALSE
 set FSP_BUILD=FALSE
 set FSP_WRAPPER=FALSE
 set UP2_BOARD=FALSE
+set MINNOW3_MODULE_BOARD=FALSE
 
 :: Set Defaults of platform specific environment variables.
 set EFI_SOURCE=%CD%
@@ -70,6 +71,7 @@ set PLATFORM_NAME=BxtPlatformPkg
 set PLATFORM_RC_PACKAGE=%SILICON_PATH%\BroxtonSiPkg
 set FSP_BIN_PKG_NAME=BroxtonFspBinPkg
 set STITCH_PATH=%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch
+set ResetVectorPath=%WORKSPACE%\%PLATFORM_RC_PACKAGE%\Cpu\ResetVector
 
 PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\GenBiosId;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\nasm\Win32
 PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\FCE;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\nasm\Win32
@@ -234,6 +236,7 @@ if /i "%~1" == "%Minnow_RVP%" (
     set BOARD_ID=AURORAV
   ) else if %BoardId%==MX (
     set BOARD_ID=M3MODUL
+    set MINNOW3_MODULE_BOARD=TRUE
   ) else if %BoardId%==LH (
     set BOARD_ID=LEAFHIL
   ) else if %BoardId%==UP (
@@ -275,6 +278,7 @@ if "%Arch%"=="IA32" (
 )
 
 echo DEFINE UP2_BOARD                = %UP2_BOARD%               >> %Build_Macros%
+echo DEFINE MINNOW3_MODULE_BOARD     = %MINNOW3_MODULE_BOARD%    >> %Build_Macros%
 
 ::Stage of copy of BiosId.env in Conf/ with Platform_Type and Build_Target values removed
 
@@ -419,7 +423,6 @@ if ErrorLevel 1 goto BldFail
 
 echo Building ResetVector...
 
-set ResetVectorPath=%WORKSPACE%\%PLATFORM_RC_PACKAGE%\Cpu\ResetVector
 
 pushd %ResetVectorPath%\Vtf0
   nasm.exe %Nasm_Flags% -o Bin\ResetVector.ia32.port80.raw ResetVectorCode.asm
