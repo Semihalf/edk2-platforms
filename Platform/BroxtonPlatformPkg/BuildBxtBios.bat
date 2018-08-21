@@ -90,21 +90,6 @@ if /i "%~1"=="/l" (
     shift
     goto OptLoop
 )
-if /i "%~1" == "/c" (
-    echo Removing previous Build files...
-    if exist build (
-        del /f/s/q build > nul
-        rmdir /s/q build
-    )
-    if exist Conf\.cache (
-        del /f/s/q Conf\.cache > nul
-        rmdir /s/q Conf\.cache
-    )
-    echo.
-    shift
-    goto OptLoop
-)
-
 if /i "%~1"=="/ia32" (
     set Arch=IA32
     shift
@@ -160,6 +145,12 @@ if /i "%~1"=="/A" (
 )
 if /i "%~1"=="/B" (
     set FabId=B
+    echo.
+    shift
+    goto OptLoop
+)
+if /i "%~1"=="/C" (
+    set FabId=C
     echo.
     shift
     goto OptLoop
@@ -318,8 +309,8 @@ if %BoardId%==MN (
 )
 
 if %BoardId%==MX (
-  if %FabId%==B (
-    echo BOARD_REV = B >> Conf\BiosId.env
+  if %FabId%==C (
+    echo BOARD_REV = C >> Conf\BiosId.env
   ) else (
     echo BOARD_REV = A >> Conf\BiosId.env
   )
@@ -652,7 +643,6 @@ echo Usage: %0 [options] ^<PlatformType^> ^<BuildTarget^>
 echo.
 echo.   /?       Display this help text
 echo    /l       Log a copy of the build output to EDK2.log
-echo    /c       CleanAll before building
 echo    /x64     Set Arch to X64  (default)
 echo    /ia32    Set Arch to IA32
 echo    /vs08    Set compiler to VisualStudio 2008

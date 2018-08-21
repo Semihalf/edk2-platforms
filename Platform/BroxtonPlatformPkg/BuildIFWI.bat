@@ -31,12 +31,6 @@ if /i "%~1"=="" goto Usage
 if /i "%~1"=="/?" goto Usage
 
 ::Build Flags
-if /i "%~1" == "/c" (
-    set Build_Flags=%Build_Flags% /c
-    shift
-    set SkipUsageFlag=TRUE
-    goto OptLoop
-)
 if /i "%~1"=="/ia32" (
     set Arch=IA32
     set Build_Flags=%Build_Flags% /ia32
@@ -89,6 +83,12 @@ if /i "%~1"=="/A" (
 if /i "%~1"=="/B" (
     set FabId=B
     set Build_Flags=%Build_Flags% /B
+    shift
+    goto OptLoop
+)
+if /i "%~1"=="/C" (
+    set FabId=C
+    set Build_Flags=%Build_Flags% /C
     shift
     goto OptLoop
 )

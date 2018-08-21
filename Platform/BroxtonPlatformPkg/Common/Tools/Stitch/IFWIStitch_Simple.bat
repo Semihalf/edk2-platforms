@@ -175,10 +175,17 @@ if %BoardId%==BG (
            copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
          )
 ) else if %BoardId%==MX (
+         if %FabId%==A (
            copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk1.bin .
            copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk2.bin .
            copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk3.bin .
            copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_A\SpiChunk1SpiAccessControl.bin .
+         ) else (
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_C\SpiChunk1.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_C\SpiChunk2.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_C\SpiChunk3.bin .
+           copy /y /b ..\..\..\Board\MinnowBoard3Module\IFWI\FAB_C\SpiChunk1SpiAccessControl.bin .
+         )
            if %SpiAccessControl% EQU 0 (
              copy /y /b SpiChunk1.bin+.\BIOS_COMPONENTS\IBBL.Fv+.\BIOS_COMPONENTS\IBB.Fv+SpiChunk2.bin+.\BIOS_COMPONENTS\OBB.Fv+.\BIOS_COMPONENTS\NvStorage.Fv+SpiChunk3.bin spi_out.bin
            ) else (

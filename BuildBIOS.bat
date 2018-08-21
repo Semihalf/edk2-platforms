@@ -57,6 +57,7 @@ echo        /x64   Set Arch to X64  (default: X64)
 echo        /IA32  Set Arch to IA32 (default: X64)
 echo        /A     Set FabId to A
 echo        /B     Set FabId to B (default:  FAB_B)
+echo        /C     Set FabId to C
 echo        /D     Set FabId to D
 echo        /MN    MinnowBoard 3(default: MN)
 echo        /MX    MinnowBoard 3 Module
