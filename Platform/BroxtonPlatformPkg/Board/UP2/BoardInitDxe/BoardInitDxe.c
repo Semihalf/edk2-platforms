@@ -63,15 +63,17 @@ UpdateSetupVariable (
   ASSERT_EFI_ERROR (Status);
 
   if (Status == EFI_SUCCESS) {
-    mSystemConfiguration.PcieRootPortEn[3]= (UINT8) 0;
-    Status = gRT->SetVariable (
-                    L"Setup",
-                    &gEfiSetupVariableGuid,
-                    VariableAttributes,
-                    VarSize,
-                    &mSystemConfiguration
-                    );
-    ASSERT_EFI_ERROR (Status);
+    if (mSystemConfiguration.PcieRootPortEn[3] != 0) {
+      mSystemConfiguration.PcieRootPortEn[3]= (UINT8) 0;
+      Status = gRT->SetVariable (
+                      L"Setup",
+                      &gEfiSetupVariableGuid,
+                      VariableAttributes,
+                      VarSize,
+                      &mSystemConfiguration
+                      );
+      ASSERT_EFI_ERROR (Status);
+    }
   }
   
   return Status;
