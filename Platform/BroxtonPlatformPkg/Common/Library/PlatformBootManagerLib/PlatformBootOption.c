@@ -519,12 +519,10 @@ RegisterDefaultBootOption (
   //
   // Shell.
   //
-  if (1) {
-    ShellData = NULL;
-    ShellDataSize = 0;
-    RegisterFvBootOption (&gUefiShellFileGuid, INTERNAL_UEFI_SHELL_NAME,  (UINTN) -1, LOAD_OPTION_ACTIVE, (UINT8 *)ShellData, ShellDataSize);
-  }
-  
+  ShellData = NULL;
+  ShellDataSize = 0;
+  RegisterFvBootOption (&gUefiShellFileGuid, INTERNAL_UEFI_SHELL_NAME,  (UINTN) -1, LOAD_OPTION_ACTIVE, (UINT8 *)ShellData, ShellDataSize);
+
   //
   // UiApp.
   //

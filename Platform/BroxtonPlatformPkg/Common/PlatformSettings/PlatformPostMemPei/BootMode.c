@@ -1,7 +1,7 @@
 /** @file
   EFI PEIM to provide the platform support functionality.
 
-  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -423,14 +423,6 @@ SetPlatformBootMode (
     //
     CopyMem (&PlatformSetupId.SetupName, SAFE_SETUP_NAME, StrSize (SAFE_SETUP_NAME));
     PlatformSetupId.PlatformBootMode = PLATFORM_SAFE_MODE;
-
-  } else if (0) {
-    //
-    // Manufacturing mode
-    //
-    CopyMem (&PlatformSetupId.SetupName, MANUFACTURE_SETUP_NAME, StrSize (MANUFACTURE_SETUP_NAME));
-    PlatformSetupId.PlatformBootMode = PLATFORM_MANUFACTURING_MODE;
-
   } else {
     //
     // Default to normal mode.

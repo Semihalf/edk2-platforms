@@ -1,7 +1,7 @@
 /** @file
   SC HD Audio Library implementation.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -185,7 +185,9 @@ NhltFormatDump (
   DEBUG ((DEBUG_INFO, " Format->FormatConfiguration.CapabilitiesSize = %d B\n", Format->FormatConfiguration.CapabilitiesSize));
   DEBUG ((DEBUG_INFO, " Format->FormatConfiguration.Capabilities:"));
   for (i = 0; i < (  Format->FormatConfiguration.CapabilitiesSize ) ; i++) {
-    if(i % 16 == 0) DEBUG ((DEBUG_INFO, "\n"));
+    if(i % 16 == 0) {
+      DEBUG ((DEBUG_INFO, "\n"));
+    }
     DEBUG ((DEBUG_INFO, "0x%02x, ", Format->FormatConfiguration.Capabilities[i]));
   }
   DEBUG ((DEBUG_INFO, "\n"));
@@ -260,7 +262,9 @@ NhltOedConfigDump (
   DEBUG ((DEBUG_INFO, " OedConfig->CapabilitiesSize = %d B\n", OedConfig->CapabilitiesSize));
   DEBUG ((DEBUG_INFO, " OedConfig->Capabilities:"));
   for (i = 0; i < (OedConfig->CapabilitiesSize) ; i++) {
-    if(i % 16 == 0) DEBUG ((DEBUG_INFO, "\n"));
+    if(i % 16 == 0) {
+      DEBUG ((DEBUG_INFO, "\n"));
+    }
     DEBUG ((DEBUG_INFO, "0x%02x, ", OedConfig->Capabilities[i]));
   }
 
