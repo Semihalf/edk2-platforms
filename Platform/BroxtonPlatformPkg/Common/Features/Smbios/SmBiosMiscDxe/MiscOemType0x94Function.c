@@ -165,7 +165,7 @@ EfiValueToString (
   //
   // Reverse temp string into Buffer.
   //
-  if (Width > 0 && (UINTN) (TempStr - TempBuffer) > Width) {
+  if (Width > 0 && ((UINTN)TempStr - (UINTN)TempBuffer) > Width) {
     TempStr = TempBuffer + Width;
   }
   Index = 0;
@@ -241,7 +241,7 @@ EfiValueToHexStr (
   //
   // Reverse temp string into Buffer.
   //
-  if (Width > 0 && (UINTN) (TempStr - TempBuffer) > Width) {
+  if (Width > 0 && ((UINTN)TempStr - (UINTN)TempBuffer) > Width) {
     TempStr = TempBuffer + Width;
   }
   Index = 0;

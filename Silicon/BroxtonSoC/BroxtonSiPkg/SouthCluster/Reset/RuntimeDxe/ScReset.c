@@ -1,7 +1,7 @@
 /** @file
   Reset Architectural Protocol implementation.
 
-  Copyright (c) 2011 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -307,7 +307,7 @@ IntelScResetSystem (
       //
       Data16 = 0;
 
-      IoWrite16 ((UINTN) (AcpiBase + R_ACPI_GPE0a_EN), Data16);
+      IoWrite16 ((UINTN) (UINT16) (AcpiBase + R_ACPI_GPE0a_EN), Data16);
 
       //
       // Clear Sleep SMI Status
@@ -332,19 +332,19 @@ IntelScResetSystem (
       // Clear it through SMI Status register
       //
       Data16 = B_SMI_STS_PM1_STS_REG;
-      IoWrite16 ((UINTN) (AcpiBase + R_SMI_STS), Data16);
+      IoWrite16 ((UINTN) (UINT16) (AcpiBase + R_SMI_STS), Data16);
 
       //
       // Finally, transform system into S5 sleep state
       //
-      Data32  = IoRead32 ((UINTN) (AcpiBase + R_ACPI_PM1_CNT));
-      Data32  = (UINT32) ((Data32 & ~(B_ACPI_PM1_CNT_SLP_TYP + B_ACPI_PM1_CNT_SLP_EN)) | V_ACPI_PM1_CNT_S5);
+      Data32  = IoRead32 ((UINTN) (UINT16) (AcpiBase + R_ACPI_PM1_CNT));
+      Data32  = (UINT32)((Data32 & ~(B_ACPI_PM1_CNT_SLP_TYP + B_ACPI_PM1_CNT_SLP_EN)) | V_ACPI_PM1_CNT_S5);
 
-      IoWrite32 ((UINTN) (AcpiBase + R_ACPI_PM1_CNT), Data32);
+      IoWrite32 ((UINTN) (UINT16) (AcpiBase + R_ACPI_PM1_CNT), Data32);
 
       Data32 = Data32 | B_ACPI_PM1_CNT_SLP_EN;
 
-      IoWrite32 ((UINTN) (AcpiBase + R_ACPI_PM1_CNT), Data32);
+      IoWrite32 ((UINTN) (UINT16) (AcpiBase + R_ACPI_PM1_CNT), Data32);
       //
       // Should not return
       //

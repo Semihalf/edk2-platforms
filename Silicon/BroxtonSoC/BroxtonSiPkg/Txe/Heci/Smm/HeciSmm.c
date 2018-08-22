@@ -1,7 +1,7 @@
 /** @file
   HECI Smm driver.
 
-  Copyright (c) 2007 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -148,9 +148,9 @@ SendPGIEntry (
   volatile HECI_HOST_CONTROL_REGISTER   *HostControlReg;
   volatile HECI_SEC_CONTROL_REGISTER    *SecControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
-  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + SEC_CSR_HA);
-  WriteBuffer = (UINT32 *) (UINTN) (mHeci_HeciBar + H_CB_WW);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) ((UINTN)mHeci_HeciBar + H_CSR);
+  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) ((UINTN)mHeci_HeciBar + SEC_CSR_HA);
+  WriteBuffer = (UINT32 *) ((UINTN)mHeci_HeciBar + H_CB_WW);
 
   //
   // Prepare message header
@@ -619,9 +619,9 @@ HeciReceiveInterrupt (
   volatile HECI_HOST_CONTROL_REGISTER  *HostControlReg;
   volatile HECI_SEC_CONTROL_REGISTER   *SecControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
-  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + SEC_CSR_HA);
-  ReadBuffer = (UINT32 *) (UINTN) (mHeci_HeciBar + SEC_CB_RW);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) ((UINTN)mHeci_HeciBar + H_CSR);
+  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) ((UINTN)mHeci_HeciBar + SEC_CSR_HA);
+  ReadBuffer = (UINT32 *) ((UINTN)mHeci_HeciBar + SEC_CB_RW);
 
   Size = 0;
   ReadSize = 0;
@@ -654,7 +654,7 @@ HeciDisableInterrupt (
 {
   volatile HECI_HOST_CONTROL_REGISTER  *HostControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *)((UINTN)mHeci_HeciBar + H_CSR);
 
   HostControlReg->r.H_IE = 0;
 }
@@ -671,7 +671,7 @@ HeciEnableInterrupt (
 {
   volatile HECI_HOST_CONTROL_REGISTER  *HostControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *)((UINTN)mHeci_HeciBar + H_CSR);
 
   HostControlReg->r.H_IE = 1;
 }
@@ -688,7 +688,7 @@ HeciClearInterrupt (
 {
   volatile HECI_HOST_CONTROL_REGISTER  *HostControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *)((UINTN)mHeci_HeciBar + H_CSR);
 
   HostControlReg->r.H_IS = 1;
 }
@@ -707,7 +707,7 @@ HeciInterruptOccur (
 {
   volatile HECI_HOST_CONTROL_REGISTER  *HostControlReg;
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *)((UINTN)mHeci_HeciBar + H_CSR);
 
   return (HostControlReg->r.H_IS == 1);
 }
@@ -726,7 +726,7 @@ IsHeciCseResponse (
 {
   volatile HECI_SEC_CONTROL_REGISTER  *SecControlReg;
 
-  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + SEC_CSR_HA);
+  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *)((UINTN)mHeci_HeciBar + SEC_CSR_HA);
 
   return (SecControlReg->r.SEC_CBRP_HRA != SecControlReg->r.SEC_CBWP_HRA);
 }

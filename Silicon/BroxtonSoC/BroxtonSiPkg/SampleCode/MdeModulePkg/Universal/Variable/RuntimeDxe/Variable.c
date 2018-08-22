@@ -16,7 +16,7 @@
   VariableServiceSetVariable() should also check authenticate data to avoid buffer overflow,
   integer overflow. It should also check attribute to avoid authentication bypass.
 
-  Copyright (c) 2006 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -1413,7 +1413,7 @@ Reclaim (
     CurrPtr += NewVariableSize;
   }
 
-  *LastVariableOffset = (UINTN) (CurrPtr - ValidBuffer);
+  *LastVariableOffset = ((UINTN)CurrPtr - (UINTN)ValidBuffer);
   if (IsVolatile) {
     //
     // If volatile variable store, just copy valid buffer.
@@ -4759,7 +4759,7 @@ VariableCommonInitialize (
   GuidHob = GetFirstGuidHob (VariableGuid);
   if (GuidHob != NULL) {
     VariableStoreHeader = GET_GUID_HOB_DATA (GuidHob);
-    VariableStoreLength = (UINT64) (GuidHob->Header.HobLength - sizeof (EFI_HOB_GUID_TYPE));
+    VariableStoreLength = (UINT64)(UINT32)(GuidHob->Header.HobLength - sizeof (EFI_HOB_GUID_TYPE));
     if (GetVariableStoreStatus (VariableStoreHeader) == EfiValid) {
       mVariableModuleGlobal->VariableGlobal.HobVariableBase = (EFI_PHYSICAL_ADDRESS) (UINTN) AllocateRuntimeCopyPool ((UINTN) VariableStoreLength, (VOID *) VariableStoreHeader);
       if (mVariableModuleGlobal->VariableGlobal.HobVariableBase == 0) {

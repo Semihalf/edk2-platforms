@@ -2,7 +2,7 @@
   This file contains the implementation of SideBandLib library.
   The library exposes an abstract interface to the SoC SideBand network.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -70,7 +70,7 @@ GetSideBandMmioAddress (
 {
   UINT32 Temp = MmioRead32 (P2SB_PCI_MM_BASE + R_P2SB_BASE) & 0xff000000;
   Temp |= TargetPortId << 16;
-  Temp |= TargetRegister;
+  Temp |= (UINT32)TargetRegister;
 
   return Temp;
 }

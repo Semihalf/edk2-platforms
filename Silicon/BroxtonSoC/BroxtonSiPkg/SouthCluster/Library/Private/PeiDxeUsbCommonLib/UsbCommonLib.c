@@ -1,7 +1,7 @@
 /** @file
   Initializes USB Controllers.
 
-  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -804,7 +804,7 @@ CommonXhciHcInit (
     BitMask  = (UINT32) (BIT29);
     BitValue = 0;
     Status = ScMmioPoll32 (
-              (UINTN) (XhciMmioBase + R_XHCI_MEM_DUAL_ROLE_CFG1),
+              (UINTN) (UINT32) (XhciMmioBase + R_XHCI_MEM_DUAL_ROLE_CFG1),
               BitMask,
               BitValue,
               50

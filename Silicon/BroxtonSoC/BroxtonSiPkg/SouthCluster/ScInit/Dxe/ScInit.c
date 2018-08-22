@@ -1,7 +1,7 @@
 /** @file
   This is the driver that initializes the Intel SC devices
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -670,14 +670,14 @@ ScOnEndOfDxe (
   FuncDisableReg = MmioRead32 (PmcBase + R_PMC_FUNC_DIS);
 
   MmioAnd32 (
-    (UINTN) (PmcBase + R_PMC_PMIR),
+    (UINTN) (UINT32) (PmcBase + R_PMC_PMIR),
     (UINT32) ~(B_PMC_PMIR_CF9GR)
     );
   S3BootScriptSaveMemWrite (
     EfiBootScriptWidthUint32,
-    (UINTN) (PmcBase + R_PMC_PMIR),
+    (UINTN) (UINT32) (PmcBase + R_PMC_PMIR),
     1,
-    (VOID *) (UINTN) (PmcBase + R_PMC_PMIR)
+    (VOID *) (UINTN) (UINT32) (PmcBase + R_PMC_PMIR)
     );
 
   if (BxtSeries == BxtP){
@@ -700,24 +700,24 @@ ScOnEndOfDxe (
     //
     // Save Global SMI Enable bit setting before BIOS enables SMI_LOCK during S3 resume
     //
-    Data32Or  = IoRead32 ((UINTN) (AcpiBaseAddr + R_SMI_EN));
+    Data32Or  = IoRead32 ((UINTN) (UINT16) (AcpiBaseAddr + R_SMI_EN));
     if ((Data32Or & B_SMI_EN_GBL_SMI) != 0) {
       Data32And = 0xFFFFFFFF;
       Data32Or &= B_SMI_EN_GBL_SMI;
       S3BootScriptSaveIoReadWrite (
         EfiBootScriptWidthUint32,
-        (UINTN) (AcpiBaseAddr + R_SMI_EN),
+        (UINTN) (UINT16) (AcpiBaseAddr + R_SMI_EN),
         &Data32Or,  // Data to be ORed
         &Data32And  // Data to be ANDed
         );
     }
 
-    MmioOr8 ((UINTN) (PmcBase + R_PMC_GEN_PMCON_2), B_PMC_GEN_PMCON_SMI_LOCK);
+    MmioOr8 ((UINTN) (UINT32) (PmcBase + R_PMC_GEN_PMCON_2), B_PMC_GEN_PMCON_SMI_LOCK);
     S3BootScriptSaveMemWrite (
       EfiBootScriptWidthUint8,
-      (UINTN) (PmcBase + R_PMC_GEN_PMCON_2),
+      (UINTN) (UINT32) (PmcBase + R_PMC_GEN_PMCON_2),
       1,
-      (VOID *) (UINTN) (PmcBase + R_PMC_GEN_PMCON_2)
+      (VOID *)(UINTN) (UINT32) (PmcBase + R_PMC_GEN_PMCON_2)
       );
   }
 
@@ -818,7 +818,7 @@ ScOnEndOfDxe (
 
   S3BootScriptSaveIoReadWrite (
     EfiBootScriptWidthUint16,
-    (UINTN) (AcpiBaseAddr + R_TCO_CNT),
+    (UINTN) (UINT16) (AcpiBaseAddr + R_TCO_CNT),
     &Data16Or,  // Data to be ORed
     &Data16And  // Data to be ANDed
   );

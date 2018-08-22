@@ -2,7 +2,7 @@
   This driver is responsible for the registration of child drivers
   and the abstraction of the SC SMI sources.
 
-  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -90,13 +90,13 @@ ScSmmEnableGlobalSmiBit (
 {
   UINT32  SmiEn;
 
-  SmiEn = IoRead32 ((UINTN) (AcpiBaseAddr + R_SMI_EN));
+  SmiEn = IoRead32 (((UINTN)AcpiBaseAddr + R_SMI_EN));
 
   //
   // Set the "global smi enable" bit
   //
   SmiEn |= B_SMI_EN_GBL_SMI;
-  IoWrite32 ((UINTN) (AcpiBaseAddr + R_SMI_EN), SmiEn);
+  IoWrite32 (((UINTN)AcpiBaseAddr + R_SMI_EN), SmiEn);
 
   return EFI_SUCCESS;
 }
@@ -129,14 +129,14 @@ ScSmmClearSmi (
   //
   // Determine whether an ACPI OS is present (via the SCI_EN bit)
   //
-  Pm1Cnt  = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT));
+  Pm1Cnt  = IoRead32 (((UINTN)AcpiBaseAddr + R_ACPI_PM1_CNT));
   SciEn   = (BOOLEAN) ((Pm1Cnt & B_ACPI_PM1_CNT_SCI_EN) == B_ACPI_PM1_CNT_SCI_EN);
   if (!SciEn) {
     //
     // Clear any SMIs that double as SCIs (when SCI_EN==0)
     //
-    Pm1Sts        = IoRead16 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_STS));
-    Gpe0aStsLow   = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_GPE0a_STS));
+    Pm1Sts        = IoRead16 (((UINTN)AcpiBaseAddr + R_ACPI_PM1_STS));
+    Gpe0aStsLow   = IoRead32 (((UINTN)AcpiBaseAddr + R_ACPI_GPE0a_STS));
 
     Pm1Sts |=
       (
@@ -167,15 +167,15 @@ ScSmmClearSmi (
        B_ACPI_GPE0a_STS_HOT_PLUG
        );
 
-    IoWrite16 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_STS), (UINT16) Pm1Sts);
-    IoWrite32 ((UINTN) (AcpiBaseAddr + R_ACPI_GPE0a_STS), (UINT32) Gpe0aStsLow);
+    IoWrite16 (((UINTN)AcpiBaseAddr + R_ACPI_PM1_STS), (UINT16) Pm1Sts);
+    IoWrite32 (((UINTN)AcpiBaseAddr + R_ACPI_GPE0a_STS), (UINT32) Gpe0aStsLow);
   }
 
   //
   // Clear all SMIs that are unaffected by SCI_EN
   //
-  SmiSts = IoRead32 ((UINTN) (AcpiBaseAddr + R_SMI_STS));
-  TcoSts = IoRead32 ((UINTN) (AcpiBaseAddr + R_TCO_STS));
+  SmiSts = IoRead32 (((UINTN)AcpiBaseAddr + R_SMI_STS));
+  TcoSts = IoRead32 (((UINTN)AcpiBaseAddr + R_TCO_STS));
 
   SmiSts |=
     (
@@ -194,7 +194,7 @@ ScSmmClearSmi (
      );
 
   GpioClearAllGpiSmiSts ();
-  IoWrite32 ((UINTN) (AcpiBaseAddr + R_SMI_STS), SmiSts);
+  IoWrite32 (((UINTN)AcpiBaseAddr + R_SMI_STS), SmiSts);
 
   //
   // Try to clear the EOS bit. ASSERT on an error
@@ -220,18 +220,18 @@ ScSmmSetAndCheckEos (
 {
   UINT32  SmiEn;
 
-  SmiEn = IoRead32 ((UINTN) (AcpiBaseAddr + R_SMI_EN));
+  SmiEn = IoRead32 (((UINTN)AcpiBaseAddr + R_SMI_EN));
 
   //
   // Reset the SC to generate subsequent SMIs
   //
   SmiEn |= B_SMI_EN_EOS;
-  IoWrite32 ((UINTN) (AcpiBaseAddr + R_SMI_EN), SmiEn);
+  IoWrite32 (((UINTN)AcpiBaseAddr + R_SMI_EN), SmiEn);
 
   //
   // Double check that the assert worked
   //
-  SmiEn = IoRead32 ((UINTN) (AcpiBaseAddr + R_SMI_EN));
+  SmiEn = IoRead32 (((UINTN)AcpiBaseAddr + R_SMI_EN));
 
   //
   // Return TRUE if EOS is set correctly
@@ -268,7 +268,7 @@ ScSmmGetSciEn (
   //
   // Determine whether an ACPI OS is present (via the SCI_EN bit)
   //
-  Pm1Cnt  = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT));
+  Pm1Cnt  = IoRead32 (((UINTN)AcpiBaseAddr + R_ACPI_PM1_CNT));
   SciEn   = (BOOLEAN) ((Pm1Cnt & B_ACPI_PM1_CNT_SCI_EN) == B_ACPI_PM1_CNT_SCI_EN);
 
   return SciEn;

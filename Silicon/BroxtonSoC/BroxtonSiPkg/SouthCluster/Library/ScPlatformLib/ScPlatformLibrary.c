@@ -1,7 +1,7 @@
 /** @file
   SC Platform Lib implementation.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -92,7 +92,7 @@ ScPmTimerStall (
   //
   AcpiBaseAddr = (UINT16)PcdGet16(PcdScAcpiIoPortBaseAddress);
 
-  OriginalTick  = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
+  OriginalTick  = IoRead32 ((UINTN)(UINT32)(AcpiBaseAddr + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
   CurrentTick   = OriginalTick;
 
   //

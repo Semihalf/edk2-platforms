@@ -2,7 +2,7 @@
   This is the driver that publishes the SMM Access Protocol
   instance for System Agent.
 
-  Copyright (c) 1999 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -182,7 +182,7 @@ Close (
     }
 
     SmmAccess->SmramDesc[Index].RegionState &= ~EFI_SMRAM_OPEN;
-    SmmAccess->SmramDesc[Index].RegionState |= (EFI_SMRAM_CLOSED |EFI_ALLOCATED);
+    SmmAccess->SmramDesc[Index].RegionState |= (UINTN)(EFI_SMRAM_CLOSED |EFI_ALLOCATED);
   }
   SmmAccess->SmmAccess.OpenState = FALSE;
 

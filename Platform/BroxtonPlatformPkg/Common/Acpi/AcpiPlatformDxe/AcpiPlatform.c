@@ -381,7 +381,7 @@ PlatformUpdateTables (
 #if defined (IDCC2_SUPPORTED) && IDCC2_SUPPORTED
   EFI_ACPI_ASPT_TABLE                                         *pSpttTable;
 #endif
-  UINT16                                                      NumberOfHpets;
+  UINT32                                                      NumberOfHpets;
   UINT16                                                      HpetCapIdValue;
   UINT32                                                      HpetBlockID;
   UINTN                                                       LocalApicCounter;

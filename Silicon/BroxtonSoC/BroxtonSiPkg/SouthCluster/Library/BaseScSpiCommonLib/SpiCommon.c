@@ -158,7 +158,7 @@ PchPmTimerStallRuntimeSafe (
     return;
   }
 
-  OriginalTick   = IoRead32 ((UINTN) (ABase + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
+  OriginalTick   = IoRead32 ((UINTN)(UINT16)(ABase + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
   CurrentTick    = OriginalTick;
 
   //
@@ -181,7 +181,7 @@ PchPmTimerStallRuntimeSafe (
   // one I/O operation, and maybe generate SMI
   //
   while ((Counts != 0) || (RemainingTick > CurrentTick)) {
-    CurrentTick = IoRead32 ((UINTN) (ABase + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
+    CurrentTick = IoRead32 ((UINTN)(UINT16)(ABase + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
     //
     // Check if timer overflow
     //
@@ -625,8 +625,8 @@ SendSpiCmd (
   // whose SMI handlers access flash before flash cycle and re-enabling the SMI
   // sources after the flash cycle .
   //
-  SmiEnSave   = IoRead32 ((UINTN) (ABase + R_SMI_EN));
-  IoWrite32 ((UINTN) (ABase + R_SMI_EN), SmiEnSave & (UINT32) (~B_SMI_EN_GBL_SMI));
+  SmiEnSave   = IoRead32 ((UINTN)(UINT16)(ABase + R_SMI_EN));
+  IoWrite32 ((UINTN) (UINT16) (ABase + R_SMI_EN), SmiEnSave & (UINT32) (~B_SMI_EN_GBL_SMI));
   BiosCtlSave = MmioRead8 (SpiBaseAddress + R_SPI_BCR) & B_SPI_BCR_SRC;
 
   //
@@ -947,7 +947,7 @@ SendSpiCmdEnd:
   //
   // Restore SMIs.
   //
-  IoWrite32 ((UINTN) (ABase + R_SMI_EN), SmiEnSave);
+  IoWrite32 ((UINTN)(UINT16) (ABase + R_SMI_EN), SmiEnSave);
   ReleaseSpiBar0 (SpiInstance);
 
   return Status;

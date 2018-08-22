@@ -1,7 +1,7 @@
 /** @file
   This is a generic template for a child of the IchSmm driver.
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -1058,7 +1058,7 @@ BcdToHex(
   UINTN   HighByte;
   UINTN   LowByte;
 
-  HighByte    = (UINTN) ((BcdValue >> 4) * 10);
+  HighByte    = (UINTN)(UINT32)((BcdValue >> 4) * 10);
   LowByte     = (UINTN) (BcdValue & 0x0F);
 
   return ((UINT8) (LowByte + HighByte));

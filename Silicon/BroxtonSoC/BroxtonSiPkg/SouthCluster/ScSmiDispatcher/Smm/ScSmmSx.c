@@ -1,7 +1,7 @@
 /** @file
   File to contain all the hardware specific stuff for the Smm Sx dispatch protocol.
 
-  Copyright (c) 2012 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -64,7 +64,7 @@ SxGetContext (
 {
   UINT32  Pm1Cnt;
 
-  Pm1Cnt = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT));
+  Pm1Cnt = IoRead32(((UINTN) AcpiBaseAddr + R_ACPI_PM1_CNT));
 
   //
   // By design, the context phase will always be ENTRY
@@ -199,7 +199,7 @@ ScSmmSxGoToSleep (
   //
   // Get Power Management 1 Control Register Value
   //
-  Pm1Cnt = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT));
+  Pm1Cnt = IoRead32 (((UINTN) AcpiBaseAddr + R_ACPI_PM1_CNT));
 
   if (((Pm1Cnt & B_ACPI_PM1_CNT_SLP_TYP) == V_ACPI_PM1_CNT_S3) ||
       ((Pm1Cnt & B_ACPI_PM1_CNT_SLP_TYP) == V_ACPI_PM1_CNT_S4) ||
@@ -229,13 +229,13 @@ ScSmmSxGoToSleep (
   // Now that SMIs are disabled, write to the SLP_EN bit again to trigger the sleep
   //
   Pm1Cnt |= B_ACPI_PM1_CNT_SLP_EN;
-  IoWrite32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT), Pm1Cnt);
+  IoWrite32 (((UINTN) AcpiBaseAddr + R_ACPI_PM1_CNT), Pm1Cnt);
 
   //
   // Should only proceed if wake event is generated.
   //
   if ((Pm1Cnt & B_ACPI_PM1_CNT_SLP_TYP) == V_ACPI_PM1_CNT_S1) {
-    while (((IoRead16 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_STS))) & B_ACPI_PM1_STS_WAK) == 0x0);
+    while (((IoRead16 (((UINTN) AcpiBaseAddr + R_ACPI_PM1_STS))) & B_ACPI_PM1_STS_WAK) == 0x0);
   } else {
     CpuDeadLoop ();
   }
@@ -244,7 +244,7 @@ ScSmmSxGoToSleep (
   // The system just went to sleep. If the sleep state was S1, then code execution will resume
   // here when the system wakes up.
   //
-  Pm1Cnt = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT));
+  Pm1Cnt = IoRead32 (((UINTN) AcpiBaseAddr + R_ACPI_PM1_CNT));
 
   if ((Pm1Cnt & B_ACPI_PM1_CNT_SCI_EN) == 0) {
     //
@@ -253,7 +253,7 @@ ScSmmSxGoToSleep (
     Pm1Cnt &= ~B_ACPI_PM1_CNT_SLP_TYP;
     Pm1Cnt |= V_ACPI_PM1_CNT_S0;
 
-    IoWrite32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_CNT), Pm1Cnt);
+    IoWrite32 (((UINTN) AcpiBaseAddr + R_ACPI_PM1_CNT), Pm1Cnt);
   }
 
   ScSmmClearSource (&SX_SOURCE_DESC);

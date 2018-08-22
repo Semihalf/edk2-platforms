@@ -1,7 +1,7 @@
 /** @file
   Provide FSP API related function.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -106,7 +106,7 @@ CallFspNotifyPhase (
     return EFI_DEVICE_ERROR;
   }
 
-  NotifyPhaseApi = (FSP_NOTIFY_PHASE) (UINTN) (FspHeader->ImageBase + FspHeader->NotifyPhaseEntryOffset);
+  NotifyPhaseApi = (FSP_NOTIFY_PHASE)((UINTN)FspHeader->ImageBase + (UINTN)FspHeader->NotifyPhaseEntryOffset);
   InterruptState = SaveAndDisableInterrupts ();
   Status = Execute32BitCode ((UINTN) NotifyPhaseApi, (UINTN) NotifyPhaseParams, (UINTN) NULL);
   SetInterruptState (InterruptState);
@@ -139,7 +139,7 @@ CallFspMemoryInit (
     return EFI_DEVICE_ERROR;
   }
 
-  FspMemoryInitApi = (FSP_MEMORY_INIT) (UINTN) (FspHeader->ImageBase + FspHeader->FspMemoryInitEntryOffset);
+  FspMemoryInitApi = (FSP_MEMORY_INIT)((UINTN)FspHeader->ImageBase + (UINTN)FspHeader->FspMemoryInitEntryOffset);
   InterruptState = SaveAndDisableInterrupts ();
   Status = Execute32BitCode ((UINTN) FspMemoryInitApi, (UINTN) FspmUpdDataPtr, (UINTN) HobListPtr);
   SetInterruptState (InterruptState);
@@ -171,7 +171,7 @@ CallTempRamExit (
     return EFI_DEVICE_ERROR;
   }
 
-  TempRamExitApi = (FSP_TEMP_RAM_EXIT) (UINTN) (FspHeader->ImageBase + FspHeader->TempRamExitEntryOffset);
+  TempRamExitApi = (FSP_TEMP_RAM_EXIT)((UINTN)FspHeader->ImageBase + (UINTN)FspHeader->TempRamExitEntryOffset);
   InterruptState = SaveAndDisableInterrupts ();
 
   DEBUG ((DEBUG_INFO, "** calling TempRamExitApi\n"));
@@ -210,7 +210,7 @@ CallFspSiliconInit (
   }
   DEBUG ((DEBUG_INFO, "FspHeader = 0x%X\n", FspHeader));
 
-  FspSiliconInitApi = (FSP_SILICON_INIT) (UINTN) (FspHeader->ImageBase + FspHeader->FspSiliconInitEntryOffset);
+  FspSiliconInitApi = (FSP_SILICON_INIT)((UINTN)FspHeader->ImageBase + (UINTN)FspHeader->FspSiliconInitEntryOffset);
   DEBUG ((DEBUG_INFO, "FspSiliconInitApi = 0x%X\n", FspSiliconInitApi));
 
   InterruptState = SaveAndDisableInterrupts ();

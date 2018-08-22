@@ -1,7 +1,7 @@
 /** @file
   Locate and install Firmware Volume Hob's Once there is main memory.
 
-  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -158,7 +158,7 @@ CreateVariableHobs (
     return EFI_INVALID_PARAMETER;
   }
 
-  VariableStoreBase   = (EFI_PHYSICAL_ADDRESS) ((UINTN) NvStorageFvHeader + NvStorageFvHeader->HeaderLength);
+  VariableStoreBase   = (EFI_PHYSICAL_ADDRESS) ((UINTN) NvStorageFvHeader + (UINTN)NvStorageFvHeader->HeaderLength);
   VariableStoreHeader = (VARIABLE_STORE_HEADER *) (UINTN) VariableStoreBase;
 
   DEBUG ((EFI_D_INFO, "  VariableStoreHeader at 0x%x. VariableStoreSize = %d\n", VariableStoreHeader, (UINTN) VariableStoreHeader->Size));

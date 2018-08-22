@@ -1,7 +1,7 @@
 /** @file
   Library functions for Config Block management.
 
-  Copyright (c) 2015 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -132,7 +132,7 @@ AddConfigBlock (
   }
 
   OffsetIndex = NumOfBlocks - ConfigBlkTblAddrPtr->AvailableBlocks;
-  OffsetTblPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + (UINTN) ((OffsetIndex) * 4));
+  OffsetTblPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + (((UINTN)OffsetIndex) * 4));
   if (OffsetIndex == 0) {
     LastUsedOffset = 0;
   } else {
@@ -144,7 +144,7 @@ AddConfigBlock (
   ConfigBlkTblAddrPtr->AvailableBlocks--;
   ConfigBlkTblAddrPtr->AvailableSize = ConfigBlkTblAddrPtr->AvailableSize - ConfigBlkSize;
 
-  TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + (UINTN) (NumOfBlocks * 4) + LastUsedOffset);
+  TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + (UINTN) ConfigBlkTblHdrSize + (UINTN) (NumOfBlocks * 4) + (UINTN) LastUsedOffset);
   TempConfigBlk->Header.Size = ConfigBlkSize;
   TempConfigBlk->Header.Revision = ConfigBlkAddrPtr->Header.Revision;
   TempConfigBlk->Header.Guid = ConfigBlkAddrPtr->Header.Guid;
@@ -191,12 +191,12 @@ GetConfigBlock (
 
   ConfigBlkOffset = 0;
   for (OffsetIndex = 0; OffsetIndex < NumOfBlocks; OffsetIndex++) {
-    TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + (UINTN) ConfigBlkTblHdrSize + (UINTN) (NumOfBlocks * 4) + (UINTN) ConfigBlkOffset);
+    TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + (UINTN) ConfigBlkTblHdrSize + ((UINTN)NumOfBlocks * 4) + (UINTN) ConfigBlkOffset);
     if (CompareGuid (&(TempConfigBlk->Header.Guid), ConfigBlockGuid)) {
       *ConfigBlockAddress = (VOID *) TempConfigBlk;
       return EFI_SUCCESS;
     }
-    OffsetTblPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + (UINTN) (OffsetIndex * 4));
+    OffsetTblPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + ((UINTN)OffsetIndex * 4));
     ConfigBlkOffset = *OffsetTblPtr;
   }
   DEBUG ((DEBUG_ERROR, "Could not find the config block.\n"));

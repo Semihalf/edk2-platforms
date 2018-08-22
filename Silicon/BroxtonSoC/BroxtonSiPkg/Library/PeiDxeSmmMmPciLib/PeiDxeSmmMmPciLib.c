@@ -1,7 +1,7 @@
 /** @file
   This file contains routines that get PCI Express Address.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -41,7 +41,7 @@ MmPciBase (
   // Use local variable PcieAddress here. This library is for PEI\DXE\SMM
   // When PEI, the module variable can't be updated. Need a local variable to get the pcie base address + offset.
   //
-  PcieAddress = (UINTN) PcdGet64 (PcdPciExpressBaseAddress) + (UINTN) ((Bus << 20) + (Device << 15) + (Function << 12));
+  PcieAddress = (UINTN) PcdGet64 (PcdPciExpressBaseAddress) + (UINTN)(UINT32) ((Bus << 20) + (Device << 15) + (Function << 12));
 
   return PcieAddress;
 }

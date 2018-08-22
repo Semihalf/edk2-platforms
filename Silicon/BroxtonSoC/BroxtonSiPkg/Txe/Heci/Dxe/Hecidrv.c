@@ -1,7 +1,7 @@
 /** @file
   HECI driver.
 
-  Copyright (c) 2007 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -170,16 +170,16 @@ LockConfig (
   }
 
   MmioAndThenOr32 (
-    (UINTN) (PmcBase + R_PMC_PMIR),
+    (UINTN)(UINT32)(PmcBase + R_PMC_PMIR),
     (UINT32) (~(B_PMC_PMIR_CF9LOCK | B_PMC_PMIR_CF9GR)),
     (UINT32) Data
     );
 
   S3BootScriptSaveMemWrite (
     EfiBootScriptWidthUint32,
-    (UINTN) (PmcBase + R_PMC_PMIR),
+    (UINTN)(UINT32)(PmcBase + R_PMC_PMIR),
     1,
-    (VOID *) (UINTN) (PmcBase + R_PMC_PMIR)
+    (VOID *) (UINTN)(UINT32)(PmcBase + R_PMC_PMIR)
     );
 }
 

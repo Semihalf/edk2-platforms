@@ -1,7 +1,7 @@
 /** @file
   Initializes SC LPSS Devices.
 
-  Copyright (c) 2012 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -130,8 +130,8 @@ ConfigureLpssAtBoot (
     //
     // Assume the MMIO address for BAR0 is always 32 bits (high DW is 0).
     //
-    MmioWrite32 ((UINTN) (LpssMmioBase0 + R_LPSS_IO_REMAP_ADDRESS_LOW), LpssMmioBase0);
-    MmioWrite32 ((UINTN) (LpssMmioBase0 + R_LPSS_IO_REMAP_ADDRESS_HI), LpssMmioBase0_High);
+    MmioWrite32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_IO_REMAP_ADDRESS_LOW), LpssMmioBase0);
+    MmioWrite32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_IO_REMAP_ADDRESS_HI), LpssMmioBase0_High);
 
     DEBUG ((DEBUG_INFO, "Read back LPSS REMAP Register, High DW = 0x%x, Low DW = 0x%x, Index = %d\n",
       MmioRead32 ((UINTN) (LpssMmioBase0 + R_LPSS_IO_REMAP_ADDRESS_HI)),
@@ -262,18 +262,18 @@ StopLpssAtBoot (
 
     if ((mLpssIoDevices[Index].PciDeviceNum  == PCI_DEVICE_NUMBER_LPSS_I2C0) || \
         (mLpssIoDevices[Index].PciDeviceNum  == PCI_DEVICE_NUMBER_LPSS_I2C1)) {
-      D32 = MmioRead32 ((UINTN) (LpssMmioBase0 + R_LPSS_I2C_IC_ENABLE));
+      D32 = MmioRead32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_I2C_IC_ENABLE));
       if (D32 & B_LPSS_I2C_IC_ENABLE_ENABLE) {
         DEBUG ((DEBUG_INFO, "Stop I2C controller D:%02X, F: %02X...\n", mLpssIoDevices[Index].PciDeviceNum, mLpssIoDevices[Index].PciFuncNum));
         MmioWrite32 ((UINTN) LpssMmioBase0 + R_LPSS_I2C_IC_ENABLE, \
-        MmioRead32 ((UINTN) (LpssMmioBase0 + R_LPSS_I2C_IC_ENABLE)) & (~(UINT32) B_LPSS_I2C_IC_ENABLE_ENABLE));
+        MmioRead32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_I2C_IC_ENABLE)) & (~(UINT32) B_LPSS_I2C_IC_ENABLE_ENABLE));
       }
     } else if (mLpssIoDevices[Index].PciDeviceNum  == PCI_DEVICE_NUMBER_LPSS_SPI) {
-      D32 = MmioRead32 ((UINTN) (LpssMmioBase0 + R_LPSS_SPI_MEM_SSP_CONTROL0));
+      D32 = MmioRead32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_SPI_MEM_SSP_CONTROL0));
       if (D32 & B_LPSS_SPI_MEM_SSP_CONTROL0_SSE) {
         DEBUG ((DEBUG_INFO, "Stop SPI controller D:%02X, F: %02X...\n", mLpssIoDevices[Index].PciDeviceNum, mLpssIoDevices[Index].PciFuncNum));
         MmioWrite32 ((UINTN) LpssMmioBase0 + R_LPSS_SPI_MEM_SSP_CONTROL0, \
-        MmioRead32 ((UINTN) (LpssMmioBase0 + R_LPSS_SPI_MEM_SSP_CONTROL0)) & (~(UINT32) B_LPSS_SPI_MEM_SSP_CONTROL0_SSE));
+        MmioRead32 ((UINTN) (UINT32) (LpssMmioBase0 + R_LPSS_SPI_MEM_SSP_CONTROL0)) & (~(UINT32) B_LPSS_SPI_MEM_SSP_CONTROL0_SSE));
       }
     }
   }

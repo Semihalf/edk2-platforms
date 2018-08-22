@@ -192,7 +192,7 @@ EfiValueToString (
   //
   // Reverse temp string into Buffer.
   //
-  if (Width > 0 && (UINTN) (TempStr - TempBuffer) > Width) {
+  if (Width > 0 && ((UINTN)TempStr - (UINTN)TempBuffer) > Width) {
     TempStr = TempBuffer + Width;
   }
   Index = 0;
@@ -270,7 +270,7 @@ EfiValueToHexStr (
   //
   // Reverse temp string into Buffer.
   //
-  if (Width > 0 && (UINTN) (TempStr - TempBuffer) > Width) {
+  if (Width > 0 && ((UINTN)TempStr - (UINTN)TempBuffer) > Width) {
     TempStr = TempBuffer + Width;
   }
   Index = 0;
@@ -1298,10 +1298,10 @@ GetChipsetSataPortSpeed (
 
   switch (PortNum) {
     case 0:
-      DeviceSpeed = *(volatile UINT32 *) (UINTN) (IdeAhciBar + R_SATA_AHCI_P0SSTS);
+      DeviceSpeed = *(volatile UINT32 *) (UINTN) (UINT32) (IdeAhciBar + R_SATA_AHCI_P0SSTS);
       break;
     case 1:
-      DeviceSpeed = *(volatile UINT32 *) (UINTN) (IdeAhciBar + R_SATA_AHCI_P1SSTS);
+      DeviceSpeed = *(volatile UINT32 *) (UINTN) (UINT32) (IdeAhciBar + R_SATA_AHCI_P1SSTS);
       break;
   }
 
