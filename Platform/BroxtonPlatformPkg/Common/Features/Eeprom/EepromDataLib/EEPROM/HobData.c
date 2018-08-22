@@ -19,7 +19,7 @@
 
 EFI_STATUS
 EFIAPI
-GetEepromDataHobData (VOID)
+GetEepromDataHobDataEeprom (VOID)
 {
   UINT8                        *BlockData;
   BOOLEAN                       BlockFound;
@@ -131,7 +131,7 @@ Exit:
 
 EFI_STATUS
 EFIAPI
-SetEepromDataHobData (VOID)
+SetEepromDataHobDataEeprom (VOID)
 {
   //
   // Not supported in DXE.

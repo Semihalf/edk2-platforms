@@ -17,7 +17,7 @@
 #include "BoardInitDxe.h"
 
 GET_BOARD_NAME mUp2GetBoardNamePtr = Up2GetBoardName;
-SYSTEM_CONFIGURATION  mSystemConfiguration;
+SYSTEM_CONFIGURATION  mSystemConfigurationUp;
 
 CHAR16*
 EFIAPI
@@ -58,19 +58,19 @@ UpdateSetupVariable (
                     &gEfiSetupVariableGuid,
                     &VariableAttributes,
                     &VarSize,
-                    &mSystemConfiguration
+                    &mSystemConfigurationUp
                     );
   ASSERT_EFI_ERROR (Status);
 
   if (Status == EFI_SUCCESS) {
-    if (mSystemConfiguration.PcieRootPortEn[3] != 0) {
-      mSystemConfiguration.PcieRootPortEn[3]= (UINT8) 0;
+    if (mSystemConfigurationUp.PcieRootPortEn[3] != 0) {
+      mSystemConfigurationUp.PcieRootPortEn[3]= (UINT8) 0;
       Status = gRT->SetVariable (
                       L"Setup",
                       &gEfiSetupVariableGuid,
                       VariableAttributes,
                       VarSize,
-                      &mSystemConfiguration
+                      &mSystemConfigurationUp
                       );
       ASSERT_EFI_ERROR (Status);
     }

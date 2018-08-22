@@ -70,6 +70,10 @@ for (( i=1; i<=$#; ))
       BoardId=MX
       Build_Flags="$Build_Flags /MX"
       shift
+    elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/UP" ]; then
+      BoardId=UP
+      Build_Flags="$Build_Flags /UP"
+      shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/LH" ]; then
       BoardId=LH
       Build_Flags="$Build_Flags /LH"

@@ -16,7 +16,7 @@
 #include "EepromLib.h"
 
 BOOLEAN     *gImageValidFlag;
-UINT32       mCrcTable[256];
+UINT32       mCrcTableEeprom[256];
 BOOLEAN      mCrcInitFlag        = FALSE;
 BOOLEAN      mEepromLibDebugFlag = TRUE;
 
@@ -71,7 +71,7 @@ InitializeCrc32Table (
           Value = Value << 1;
         }
       }
-      mCrcTable[TableEntry] = ReverseBits (Value);
+      mCrcTableEeprom[TableEntry] = ReverseBits (Value);
     }
     mCrcInitFlag = TRUE;
   }
@@ -102,7 +102,7 @@ AddToCrc32 (
   Crc32 = Crc;
   Ptr   = (UINT8 *) Data;
   for (Index = 0; Index < DataSize; Index++) {
-    Crc32 = (Crc32 >> 8) ^ mCrcTable[(UINT8) Crc32 ^ Ptr[Index]];
+    Crc32 = (Crc32 >> 8) ^ mCrcTableEeprom[(UINT8) Crc32 ^ Ptr[Index]];
   }
   return Crc32;
 }
@@ -570,10 +570,6 @@ GetValidEepromLibrary (
   }
 
   //
-  // Display current stack pointer
-  //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
-  //
   // Loop thru PcdEepromAutoPriority looking for a previously validated image.
   //
   index = 0;
@@ -600,10 +596,6 @@ GetValidEepromLibrary (
     index++;
   }
 
-  //
-  // Display current stack pointer
-  //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
   //
   // If nothing is valid, try validating them all
   //
@@ -632,10 +624,6 @@ GetValidEepromLibrary (
     }
   }
 
-  //
-  // Display current stack pointer
-  //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
   //
   // Determine which image to copy to memory
   //
@@ -730,10 +718,6 @@ GetValidEepromLibrary (
     FvBoardInfo        = EepromFreePool (FvBoardInfo);
     FvEepromHeader     = EepromFreePool (FvEepromHeader);
   }
-  //
-  // Display current stack pointer
-  //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
 
   //
   // Check to see if we need to copy into memory and not in PEI
@@ -804,11 +788,6 @@ Exit:
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to find a valid image in list PcdEepromAutoPriority!\n", __FUNCTION__, __LINE__));
     Library = EEPROM_NULL;
   }
-
-  //
-  // Display current stack pointer
-  //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
 
   if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning library %a\n", __FUNCTION__, __LINE__, mEepromLibraryString[Library]));
   return Library;

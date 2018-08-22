@@ -18,10 +18,10 @@
 BOOLEAN                      mEepromDataLibDebugFlag = FALSE;
 EEPROM_DATA_LIBRARY_INDEX    mEepromDataLibIndex[EEPROM_DATA_LIBRARY_INDEX_MAX];
 CHAR8                       *mEepromLibraryString[EEPROM_DATA_LIBRARY_INDEX_MAX] = {
-                              {"EEPROM_NULL"},
-                              {"EEPROM_EEPROM"},
-                              {"EEPROM_FV"},
-                              {"EEPROM_MEMORY"}
+                              "EEPROM_NULL",
+                              "EEPROM_EEPROM",
+                              "EEPROM_FV",
+                              "EEPROM_MEMORY"
                              };
 
 //

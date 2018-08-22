@@ -19,7 +19,7 @@
 
 EFI_STATUS
 EFIAPI
-GetEepromDataHobData (VOID)
+GetEepromDataHobDataEeprom (VOID)
 {
   //
   // Not supported in PEI.
@@ -30,7 +30,7 @@ GetEepromDataHobData (VOID)
 
 EFI_STATUS
 EFIAPI
-SetEepromDataHobData (VOID)
+SetEepromDataHobDataEeprom (VOID)
 {
   UINT8                        *BlockData;
   UINT16                        BlockNumber;

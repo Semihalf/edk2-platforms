@@ -315,12 +315,10 @@ GetEepromMemoryHob (VOID)
   //
   // Create HOB
   //
-  DisplayStackPointer (__FUNCTION__, __LINE__);
   ZeroMem (&AllocationHeader, sizeof (EEPROM_ALLOCATION_STRUCT));
   AllocationHeader.Signature = ALLOCATION_HOB_HEADER_SIGNATURE;
   HeaderPointer = BuildGuidDataHob (&gEepromVariableGuid, &AllocationHeader, MAX_EEPROM_HOB_SIZE);
   if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - HeaderPointer = %08x\n", __FUNCTION__, __LINE__, HeaderPointer));
-  DisplayStackPointer (__FUNCTION__, __LINE__);
 
 Exit:
   if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - AllocationHob @ %08x\n", __FUNCTION__, __LINE__, HeaderPointer));
