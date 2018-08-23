@@ -122,9 +122,9 @@ form formid = CPU_CONFIGURATION_FORM_ID,
   oneof varid   = Setup.MonitorMwaitEnable,
     prompt      = STRING_TOKEN(STR_MONITOR_MWAIT_PROMPT),
     help        = STRING_TOKEN(STR_MONITOR_MWAIT_HELP),
-    option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = MANUFACTURING | DEFAULT | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_ENABLE),  value = 1, flags = RESET_REQUIRED;
-    option text = STRING_TOKEN(STR_AUTO), value = 2, flags = MANUFACTURING | DEFAULT | RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_AUTO), value = 2, flags = RESET_REQUIRED;
   endoneof;  
 
   subtitle text = STRING_TOKEN(STR_NULL_STRING);

@@ -123,7 +123,6 @@ LoadOsDefaultValues (
 #else
   Private->FakeNvData.TPM                        = 0;
 #endif
-  Private->FakeNvData.MonitorMwaitEnable         = 2;
   Private->FakeNvData.I2C0Speed                  = 1;
   Private->FakeNvData.I2C1Speed                  = 1;
   Private->FakeNvData.I2C2Speed                  = 1;

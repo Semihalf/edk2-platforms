@@ -120,6 +120,7 @@ PeiFspCpuPolicyInit (
     FspsUpd->FspsConfig.PkgCStateDemotion     = SystemConfiguration->PkgCStateDemotion;
     FspsUpd->FspsConfig.PkgCStateUnDemotion   = SystemConfiguration->PkgCStateUnDemotion;
     FspsUpd->FspsConfig.TurboMode             = SystemConfiguration->TurboModeEnable;
+    FspsUpd->FspsConfig.MonitorMwaitEnable    = SystemConfiguration->MonitorMwaitEnable;
   }
 
   return EFI_SUCCESS;
