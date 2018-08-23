@@ -117,11 +117,17 @@ for (( i=1; i<=$#; ))
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/MX" ]; then
       BoardId=MX
       shift
+    elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/UP" ]; then
+      BoardId=UP
+      shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/LH" ]; then
       BoardId=LH
       shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/D" ]; then
       FabId=D
+      shift
+    elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/C" ]; then
+      FabId=C
       shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/B" ]; then
       FabId=B
@@ -234,9 +240,9 @@ if [ $BoardId == "MN" ]; then
 fi
 
 if [ $BoardId == "MX" ]; then
-  if [ $FabId == "B" ]; then
-    BOARD_REV=B
-    echo BOARD_REV = B >> $WORKSPACE/Conf/BiosId.env
+  if [ $FabId == "C" ]; then
+    BOARD_REV=C
+    echo BOARD_REV = C >> $WORKSPACE/Conf/BiosId.env
   else
     BOARD_REV=A
     echo BOARD_REV = A >> $WORKSPACE/Conf/BiosId.env
@@ -409,11 +415,11 @@ if [ $BoardId == "MN" ]; then
 fi
 
 if [ $BoardId == "MX" ]; then
-  if [ $FabId == "B" ]; then
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_B/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_B/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_B/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_B/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+  if [ $FabId == "C" ]; then
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_C/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_C/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_C/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_C/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
   else
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_A/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
     cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/MinnowBoard3Module/IFWI/FAB_A/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch

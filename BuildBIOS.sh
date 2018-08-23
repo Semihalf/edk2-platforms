@@ -25,6 +25,7 @@ function Usage () {
   echo "       Build_Flags:                 /UP    AAEON UP2 Board"
   echo "       Build_Flags:                 /A     Set FabId to A "
   echo "       Build_Flags:                 /B     Set FabId to B (default:  FAB_B)"
+  echo "       Build_Flags:                 /C     Set FabId to C "
   echo "       Build_Flags:                 /D     Set FabId to D "
   echo "       Build_Flags:                 /L     Flash region access permission for host CPU"
   echo "       PlatformName [optional]:     Broxton  "                   
@@ -81,6 +82,10 @@ for (( i=1; i<=$#; ))
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/D" ]; then
       FabId=D
       Build_Flags="$Build_Flags /D"
+      shift
+    elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/C" ]; then
+      FabId=C
+      Build_Flags="$Build_Flags /C"
       shift
     elif [ "$(echo $1 | tr 'a-z' 'A-Z')" == "/B" ]; then
       FabId=B
