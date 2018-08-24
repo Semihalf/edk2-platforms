@@ -439,10 +439,10 @@ fi
 
 if [ $BoardId == "UP" ]; then
   if [ $FabId == "A" ]; then
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
-    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/LeafHill/IFWI/FAB_A/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/UP2/IFWI/FAB_A/SpiChunk1.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/UP2/IFWI/FAB_A/SpiChunk2.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/UP2/IFWI/FAB_A/SpiChunk3.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
+    cp -f $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Board/UP2/IFWI/FAB_A/SpiChunk1SpiAccessControl.bin  $PLATFORM_PATH/Platform/BroxtonPlatformPkg/Common/Tools/Stitch
   fi
 fi
 #
