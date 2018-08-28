@@ -54,4 +54,63 @@ Up2GetEmbeddedBoardIdFabId(
   return EFI_SUCCESS;
 }
 
+EFI_STATUS
+EFIAPI
+Up2GetDdrId(
+  IN CONST EFI_PEI_SERVICES     **PeiServices,
+  OUT UINT8                     *DdrId
+  )
+{
+  BXT_CONF_PAD0   padConfg0;
+  BXT_CONF_PAD1   padConfg1;
+  IN UINT32       CommAndOffset;
+
+  //
+  // DDR_ID1    DDR_ID0  Memory
+  // GPIO_215   GPIO_214
+  //  0          0        2G
+  //  0          1        4G
+  //  1          0        8G
+  //
+  
+  //BXT_GPIO_PAD_CONF(L"GPIO_214 PMIC_BCUDISW2",   M0   ,    GPO   ,GPIO_D,  HI     ,   NA      ,Wake_Disabled, P_20K_L,    NA   ,    NA  ,NA        ,     NA,  GPIO_PADBAR+0x00D8,  NORTHWEST),//Feature: BT WAKE to Device Net in Sch: NGFF_BT_DEV_WAKE_N
+  //BXT_GPIO_PAD_CONF(L"GPIO_215 PMIC_BCUDISCRIT", M0   ,    GPO   ,GPIO_D,  HI     ,   NA      ,Wake_Disabled, P_20K_L,    NA   ,    NA  ,NA        ,     NA,  GPIO_PADBAR+0x00E0,  NORTHWEST),//Feature: RF_KILL_GPS       Net in Sch: RF_KILL_GPS_1P8_N
+
+  //
+  // DDR_ID0: GPIO_214
+  //
+  CommAndOffset = GetCommOffset (NORTHWEST, 0x00D8);
+  padConfg0.padCnf0 = GpioPadRead (CommAndOffset + BXT_GPIO_PAD_CONF0_OFFSET);
+  padConfg0.r.PMode = 0;
+  padConfg0.r.GPIORxTxDis = 0x1;
+  GpioPadWrite (CommAndOffset + BXT_GPIO_PAD_CONF0_OFFSET, padConfg0.padCnf0);
+  //
+  // Set to Pull Up 20K
+  //
+  padConfg1.r.Term = 0xC;
+  GpioPadWrite (CommAndOffset + BXT_GPIO_PAD_CONF1_OFFSET, padConfg1.padCnf1);
+  
+  
+  //
+  // DDR_ID1: GPIO_215
+  //
+  CommAndOffset = GetCommOffset (NORTHWEST, 0x00E0);
+  padConfg0.padCnf0 = GpioPadRead (CommAndOffset + BXT_GPIO_PAD_CONF0_OFFSET);
+  padConfg0.r.PMode = 0;
+  padConfg0.r.GPIORxTxDis = 0x1;
+  GpioPadWrite (CommAndOffset + BXT_GPIO_PAD_CONF0_OFFSET, padConfg0.padCnf0);
+  //Set to Pull Up 20K
+  padConfg1.r.Term = 0xC;
+  GpioPadWrite (CommAndOffset + BXT_GPIO_PAD_CONF1_OFFSET, padConfg1.padCnf1);
+ 
+
+  *DdrId = (UINT8) (((GpioPadRead (GetCommOffset (NORTHWEST, 0x00D8) + BXT_GPIO_PAD_CONF0_OFFSET) & BIT1) >> 1) | \
+                      (((GpioPadRead (GetCommOffset (NORTHWEST, 0x00E0) + BXT_GPIO_PAD_CONF0_OFFSET) & BIT1) >> 1) << 1));
+
+  DEBUG ((EFI_D_INFO,  "Ddr4Id is: %02X\n", *DdrId));
+
+
+  return EFI_SUCCESS;
+}
+
 

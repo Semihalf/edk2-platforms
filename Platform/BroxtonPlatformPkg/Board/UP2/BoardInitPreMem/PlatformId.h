@@ -70,5 +70,12 @@ Up2GetBomIdPss (
   OUT UINT8                     *BomIdPss
   );
 
+EFI_STATUS
+EFIAPI
+Up2GetDdrId(
+  IN CONST EFI_PEI_SERVICES     **PeiServices,
+  OUT UINT8                     *DdrId
+  );
+
 #endif
 

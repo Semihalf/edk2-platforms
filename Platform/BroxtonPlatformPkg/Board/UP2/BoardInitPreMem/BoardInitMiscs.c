@@ -15,6 +15,7 @@
 
 #include "BoardInitMiscs.h"
 #include "MmrcData.h"
+#include "PlatformId.h"
 
 UPDATE_FSPM_UPD_FUNC mUp2UpdateFspmUpdPtr = Up2UpdateFspmUpd;
 DRAM_CREATE_POLICY_DEFAULTS_FUNC   mUp2DramCreatePolicyDefaultsPtr = Up2DramCreatePolicyDefaults;
@@ -43,6 +44,10 @@ Up2UpdateFspmUpd (
   BOOT_VARIABLE_NV_DATA          *BootVariableNvData;
   MRC_PARAMS_SAVE_RESTORE        *MrcParamsHob;
   BOOT_VARIABLE_NV_DATA          *BootVariableNvDataHob;
+  SYSTEM_CONFIGURATION            SystemConfiguration;
+  UINTN                           VariableSize;
+  EFI_PEI_READ_ONLY_VARIABLE2_PPI *VariablePpi;
+  UINT8                           DdrId;
 
   Status = (*PeiServices)->LocatePpi (
                              PeiServices,
@@ -98,13 +103,6 @@ Up2UpdateFspmUpd (
     }
 
   }
-  //
-  // Override RankEnable settings for UP2
-  //
-  FspUpdRgn->FspmConfig.Ch0_RankEnable   = 1;
-  FspUpdRgn->FspmConfig.Ch1_RankEnable   = 1;
-  FspUpdRgn->FspmConfig.Ch2_RankEnable   = 0;
-  FspUpdRgn->FspmConfig.Ch3_RankEnable   = 0;
 
   DEBUG ((DEBUG_INFO, "UpdateFspmUpd - gEfiPlatformInfoGuid\n"));
   Hob.Raw = GetFirstGuidHob (&gEfiPlatformInfoGuid);
@@ -131,34 +129,97 @@ Up2UpdateFspmUpd (
   FspUpdRgn->FspmConfig.DIMM1SPDAddress = 0;
   FspUpdRgn->FspmConfig.DDR3LPageSize   = 0;
   FspUpdRgn->FspmConfig.DDR3LASR        = 0;
-
-  FspUpdRgn->FspmConfig.Ch0_RankEnable   = 1; // 
-  FspUpdRgn->FspmConfig.Ch0_DeviceWidth  = 1; 
-  FspUpdRgn->FspmConfig.Ch0_DramDensity  = 2;
-  FspUpdRgn->FspmConfig.Ch0_Option       = 3;
-
-  FspUpdRgn->FspmConfig.Ch1_RankEnable   = 1; 
-  FspUpdRgn->FspmConfig.Ch1_DeviceWidth  = 1; // x16
-  FspUpdRgn->FspmConfig.Ch1_DramDensity  = 2; // 8GB
-  FspUpdRgn->FspmConfig.Ch1_Option       = 3;
-
-  FspUpdRgn->FspmConfig.Ch2_RankEnable   = 0; // empty
-  FspUpdRgn->FspmConfig.Ch2_DeviceWidth  = 1;
-  FspUpdRgn->FspmConfig.Ch2_DramDensity  = 2;
-  FspUpdRgn->FspmConfig.Ch2_Option       = 3;
-
-  FspUpdRgn->FspmConfig.Ch3_RankEnable   = 0;
-  FspUpdRgn->FspmConfig.Ch3_DeviceWidth  = 1;
-  FspUpdRgn->FspmConfig.Ch3_DramDensity  = 2;
-  FspUpdRgn->FspmConfig.Ch3_Option       = 3;
-
   FspUpdRgn->FspmConfig.ChannelHashMask       = 0;
   FspUpdRgn->FspmConfig.SliceHashMask         = 0;
   FspUpdRgn->FspmConfig.ChannelsSlicesEnable  = 0;
   FspUpdRgn->FspmConfig.ScramblerSupport      = 1;
   FspUpdRgn->FspmConfig.InterleavedMode       = 0;
   FspUpdRgn->FspmConfig.MinRefRate2xEnable    = 0;
-  FspUpdRgn->FspmConfig.DualRankSupportEnable = 0;
+
+  //
+  // DDR_ID1    DDR_ID0  Memory
+  // GPIO_215   GPIO_214
+  //  0          0        2G
+  //  0          1        4G
+  //  1          0        8G
+  //
+  Status = Up2GetDdrId(PeiServices, &DdrId);
+  
+  if (DdrId == 0x00) { // 2GB, SK, Single Rank
+  
+    FspUpdRgn->FspmConfig.DualRankSupportEnable = 0;
+
+    FspUpdRgn->FspmConfig.Ch0_RankEnable   = 1;  
+    FspUpdRgn->FspmConfig.Ch0_DeviceWidth  = 1; 
+    FspUpdRgn->FspmConfig.Ch0_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch0_Option       = 3;
+
+    FspUpdRgn->FspmConfig.Ch1_RankEnable   = 1; 
+    FspUpdRgn->FspmConfig.Ch1_DeviceWidth  = 1; // x16
+    FspUpdRgn->FspmConfig.Ch1_DramDensity  = 2; // 8GB
+    FspUpdRgn->FspmConfig.Ch1_Option       = 3;
+ 
+    FspUpdRgn->FspmConfig.Ch2_RankEnable   = 0; // empty
+    FspUpdRgn->FspmConfig.Ch2_DeviceWidth  = 1;
+    FspUpdRgn->FspmConfig.Ch2_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch2_Option       = 3;
+
+    FspUpdRgn->FspmConfig.Ch3_RankEnable   = 0; // empty
+    FspUpdRgn->FspmConfig.Ch3_DeviceWidth  = 1;
+    FspUpdRgn->FspmConfig.Ch3_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch3_Option       = 3;
+    
+  }else if (DdrId == 0x01) { // 4GB, SK, Single Rank
+  
+    FspUpdRgn->FspmConfig.DualRankSupportEnable = 0;
+
+    FspUpdRgn->FspmConfig.Ch0_RankEnable   = 1; // 
+    FspUpdRgn->FspmConfig.Ch0_DeviceWidth  = 1; 
+    FspUpdRgn->FspmConfig.Ch0_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch0_Option       = 3;
+
+    FspUpdRgn->FspmConfig.Ch1_RankEnable   = 1; 
+    FspUpdRgn->FspmConfig.Ch1_DeviceWidth  = 1; // x16
+    FspUpdRgn->FspmConfig.Ch1_DramDensity  = 2; // 8GB
+    FspUpdRgn->FspmConfig.Ch1_Option       = 3;
+
+    FspUpdRgn->FspmConfig.Ch2_RankEnable   = 1; // empty
+    FspUpdRgn->FspmConfig.Ch2_DeviceWidth  = 1;
+    FspUpdRgn->FspmConfig.Ch2_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch2_Option       = 3;
+
+    FspUpdRgn->FspmConfig.Ch3_RankEnable   = 1;
+    FspUpdRgn->FspmConfig.Ch3_DeviceWidth  = 1;
+    FspUpdRgn->FspmConfig.Ch3_DramDensity  = 2;
+    FspUpdRgn->FspmConfig.Ch3_Option       = 3;
+    
+  }else if (DdrId == 0x02) { // 8GB, Micron, Dual Rank
+
+    //
+    // Micron #MT53B512M32D2NP-062 AIT:C) from Platfrom4 profile
+    //
+    FspUpdRgn->FspmConfig.DualRankSupportEnable = 1;
+
+    FspUpdRgn->FspmConfig.Ch0_RankEnable        = 0x03; // [0]: Rank 0 [1]: Rank 1
+    FspUpdRgn->FspmConfig.Ch0_DeviceWidth       = 0x01; // x16
+    FspUpdRgn->FspmConfig.Ch0_DramDensity       = 0x02; // 8Gb
+    FspUpdRgn->FspmConfig.Ch0_Option            = 0x03;
+
+    FspUpdRgn->FspmConfig.Ch1_RankEnable        = 0x03; // [0]: Rank 0 [1]: Rank 1
+    FspUpdRgn->FspmConfig.Ch1_DeviceWidth       = 0x01; // x16
+    FspUpdRgn->FspmConfig.Ch1_DramDensity       = 0x02; // 8Gb
+    FspUpdRgn->FspmConfig.Ch1_Option            = 0x03;
+
+    FspUpdRgn->FspmConfig.Ch2_RankEnable        = 0x03; // [0]: Rank 0 [1]: Rank 1
+    FspUpdRgn->FspmConfig.Ch2_DeviceWidth       = 0x01; // x16
+    FspUpdRgn->FspmConfig.Ch2_DramDensity       = 0x02; // 8Gb
+    FspUpdRgn->FspmConfig.Ch2_Option            = 0x03;
+
+    FspUpdRgn->FspmConfig.Ch3_RankEnable        = 0x03; // [0]: Rank 0 [1]: Rank 1
+    FspUpdRgn->FspmConfig.Ch3_DeviceWidth       = 0x01; // x16
+    FspUpdRgn->FspmConfig.Ch3_DramDensity       = 0x02; // 8Gb
+    FspUpdRgn->FspmConfig.Ch3_Option            = 0x03;
+  }
 
   //
   // Swizzling
@@ -168,6 +229,32 @@ Up2UpdateFspmUpd (
     CopyMem (&(FspUpdRgn->FspmConfig.Ch1_Bit_swizzling), ChSwizzle_UP2[1], DRAM_POLICY_NUMBER_BITS * sizeof(UINT8));
     CopyMem (&(FspUpdRgn->FspmConfig.Ch2_Bit_swizzling), ChSwizzle_UP2[2], DRAM_POLICY_NUMBER_BITS * sizeof(UINT8));
     CopyMem (&(FspUpdRgn->FspmConfig.Ch3_Bit_swizzling), ChSwizzle_UP2[3], DRAM_POLICY_NUMBER_BITS * sizeof(UINT8));
+  }
+
+
+  //
+  // Enable or disable NPK based on DciEn
+  //
+  Status = PeiServicesLocatePpi (&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID **) &VariablePpi);
+  if (!EFI_ERROR (Status)) {
+    VariableSize = sizeof (SYSTEM_CONFIGURATION);
+    Status = VariablePpi->GetVariable (
+                            VariablePpi,
+                            PLATFORM_SETUP_VARIABLE_NAME,
+                            &gEfiSetupVariableGuid,
+                            NULL,
+                            &VariableSize,
+                            &SystemConfiguration
+                            );
+    if (!EFI_ERROR (Status)) {
+      if (SystemConfiguration.DciEn == 0) {
+        FspUpdRgn->FspmConfig.NpkEn = 0;
+      } else if (SystemConfiguration.DciAutoDetect == 1) {
+        FspUpdRgn->FspmConfig.NpkEn = 3;
+      } else {
+        FspUpdRgn->FspmConfig.NpkEn = 1;
+      }
+    }
   }
 
   return EFI_SUCCESS;
