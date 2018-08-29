@@ -121,6 +121,7 @@
   gPlatformModuleTokenSpaceGuid.PcdVibratorFeature
   gEfiSecurityPkgTokenSpaceGuid.PcdTpmInstanceGuid       ## CONSUMES
   gPlatformModuleTokenSpaceGuid.PcdBoardPostMemInitFunc
+  gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
 
 [Depex]
   gDramPolicyPpiGuid

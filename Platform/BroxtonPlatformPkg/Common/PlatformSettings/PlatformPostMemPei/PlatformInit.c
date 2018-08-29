@@ -271,7 +271,7 @@ BXTPolicyInit (
   VOID*                           Buffer;
   UINT32                          Size;
   EFI_GUID                        PeiLogoGuid        = { 0x7BB28B99, 0x61BB, 0x11D5, {0x9A, 0x5D, 0x00, 0x90, 0x27, 0x3F, 0xC1, 0x4D} };
-  EFI_GUID                        TianmaVbtGuid      = { 0xE08CA6D5, 0x8D02, 0x43ae, {0xAB, 0xB1, 0x95, 0x2C, 0xC7, 0x87, 0xC9, 0x33} };
+  EFI_GUID                        VbtGuid;
   VBT_INFO                        VbtInfo;
 
 
@@ -286,7 +286,8 @@ BXTPolicyInit (
   //
   // May need a different VBT depending on PanelSel
   //
-  PeiGetSectionFromFv (TianmaVbtGuid, &Buffer, &Size);
+  CopyMem (&VbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
+  PeiGetSectionFromFv (VbtGuid, &Buffer, &Size);
 
   if (Buffer == NULL) {
     DEBUG (( DEBUG_ERROR, "Could not locate VBT"));
