@@ -193,7 +193,7 @@ PeiFspSaPolicyInit (
   EFI_STATUS                       Status;
   VOID                             *Buffer;
   UINT32                           Size;
-  EFI_GUID                         PeiLogoGuid = gPeiLogoGuid;
+  EFI_GUID                         PeiLogoGuid;
   EFI_GUID                         PeiVbtGuid;
   EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariableServices;
   SYSTEM_CONFIGURATION             *SystemConfiguration;
@@ -244,6 +244,7 @@ PeiFspSaPolicyInit (
   // Update VbtGuid.
   //
   CopyMem (&PeiVbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
+  CopyMem (&PeiLogoGuid, PcdGetPtr (PcdOemLogoFileGuid), sizeof (EFI_GUID));
 
   //
   // Update UPD:LogoPtr

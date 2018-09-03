@@ -110,6 +110,7 @@ AuroraGlacierPostMemInitCallback (
   //
   BufferSize = sizeof (EFI_GUID);
   PcdSetPtr(PcdBoardVbtFileGuid, &BufferSize, (UINT8 *)&gPeiAuroraGlacierVbtGuid);
+  PcdSetPtr(PcdOemLogoFileGuid, &BufferSize, (UINT8 *)&gPeiLogoGuid);
 
   //
   // Set PcdSueCreek

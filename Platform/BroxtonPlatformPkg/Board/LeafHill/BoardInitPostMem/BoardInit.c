@@ -119,6 +119,7 @@ LeafHillPostMemInitCallback (
   //
   BufferSize = sizeof (EFI_GUID);
   PcdSetPtr(PcdBoardVbtFileGuid, &BufferSize, (UINT8 *)&gPeiLeafHillVbtGuid);
+  PcdSetPtr(PcdOemLogoFileGuid, &BufferSize, (UINT8 *)&gPeiLogoGuid);
   
   //
   // Set PcdSueCreek

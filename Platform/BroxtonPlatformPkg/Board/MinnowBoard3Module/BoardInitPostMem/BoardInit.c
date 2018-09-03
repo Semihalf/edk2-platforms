@@ -120,7 +120,8 @@ MinnowBoard3ModulePostMemInitCallback (
   //
   BufferSize = sizeof (EFI_GUID);
   PcdSetPtr(PcdBoardVbtFileGuid, &BufferSize, (UINT8 *)&gPeiMinnow3ModuleVbtGuid);
-    
+  PcdSetPtr(PcdOemLogoFileGuid, &BufferSize, (UINT8 *)&gPeiLogoGuid);
+  
   //
   // Set PcdeMMCHostMaxSpeed
   //

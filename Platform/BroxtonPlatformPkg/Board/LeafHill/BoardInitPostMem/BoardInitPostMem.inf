@@ -62,6 +62,7 @@
   gPlatformModuleTokenSpaceGuid.PcdFabId
   gPlatformModuleTokenSpaceGuid.PcdResetType
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdSueCreek
   gPlatformModuleTokenSpaceGuid.PcdMaxPkgCState
   gPlatformModuleTokenSpaceGuid.PcdeMMCHostMaxSpeed
@@ -84,6 +85,7 @@
   gEfiTpmDeviceInstanceTpm20DtpmGuid
   gTpmDeviceInstanceTpm20PttPtpGuid
   gPeiLeafHillVbtGuid
+  gPeiLogoGuid
 
 [Ppis]
   gBoardPostMemInitStartGuid

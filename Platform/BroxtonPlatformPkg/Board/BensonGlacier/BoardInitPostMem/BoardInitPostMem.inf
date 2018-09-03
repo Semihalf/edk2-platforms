@@ -63,6 +63,7 @@
   gPlatformModuleTokenSpaceGuid.PcdFabId
   gPlatformModuleTokenSpaceGuid.PcdResetType
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdSueCreek
   gPlatformModuleTokenSpaceGuid.PcdMaxPkgCState
   gPlatformModuleTokenSpaceGuid.PcdTi3100AudioCodecEnable
@@ -84,6 +85,7 @@
   gEfiTpmDeviceInstanceTpm20DtpmGuid
   gTpmDeviceInstanceTpm20PttPtpGuid
   gPeiBensonGlacierVbtGuid
+  gPeiLogoGuid
 
 [Ppis]
   gBoardPostMemInitStartGuid

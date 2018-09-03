@@ -210,6 +210,9 @@
   gPlatformModuleTokenSpaceGuid.PcdHdaVerbTablePtr|0|UINT64|0x8000001D
   ## This PCD report the number of VBT table entries in VBT table array.
   gPlatformModuleTokenSpaceGuid.HdaVerbTableEntryNum|0|UINT8|0x8000001E
+
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid|{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }|VOID*|0x8000001F
+
   
   ## MemoryCheck value for checking memory before boot OS.
   ## To save the boot performance, the default MemoryCheck is set to 0.

@@ -122,6 +122,7 @@
   gEfiSecurityPkgTokenSpaceGuid.PcdTpmInstanceGuid       ## CONSUMES
   gPlatformModuleTokenSpaceGuid.PcdBoardPostMemInitFunc
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
 
 [Depex]
   gDramPolicyPpiGuid

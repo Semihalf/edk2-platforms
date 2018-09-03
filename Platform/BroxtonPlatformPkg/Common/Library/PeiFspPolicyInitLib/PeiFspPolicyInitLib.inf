@@ -85,6 +85,7 @@
   gEfiBxtTokenSpaceGuid.PcdPmcGcrBaseAddress
   gPlatformModuleTokenSpaceGuid.PcdResetType
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdMaxPkgCState
   gPlatformModuleTokenSpaceGuid.PcdeMMCHostMaxSpeed
   gPlatformModuleTokenSpaceGuid.PcdHdaVerbTablePtr

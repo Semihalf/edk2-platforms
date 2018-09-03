@@ -59,6 +59,7 @@
   gPlatformModuleTokenSpaceGuid.PcdFabId
   gPlatformModuleTokenSpaceGuid.PcdResetType
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdSueCreek
   gPlatformModuleTokenSpaceGuid.PcdLogoDisplay
   gPlatformModuleTokenSpaceGuid.PcdBtDevice
@@ -80,6 +81,7 @@
   gEfiTpmDeviceInstanceTpm20DtpmGuid
   gTpmDeviceInstanceTpm20PttPtpGuid
   gPeiMinnowBoard3VbtGuid
+  gPeiLogoGuid
 
 [Ppis]
   gBoardPostMemInitStartGuid
