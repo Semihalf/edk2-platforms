@@ -1,6 +1,6 @@
 /*++
 
-Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2009 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials are licensed and made available under
   the terms and conditions of the BSD License that accompanies this distribution.
@@ -31,147 +31,208 @@ Abstract:
 #include "Library/DebugLib.h"
 #include <Uefi/UefiBaseType.h>
 #include <Guid/PlatformInfo.h>
+#include <Guid/SetupVariable.h>
+#include <Library/UefiBootServicesTableLib.h>
+#include <Library/UefiRuntimeServicesTableLib.h>
 
 
 extern EFI_PLATFORM_INFO_HOB *mPlatformInfo;
-static EFI_SMBIOS_HANDLE     mSmbiosHandleType1;
+EFI_GUID                  mSystemConfigurationGuid = SYSTEM_CONFIGURATION_GUID;
+
+
+/**
+  Return the description for network boot device.
+
+  @param Handle                Controller handle.
+
+  @return  The description string.
+**/
+CHAR16 *
+GetNetworkDescription (
+  IN EFI_HANDLE                  Handle
+  )
+{
+  EFI_STATUS                     Status;
+  EFI_DEVICE_PATH_PROTOCOL       *DevicePath;
+  MAC_ADDR_DEVICE_PATH           *Mac;
+  CHAR16                         *Description;
+  UINTN                          DescriptionSize;
+
+  Status = gBS->OpenProtocol (
+                  Handle,
+                  &gEfiLoadFileProtocolGuid,
+                  NULL,
+                  gImageHandle,
+                  Handle,
+                  EFI_OPEN_PROTOCOL_TEST_PROTOCOL
+                  );
+  if (EFI_ERROR (Status)) {
+    return NULL;
+  }
+
+  Status = gBS->OpenProtocol (
+                  Handle,
+                  &gEfiDevicePathProtocolGuid,
+                  (VOID **) &DevicePath,
+                  gImageHandle,
+                  Handle,
+                  EFI_OPEN_PROTOCOL_GET_PROTOCOL
+                  );
+  if (EFI_ERROR (Status) || (DevicePath == NULL)) {
+    return NULL;
+  }
+
+  //
+  // The PXE device path is like:
+  //   ....../Mac(...)[/Vlan(...)][/Wi-Fi(...)]
+  //   ....../Mac(...)[/Vlan(...)][/Wi-Fi(...)]/IPv4(...)
+  //   ....../Mac(...)[/Vlan(...)][/Wi-Fi(...)]/IPv6(...)
+  //
+  // The HTTP device path is like:
+  //   ....../Mac(...)[/Vlan(...)][/Wi-Fi(...)]/IPv4(...)/Uri(...)
+  //   ....../Mac(...)[/Vlan(...)][/Wi-Fi(...)]/IPv6(...)/Uri(...)
+  //
+  while (!IsDevicePathEnd (DevicePath) &&
+         ((DevicePathType (DevicePath) != MESSAGING_DEVICE_PATH) ||
+          (DevicePathSubType (DevicePath) != MSG_MAC_ADDR_DP))
+         ) {
+    DevicePath = NextDevicePathNode (DevicePath);
+  }
+
+  if (IsDevicePathEnd (DevicePath)) {
+    return NULL;
+  }
+
+  Mac = (MAC_ADDR_DEVICE_PATH *) DevicePath;
+  DevicePath = NextDevicePathNode (DevicePath);
+
+  //
+  // Skip the optional Wi-Fi node
+  //
+  if ((DevicePathType (DevicePath) == MESSAGING_DEVICE_PATH) &&
+      (DevicePathSubType (DevicePath) == MSG_WIFI_DP)
+      ) {
+    DevicePath = NextDevicePathNode (DevicePath);
+  }
+
+  //
+  // Build description like below:
+  //   "PXEv6 (MAC:112233445566 VLAN1)"
+  //   "HTTPv4 (MAC:112233445566)"
+  //
+  DescriptionSize = sizeof (L"112233445566");
+  Description     = AllocatePool (DescriptionSize);
+  ASSERT (Description != NULL);
+  UnicodeSPrint (
+    Description, DescriptionSize,
+    L"%02x%02x%02x%02x%02x%02x",
+    Mac->MacAddress.Addr[0], Mac->MacAddress.Addr[1], Mac->MacAddress.Addr[2],
+    Mac->MacAddress.Addr[3], Mac->MacAddress.Addr[4], Mac->MacAddress.Addr[5]
+    );
+
+  return Description;
+}
+
+
+
+CHAR16 *
+GetMacAddressString(
+  )
+{
+  EFI_HANDLE    *Handles;
+  UINTN         HandleCount;
+  UINT8         Index;
+  CHAR16        *MacAddressString = NULL;
+  
+  //
+  // Parse load file protocol
+  //
+  gBS->LocateHandleBuffer (
+       ByProtocol,
+       &gEfiLoadFileProtocolGuid,
+       NULL,
+       &HandleCount,
+       &Handles
+       );
+  for (Index = 0; Index < HandleCount; Index++) {
+
+    MacAddressString = GetNetworkDescription (Handles[Index]);
+
+    if (MacAddressString != NULL) {
+      break;
+    }
+  }
+
+  if (HandleCount != 0) {
+    FreePool (Handles);
+  }
+
+  return MacAddressString;
+}
 
 
 EFI_STATUS
 EFIAPI
-UpdateSmbiosManuCallback (
+AddSmbiosManuCallback (
   IN EFI_EVENT  Event,
   IN VOID       *Context
   )
 {
-  EFI_STATUS            Status;
-  EFI_HANDLE            *Handles;
-  UINTN                 BufferSize;
-  CHAR16                *MacStr;
-  EFI_SMBIOS_PROTOCOL   *Smbios;
-  UINTN                 SerialNumberOffset;
-  CHAR8                 AsciiData[SMBIOS_STRING_MAX_LENGTH];
-
-  gBS->CloseEvent (Event);    // Unload this event.
-
-  DEBUG ((EFI_D_INFO, "Executing UpdateSmbiosManuCallback.\n"));
-
-  //
-  //Get handle infomation
-  //
-  BufferSize = 0;
-  Handles = NULL;
-  Status = gBS->LocateHandle (
-                  ByProtocol,
-                  &gEfiSimpleNetworkProtocolGuid,
-                  NULL,
-                  &BufferSize,
-                  Handles
-                  );
-
-  if (Status == EFI_BUFFER_TOO_SMALL) {
-    Handles = AllocateZeroPool(BufferSize);
-    if (Handles == NULL) {
-    return (EFI_OUT_OF_RESOURCES);
-    }
-    Status = gBS->LocateHandle(
-                    ByProtocol,
-                    &gEfiSimpleNetworkProtocolGuid,
-                    NULL,
-                    &BufferSize,
-                    Handles
-                    );
-  }
-
-  //
-  //Get the MAC string
-  //
-  Status = NetLibGetMacString (
-             *Handles,
-             NULL,
-             &MacStr
-             );
-  if (EFI_ERROR (Status)) {
-    return Status;
-  }
-
-  ZeroMem (AsciiData, SMBIOS_STRING_MAX_LENGTH);
-  UnicodeStrToAsciiStr (MacStr, AsciiData);
-
-  Status = gBS->LocateProtocol (
-                  &gEfiSmbiosProtocolGuid,
-                  NULL,
-                  (VOID *) &Smbios
-                  );
-  ASSERT_EFI_ERROR (Status);
-
-  SerialNumberOffset = 4;
-  Status = Smbios->UpdateString (
-                     Smbios,
-                     &mSmbiosHandleType1,
-                     &SerialNumberOffset,
-                     AsciiData
-                     );
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-  return EFI_SUCCESS;
-}
-
-
-/**
-
-  Publish the smbios type 1.
-
-  @param Event      Event whose notification function is being invoked (gEfiDxeSmmReadyToLockProtocolGuid).
-  @param Context    Pointer to the notification functions context, which is implementation dependent.
-
-  @retval None
-
-**/
-MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
-{
-
   CHAR8                             *OptionalStrStart;
   UINTN                             ManuStrLen;
   UINTN                             VerStrLen;
   UINTN                             PdNameStrLen;
   UINTN                             SerialNumStrLen;
   UINTN                             SkuNumberStrLen;
-  UINTN                        FamilyNameStrLen;
+  UINTN                             FamilyNameStrLen;
   EFI_STATUS                        Status;
   EFI_STRING                        Manufacturer;
   EFI_STRING                        ProductName;
   EFI_STRING                        Version;
   EFI_STRING                        SerialNumber;
   EFI_STRING                        SkuNumber;
-  EFI_STRING                  FamilyName;
+  EFI_STRING                        FamilyName;
   STRING_REF                        TokenToGet;
   EFI_SMBIOS_HANDLE                 SmbiosHandle;
   SMBIOS_TABLE_TYPE1                *SmbiosRecord;
   EFI_MISC_SYSTEM_MANUFACTURER      *ForType1InputData;
   CHAR16                            Buffer[40];
-  CHAR16                            *MacStr;
   CHAR16                            PlatformNameBuffer[40];
-  VOID                              *UpdateSmbiosManuCallbackNotifyReg;
-  EFI_EVENT                         UpdateSmbiosManuCallbackEvent;
-  static BOOLEAN                    CallbackIsInstalledT1 = FALSE;
+  CHAR16                            *MacAddressString = NULL;
+  CHAR16                            SerialNumberBuffer[sizeof (L"112233445566")];
+  EFI_SMBIOS_PROTOCOL               *Smbios;
+  SYSTEM_CONFIGURATION              SetupVarBuffer;
+  UINTN                             VariableSize;
+  CHAR16                            *Uuid;
+  UINT64                            TempData;
+  UINTN                             Index;
 
-  ForType1InputData = (EFI_MISC_SYSTEM_MANUFACTURER *)RecordData;
+
+
+
+  gBS->CloseEvent (Event);   // Unload this event.
+
+  DEBUG ((EFI_D_INFO, "Executing AddSmbiosManuCallback.\n"));
+
+
+  ForType1InputData = (EFI_MISC_SYSTEM_MANUFACTURER *)Context;
   //
   // First check for invalid parameters.
   //
-  if (RecordData == NULL || mPlatformInfo == NULL) {
+  if (Context == NULL || mPlatformInfo == NULL) {
     DEBUG ((EFI_D_INFO, "MISC_SMBIOS_TABLE_FUNCTION error.\n"));
     return EFI_INVALID_PARAMETER;
   }
 
+  Status = gBS->LocateProtocol (&gEfiSmbiosProtocolGuid, NULL, (VOID **) &Smbios);
+  ASSERT_EFI_ERROR (Status);
+
+
   if (BOARD_ID_MINNOW2_TURBOT == mPlatformInfo->BoardId) {
-    //
-    // Detect the board is Turbot board platform
-    //
-    UnicodeSPrint (PlatformNameBuffer, sizeof (PlatformNameBuffer),L"%s",L"Minnowboard Turbot ");
+  //
+  // Detect the board is Turbot board platform
+  //
+  UnicodeSPrint (PlatformNameBuffer, sizeof (PlatformNameBuffer),L"%s",L"Minnowboard Turbot ");
   } else {
     UnicodeSPrint (PlatformNameBuffer, sizeof (PlatformNameBuffer),L"%s",L"Minnowboard Max ");
   }
@@ -237,9 +298,9 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
       DEBUG ((EFI_D_ERROR, "D0 Stepping Detected\n"));
       break;
     default:
-      DEBUG ((EFI_D_ERROR, "Unknow Stepping Detected\n"));
+    DEBUG ((EFI_D_ERROR, "Unknow Stepping Detected\n"));
       break;
-    }
+  }
 
   if (BOARD_ID_MINNOW2_TURBOT == mPlatformInfo->BoardId) {
     UnicodeSPrint (Buffer, sizeof (Buffer),L"ADI");
@@ -266,8 +327,15 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
     return EFI_UNSUPPORTED;
   }
 
-  MacStr = L"00000000";
-  SerialNumber = MacStr;
+
+  MacAddressString = GetMacAddressString();
+
+  if ( MacAddressString != NULL) {
+    UnicodeSPrint (SerialNumberBuffer, sizeof (L"112233445566"), L"%s", GetMacAddressString());
+    HiiSetString (mHiiHandle, STRING_TOKEN (STR_MISC_SYSTEM_SERIAL_NUMBER), SerialNumberBuffer, NULL);
+  }
+  TokenToGet = STRING_TOKEN (STR_MISC_SYSTEM_SERIAL_NUMBER);
+  SerialNumber = SmbiosMiscGetString (TokenToGet);
   SerialNumStrLen = StrLen(SerialNumber);
   if (SerialNumStrLen > SMBIOS_STRING_MAX_LENGTH) {
     return EFI_UNSUPPORTED;
@@ -327,8 +395,52 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
   //
   ForType1InputData->SystemUuid.Data1 = PcdGet32 (PcdProductSerialNumber);
   ForType1InputData->SystemUuid.Data4[0] = PcdGet8 (PcdEmmcManufacturerId);
+  VariableSize = sizeof (SYSTEM_CONFIGURATION);
+  Status = gRT->GetVariable (
+                  L"Setup",
+                  &mSystemConfigurationGuid,
+                  NULL,
+                  &VariableSize,
+                  &SetupVarBuffer
+                  );
+  ASSERT_EFI_ERROR (Status);
+
+  Uuid = AllocatePool(sizeof(SetupVarBuffer.SystemUuid));
+  ASSERT (Uuid != NULL);
+  CopyMem (Uuid, SetupVarBuffer.SystemUuid, sizeof(SetupVarBuffer.SystemUuid));
+
+  if(StrLen(Uuid) != 0) {
+    DEBUG ((EFI_D_INFO, "CustomerUuid %s\n",SetupVarBuffer.SystemUuid));
+    ForType1InputData->SystemUuid.Data1 = (UINT32) StrHexToUint64 (Uuid);
+    ForType1InputData->SystemUuid.Data2 = (UINT16) StrHexToUint64 (Uuid + 9);
+    ForType1InputData->SystemUuid.Data3 = (UINT16) StrHexToUint64 (Uuid + 14);
+    ForType1InputData->SystemUuid.Data4[0] = (UINT8) StrHexToUint64 (Uuid + 19);
+    ForType1InputData->SystemUuid.Data4[1] = (UINT8) StrHexToUint64 (Uuid + 21);
+    TempData = StrHexToUint64 (Uuid + 24);
+    for(Index = sizeof(ForType1InputData->SystemUuid.Data4)/sizeof(UINT8); Index > 2; Index--) {
+      ForType1InputData->SystemUuid.Data4[Index-1] = (UINT8) TempData;
+      TempData = TempData >> 8;
+    }
+
+    ForType1InputData->SystemUuid.Data4[0] = (UINT8) StrHexToUint64 (Uuid + 19);
+
+    } else if (MacAddressString != NULL) {
+      ForType1InputData->SystemUuid.Data1 = (UINT32)MacAddressString [0] + (((UINT32)MacAddressString [1]) << 16);
+      ForType1InputData->SystemUuid.Data2 = (UINT16)MacAddressString [2];
+      ForType1InputData->SystemUuid.Data3 = (UINT16)MacAddressString [3];
+      ForType1InputData->SystemUuid.Data4[0] = (UINT8)MacAddressString [4];
+      ForType1InputData->SystemUuid.Data4[1] = (UINT8)(MacAddressString [5]);
+      ForType1InputData->SystemUuid.Data4[2] = (UINT8)MacAddressString [6];
+      ForType1InputData->SystemUuid.Data4[3] = (UINT8)(MacAddressString [7]);
+      ForType1InputData->SystemUuid.Data4[4] = (UINT8)(MacAddressString [8]);
+      ForType1InputData->SystemUuid.Data4[5] = (UINT8)(MacAddressString [9]);
+      ForType1InputData->SystemUuid.Data4[6] = (UINT8)(MacAddressString [10]);
+      ForType1InputData->SystemUuid.Data4[7] = (UINT8)(MacAddressString [11]);
+  }
 
   CopyMem ((UINT8 *) (&SmbiosRecord->Uuid),&ForType1InputData->SystemUuid,16);
+
+
 
   SmbiosRecord->WakeUpType = (UINT8)ForType1InputData->SystemWakeupType;
 
@@ -338,7 +450,7 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
   UnicodeStrToAsciiStr(Version, OptionalStrStart + ManuStrLen + 1 + PdNameStrLen + 1);
   UnicodeStrToAsciiStr(SerialNumber, OptionalStrStart + ManuStrLen + 1 + PdNameStrLen + 1 + VerStrLen + 1);
 
-  UnicodeStrToAsciiStr(SkuNumber, OptionalStrStart + ManuStrLen + 1 + PdNameStrLen + 1 +  VerStrLen + 1 + SerialNumStrLen + 1);
+  UnicodeStrToAsciiStr(SkuNumber, OptionalStrStart + ManuStrLen + 1 + PdNameStrLen + 1 + VerStrLen + 1 + SerialNumStrLen + 1);
   UnicodeStrToAsciiStr(FamilyName, OptionalStrStart + ManuStrLen + 1 + PdNameStrLen + 1 + VerStrLen + 1 + SerialNumStrLen + 1 + SkuNumberStrLen +1);
 
   //
@@ -353,36 +465,41 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
                       );
   FreePool(SmbiosRecord);
 
-  //
-  // gEfiSimpleNetworkProtocolGuid is ready
-  //
-  if (CallbackIsInstalledT1 == FALSE) {
-    CallbackIsInstalledT1 = TRUE;          // Prevent more than 1 callback.
-    DEBUG ((EFI_D_INFO, "Create Smbios Type1 callback.\n"));
+  return Status;
+}
 
-    mSmbiosHandleType1 = SmbiosHandle;
-    Status = gBS->CreateEvent (
-                    EVT_NOTIFY_SIGNAL,
-                    TPL_CALLBACK,
-                    (EFI_EVENT_NOTIFY)UpdateSmbiosManuCallback,
-                    RecordData,
-                    &UpdateSmbiosManuCallbackEvent
-                    );
 
-    ASSERT_EFI_ERROR (Status);
-    if (EFI_ERROR (Status)) {
-      return Status;
+/**
 
-    }
+  Publish the smbios type 1.
 
-    Status = gBS->RegisterProtocolNotify (
-                    &gEfiSimpleNetworkProtocolGuid,
-                    UpdateSmbiosManuCallbackEvent,
-                    &UpdateSmbiosManuCallbackNotifyReg
-                    );
+  @param Event      Event whose notification function is being invoked (gEfiDxeSmmReadyToLockProtocolGuid).
+  @param Context    Pointer to the notification functions context, which is implementation dependent.
+
+  @retval None
+
+**/
+MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
+{
+  EFI_STATUS            Status = EFI_SUCCESS;
+  static BOOLEAN        CallbackIsInstalledManu = FALSE;
+  EFI_EVENT             AddSmbiosManuCallbackEvent;
+
+  if (CallbackIsInstalledManu == FALSE) {
+    CallbackIsInstalledManu = TRUE;   // Prevent more than 1 callback.
+    DEBUG ((EFI_D_INFO, "Create Smbios Manu callback.\n"));
+
+
+    Status = EfiCreateEventReadyToBootEx (
+               TPL_CALLBACK,
+               (EFI_EVENT_NOTIFY)AddSmbiosManuCallback,
+               RecordData,
+               &AddSmbiosManuCallbackEvent
+               );
     return Status;
   }
 
   return EFI_SUCCESS;
+
 }
 

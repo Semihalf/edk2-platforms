@@ -1311,6 +1311,7 @@ typedef struct {
   UINT8   RtcBattery;
   UINT8   LpeAudioReportedByDSDT;
   UINT8   Uart1Int3511Com; // Report UART1 as COM with _HID INT3511
+  CHAR16  SystemUuid[37];
 
 } SYSTEM_CONFIGURATION;
 #pragma pack()

@@ -1,6 +1,6 @@
 //
 //
-// Copyright (c) 2004  - 2014, Intel Corporation. All rights reserved.<BR>
+// Copyright (c) 2004  - 2018, Intel Corporation. All rights reserved.<BR>
 //                                                                                  
 // This program and the accompanying materials are licensed and made available under
 // the terms and conditions of the BSD License that accompanies this distribution.  
@@ -81,6 +81,11 @@ form formid = SYSTEM_COMPONENT_FORM_ID,
     option text = STRING_TOKEN(STR_ON), value = 1, flags = RESET_REQUIRED;
   endoneof;
 
-
+  string varid  = Setup.SystemUuid,
+    prompt   = STRING_TOKEN (STR_SYSTEM_UUID_TITLE),
+    help     = STRING_TOKEN (STR_SYSTEM_UUID_HELP),
+    minsize = 0,
+    maxsize = 36,
+  endstring;
 
 endform;
