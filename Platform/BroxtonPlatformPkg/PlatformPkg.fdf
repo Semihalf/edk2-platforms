@@ -245,7 +245,7 @@
   
 !if $(PEI_DISPLAY_ENABLE) == TRUE
   FILE FREEFORM = 7BB28B99-61BB-11D5-9A5D-0090273FC14D {
-    SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Logo.bmp
+    SECTION RAW = MdeModulePkg/Logo/Logo.bmp
   }
   
   # VBT For Leaf Hill (File Guid is gPeiLeafHillVbtGuid)
