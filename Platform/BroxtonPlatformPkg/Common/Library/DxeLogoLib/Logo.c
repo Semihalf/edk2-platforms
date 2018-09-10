@@ -1,7 +1,7 @@
 /** @file
   BDS Lib functions which contain all the code to connect console device.
 
-  Copyright (c) 2011 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2011 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -15,7 +15,6 @@
 
 #include <PiDxe.h>
 #include <Protocol/SimpleTextOut.h>
-#include <Protocol/OEMBadging.h>
 #include <Protocol/GraphicsOutput.h>
 #include <Protocol/UgaDraw.h>
 #include <Library/BaseLib.h>
@@ -293,7 +292,6 @@ EnableQuietBoot (
   )
 {
   EFI_STATUS                    Status;
-  EFI_OEM_BADGING_PROTOCOL      *Badging;
   UINT32                        SizeOfX;
   UINT32                        SizeOfY;
   INTN                          DestX;
@@ -302,8 +300,6 @@ EnableQuietBoot (
   UINTN                         ImageSize;
   UINTN                         BltSize;
   UINT32                        Instance;
-  EFI_BADGING_FORMAT            Format;
-  EFI_BADGING_DISPLAY_ATTRIBUTE Attribute;
   UINTN                         CoordinateX;
   UINTN                         CoordinateY;
   UINTN                         Height;
@@ -315,7 +311,6 @@ EnableQuietBoot (
   EFI_GRAPHICS_OUTPUT_PROTOCOL  *GraphicsOutput;
   EFI_BOOT_LOGO_PROTOCOL        *BootLogo;
   UINTN                         NumberOfLogos;
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL *LogoBlt;
   UINTN                         LogoDestX;
   UINTN                         LogoDestY;
   UINTN                         LogoHeight;
@@ -324,7 +319,6 @@ EnableQuietBoot (
   UINTN                         NewDestY;
   UINTN                         NewHeight;
   UINTN                         NewWidth;
-  UINT64                        BufferSize;
 
   UgaDraw = NULL;
   //
@@ -353,8 +347,6 @@ EnableQuietBoot (
   //
   gST->ConOut->EnableCursor (gST->ConOut, FALSE);
 
-  Badging = NULL;
-  Status  = gBS->LocateProtocol (&gEfiOEMBadgingProtocolGuid, NULL, (VOID **) &Badging);
 
   if (GraphicsOutput != NULL) {
     SizeOfX = GraphicsOutput->Mode->Info->HorizontalResolution;
@@ -380,279 +372,88 @@ EnableQuietBoot (
   NewHeight = 0;
   NewWidth = 0;
   Instance = 0;
-  while (1) {
-    ImageData = NULL;
-    ImageSize = 0;
 
-    if (Badging != NULL) {
-      //
-      // Get image from OEMBadging protocol.
-      //
-      Status = Badging->GetImage (
-                          Badging,
-                          &Instance,
-                          &Format,
-                          &ImageData,
-                          &ImageSize,
-                          &Attribute,
-                          &CoordinateX,
-                          &CoordinateY
-                          );
-      if (EFI_ERROR (Status)) {
-        goto Done;
-      }
 
-    } else {
-      //
-      // Get the specified image from FV.
-      //
-      Status = GetSectionFromAnyFv (LogoFile, EFI_SECTION_RAW, 0, (VOID **) &ImageData, &ImageSize);
-      if (EFI_ERROR (Status)) {
-        return EFI_UNSUPPORTED;
-      }
+  ImageData = NULL;
+  ImageSize = 0;
 
-      CoordinateX = 0;
-      CoordinateY = 0;
-      Attribute   = EfiBadgingDisplayAttributeCenter;
-    }
-
-    if (Blt != NULL) {
-      FreePool (Blt);
-    }
-
-    //
-    // Try BMP decoder
-    //
-    Blt = NULL;
-    Status = ConvertBmpToGopBlt (
-               ImageData,
-               ImageSize,
-               (VOID **) &Blt,
-               &BltSize,
-               &Height,
-               &Width
-               );
-
-    if (EFI_ERROR (Status)) {
-      FreePool (ImageData);
-
-      if (Badging == NULL) {
-        return Status;
-      } else {
-        continue;
-      }
-    }
-
-    //
-    // Calculate the display position according to Attribute.
-    //
-    switch (Attribute) {
-      case EfiBadgingDisplayAttributeLeftTop:
-        DestX = CoordinateX;
-        DestY = CoordinateY;
-        break;
-
-      case EfiBadgingDisplayAttributeCenterTop:
-        DestX = (SizeOfX - Width) / 2;
-        DestY = CoordinateY;
-        break;
-
-      case EfiBadgingDisplayAttributeRightTop:
-        DestX = (SizeOfX - Width - CoordinateX);
-        DestY = CoordinateY;;
-        break;
-
-      case EfiBadgingDisplayAttributeCenterRight:
-        DestX = (SizeOfX - Width - CoordinateX);
-        DestY = (SizeOfY - Height) / 2;
-        break;
-
-      case EfiBadgingDisplayAttributeRightBottom:
-        DestX = (SizeOfX - Width - CoordinateX);
-        DestY = (SizeOfY - Height - CoordinateY);
-        break;
-
-      case EfiBadgingDisplayAttributeCenterBottom:
-        DestX = (SizeOfX - Width) / 2;
-        DestY = (SizeOfY - Height - CoordinateY);
-        break;
-
-      case EfiBadgingDisplayAttributeLeftBottom:
-        DestX = CoordinateX;
-        DestY = (SizeOfY - Height - CoordinateY);
-        break;
-
-      case EfiBadgingDisplayAttributeCenterLeft:
-        DestX = CoordinateX;
-        DestY = (SizeOfY - Height) / 2;
-        break;
-
-      case EfiBadgingDisplayAttributeCenter:
-        DestX = (SizeOfX - Width) / 2;
-        DestY = (SizeOfY - Height) / 2;
-        break;
-
-      default:
-        DestX = CoordinateX;
-        DestY = CoordinateY;
-        break;
-      }
-
-    if ((DestX >= 0) && (DestY >= 0)) {
-      if (GraphicsOutput != NULL) {
-        Status = GraphicsOutput->Blt (
-                                   GraphicsOutput,
-                                   Blt,
-                                   EfiBltBufferToVideo,
-                                   0,
-                                   0,
-                                   (UINTN) DestX,
-                                   (UINTN) DestY,
-                                   Width,
-                                   Height,
-                                   Width * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
-                                   );
-      } else if (UgaDraw != NULL && FeaturePcdGet (PcdUgaConsumeSupport)) {
-        Status = UgaDraw->Blt (
-                            UgaDraw,
-                            (EFI_UGA_PIXEL *) Blt,
-                            EfiUgaBltBufferToVideo,
-                            0,
-                            0,
-                            (UINTN) DestX,
-                            (UINTN) DestY,
-                            Width,
-                            Height,
-                            Width * sizeof (EFI_UGA_PIXEL)
-                            );
-      } else {
-        Status = EFI_UNSUPPORTED;
-      }
-
-      //
-      // Report displayed Logo information.
-      //
-      if (!EFI_ERROR (Status)) {
-        NumberOfLogos++;
-
-        if (LogoWidth == 0) {
-          //
-          // The first Logo.
-          //
-          LogoDestX = (UINTN) DestX;
-          LogoDestY = (UINTN) DestY;
-          LogoWidth = Width;
-          LogoHeight = Height;
-        } else {
-          //
-          // Merge new logo with old one.
-          //
-          NewDestX = MIN ((UINTN) DestX, LogoDestX);
-          NewDestY = MIN ((UINTN) DestY, LogoDestY);
-          NewWidth = MAX ((UINTN) DestX + Width, LogoDestX + LogoWidth) - NewDestX;
-          NewHeight = MAX ((UINTN) DestY + Height, LogoDestY + LogoHeight) - NewDestY;
-
-          LogoDestX = NewDestX;
-          LogoDestY = NewDestY;
-          LogoWidth = NewWidth;
-          LogoHeight = NewHeight;
-        }
-      }
-    }
-
-    FreePool (ImageData);
-
-    if (Badging == NULL) {
-      break;
-    }
+  //
+  // Get the specified image from FV.
+  //
+  Status = GetSectionFromAnyFv (LogoFile, EFI_SECTION_RAW, 0, (VOID **) &ImageData, &ImageSize);
+  if (EFI_ERROR (Status)) {
+    return EFI_UNSUPPORTED;
   }
 
-Done:
-  if (BootLogo == NULL || NumberOfLogos == 0) {
-    //
-    // No logo displayed.
-    //
-    if (Blt != NULL) {
-      FreePool (Blt);
-    }
+  CoordinateX = 0;
+  CoordinateY = 0;
 
+
+  if (Blt != NULL) {
+    FreePool (Blt);
+  }
+
+  //
+  // Try BMP decoder
+  //
+  Blt = NULL;
+  Status = ConvertBmpToGopBlt (
+             ImageData,
+             ImageSize,
+             (VOID **) &Blt,
+             &BltSize,
+             &Height,
+             &Width
+             );
+
+  if (EFI_ERROR (Status)) {
+    FreePool (ImageData);
     return Status;
   }
 
   //
-  // Advertise displayed Logo information.
+  // Calculate the display position according to Attribute.
   //
-  if (NumberOfLogos == 1) {
-    //
-    // Only one logo displayed, use its Blt buffer directly for BootLogo protocol.
-    //
-    LogoBlt = Blt;
-    Status = EFI_SUCCESS;
-  } else {
-    //
-    // More than one Logo displayed, get merged BltBuffer using VideoToBuffer operation.
-    //
-    if (Blt != NULL) {
-      FreePool (Blt);
-    }
 
-    //
-    // Ensure the LogoHeight * LogoWidth doesn't overflow
-    //
-    if (LogoHeight > DivU64x64Remainder ((UINTN) ~0, LogoWidth, NULL)) {
-      return EFI_UNSUPPORTED;
-    }
-    BufferSize = MultU64x64 (LogoWidth, LogoHeight);
+  DestX = (SizeOfX - Width) / 2;
+  DestY = (SizeOfY - Height) / 2;
 
-    //
-    // Ensure the BufferSize * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL) doesn't overflow
-    //
-    if (BufferSize > DivU64x32 ((UINTN) ~0, sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL))) {
-      return EFI_UNSUPPORTED;
-    }
 
-    LogoBlt = AllocateZeroPool ((UINTN) BufferSize * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
-    if (LogoBlt == NULL) {
-      return EFI_OUT_OF_RESOURCES;
-    }
-
+  if ((DestX >= 0) && (DestY >= 0)) {
     if (GraphicsOutput != NULL) {
       Status = GraphicsOutput->Blt (
                                  GraphicsOutput,
-                                 LogoBlt,
-                                 EfiBltVideoToBltBuffer,
-                                 LogoDestX,
-                                 LogoDestY,
+                                 Blt,
+                                 EfiBltBufferToVideo,
                                  0,
                                  0,
-                                 LogoWidth,
-                                 LogoHeight,
-                                 LogoWidth * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
+                                 (UINTN) DestX,
+                                 (UINTN) DestY,
+                                 Width,
+                                 Height,
+                                 Width * sizeof (EFI_GRAPHICS_OUTPUT_BLT_PIXEL)
                                  );
     } else if (UgaDraw != NULL && FeaturePcdGet (PcdUgaConsumeSupport)) {
       Status = UgaDraw->Blt (
                           UgaDraw,
-                          (EFI_UGA_PIXEL *) LogoBlt,
-                          EfiUgaVideoToBltBuffer,
-                          LogoDestX,
-                          LogoDestY,
+                          (EFI_UGA_PIXEL *) Blt,
+                          EfiUgaBltBufferToVideo,
                           0,
                           0,
-                          LogoWidth,
-                          LogoHeight,
-                          LogoWidth * sizeof (EFI_UGA_PIXEL)
+                          (UINTN) DestX,
+                          (UINTN) DestY,
+                          Width,
+                          Height,
+                          Width * sizeof (EFI_UGA_PIXEL)
                           );
     } else {
       Status = EFI_UNSUPPORTED;
     }
   }
-
-  if (!EFI_ERROR (Status)) {
-    BootLogo->SetBootLogo (BootLogo, LogoBlt, LogoDestX, LogoDestY, LogoWidth, LogoHeight);
-  }
-  FreePool (LogoBlt);
-
-  return Status;
+  
+  FreePool (ImageData);
+  
+  return EFI_SUCCESS;
 }
 
 

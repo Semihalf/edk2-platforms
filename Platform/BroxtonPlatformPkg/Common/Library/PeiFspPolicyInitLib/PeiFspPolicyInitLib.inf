@@ -77,7 +77,6 @@
 [Guids]
   gEfiSetupVariableGuid
   gEfiPlatformInfoGuid
-  gPeiLogoGuid
 
 [Pcd.common]
   gEfiBxtTokenSpaceGuid.PcdScAcpiIoPortBaseAddress

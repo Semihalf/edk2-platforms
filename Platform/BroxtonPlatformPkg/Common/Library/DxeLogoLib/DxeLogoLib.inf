@@ -58,5 +58,4 @@
   gEfiUgaDrawProtocolGuid                       ## SOMETIMES_CONSUMES
   gEfiBootLogoProtocolGuid                      ## SOMETIMES_CONSUMES
   gEfiUserManagerProtocolGuid                   ## CONSUMES
-  gEfiOEMBadgingProtocolGuid                    ## CONSUMES
 

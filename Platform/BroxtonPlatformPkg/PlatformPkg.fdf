@@ -244,8 +244,8 @@
   INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformPostMemPei/PlatformPostMemPei.inf
   
 !if $(PEI_DISPLAY_ENABLE) == TRUE
-  FILE FREEFORM = 7BB28B99-61BB-11D5-9A5D-0090273FC14D {
-    SECTION RAW = MdeModulePkg/Logo/Logo.bmp
+  FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid) {
+    SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Tianocore.bmp
   }
   
   # VBT For Leaf Hill (File Guid is gPeiLeafHillVbtGuid)
@@ -611,12 +611,13 @@ APRIORI DXE {
 
   INF $(PLATFORM_PACKAGE_COMMON)/Console/GraphicsOutputDxe/GraphicsOutputDxe.inf
 
-  FILE FREEFORM = PCD(gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdLogoFile) {
-  SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Logo.bmp
-}
+  FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid) {
+  SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Tianocore.bmp
+  }
+  
   FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdLogoFileGuid) {
   SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3/Logo/MinnowBoardLogo.bmp
-}
+  }
 
   INF $(PLATFORM_PACKAGE_COMMON)/PnpDxe/PnpDxe.inf
   INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformGpio/PlatformGpio.inf

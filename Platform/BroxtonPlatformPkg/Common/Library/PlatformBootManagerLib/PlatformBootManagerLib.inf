@@ -54,7 +54,8 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution
   gEfiMdeModulePkgTokenSpaceGuid.PcdConInConnectOnDemand
   gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType
-  gEfiSecurityPkgTokenSpaceGuid.PcdTpmInstanceGuid  
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpmInstanceGuid
+  gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   
  [LibraryClasses]
   BaseLib
@@ -77,6 +78,7 @@
   PciLib
   Tcg2PhysicalPresenceLib
   TcgPhysicalPresenceLib
+  LogoLib
    
 [Protocols]
   gEfiPciRootBridgeIoProtocolGuid

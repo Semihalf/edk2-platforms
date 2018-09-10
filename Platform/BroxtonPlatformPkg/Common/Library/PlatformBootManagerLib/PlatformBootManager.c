@@ -28,6 +28,7 @@
 #include <Library/PciLib.h>
 #include <Library/TcgPhysicalPresenceLib.h>
 #include <Library/Tcg2PhysicalPresenceLib.h>
+#include <Library/LogoLib.h>
 #include <Library/HobLib.h>
 #include <Guid/EventGroup.h>
 #include <Guid/ImageAuthentication.h>
@@ -1009,8 +1010,15 @@ PlatformBootManagerAfterConsole (
   EFI_BOOT_MODE                     LocalBootMode;
   BOOLEAN                           RequireSoftECCInit;
   EFI_GENERIC_MEMORY_TEST_PROTOCOL  *GenMemoryTest;
-  
+  EFI_GUID                          DxeLogoGuid;
+
   DEBUG ((EFI_D_INFO, "PlatformBootManagerAfterConsole\n"));
+
+  //
+  // Show BIOS Logo
+  //
+  CopyMem (&DxeLogoGuid, PcdGetPtr (PcdOemLogoFileGuid), sizeof (EFI_GUID));
+  EnableQuietBoot (&DxeLogoGuid);
 
   //
   // Run memory test code at this point.
