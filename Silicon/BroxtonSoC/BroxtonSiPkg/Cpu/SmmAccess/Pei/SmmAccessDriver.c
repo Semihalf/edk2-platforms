@@ -147,7 +147,7 @@ Open (
   // END CHIPSET SPECIFIC CODE
   //
   SmmAccess->SmramDesc[DescriptorIndex].RegionState &= (UINTN) (~(EFI_SMRAM_CLOSED | EFI_ALLOCATED));
-  SmmAccess->SmramDesc[DescriptorIndex].RegionState |= EFI_SMRAM_OPEN;
+  SmmAccess->SmramDesc[DescriptorIndex].RegionState |= (UINT64)(EFI_SMRAM_OPEN);
   SmmAccess->SmmAccess.OpenState = TRUE;
 
   return EFI_SUCCESS;
@@ -190,7 +190,7 @@ Close (
     return EFI_DEVICE_ERROR;
   }
 
-  SmmAccess->SmramDesc[DescriptorIndex].RegionState &= ~EFI_SMRAM_OPEN;
+  SmmAccess->SmramDesc[DescriptorIndex].RegionState &= ~((UINT64)EFI_SMRAM_OPEN);
   SmmAccess->SmramDesc[DescriptorIndex].RegionState |= (UINTN)(EFI_SMRAM_CLOSED | EFI_ALLOCATED);
 
   SmmAccess->SmmAccess.OpenState = FALSE;

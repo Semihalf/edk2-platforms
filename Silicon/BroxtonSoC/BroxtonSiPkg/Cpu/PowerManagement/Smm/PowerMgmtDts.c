@@ -554,9 +554,9 @@ PackageDigitalThermalSensorEnable (
   //
   MsrData.Qword = AsmReadMsr64 (EFI_MSR_IA32_PACKAGE_THERM_STATUS);
   if (mDtsValue != DTS_OUT_OF_SPEC_ONLY) {
-    MsrData.Qword &= ~THERM_STATUS_LOG_MASK;
+    MsrData.Qword &= ~((UINT64)THERM_STATUS_LOG_MASK);
   } else {
-    MsrData.Qword &= ~B_OUT_OF_SPEC_STATUS_LOG;
+    MsrData.Qword &= ~((UINT64)B_OUT_OF_SPEC_STATUS_LOG);
   }
 
   AsmWriteMsr64 (EFI_MSR_IA32_PACKAGE_THERM_STATUS, MsrData.Qword);
@@ -570,7 +570,7 @@ PackageDigitalThermalSensorEnable (
   // Only lock interrupts if in CMP mode
   //
   if (gSmst->NumberOfCpus > 1) {
-    MsrData.Qword |= B_LOCK_THERMAL_INT;
+    MsrData.Qword |= ((UINT64)B_LOCK_THERMAL_INT);
   }
 
   AsmWriteMsr64 (EFI_MSR_MISC_PWR_MGMT, MsrData.Qword);
@@ -811,7 +811,7 @@ PackageDigitalThermalSensorSetOutOfSpecInterrupt (
   // Enable Out Of Spec interrupt
   //
   MsrData.Qword = AsmReadMsr64 (EFI_MSR_IA32_PACKAGE_THERM_INTERRUPT);
-  MsrData.Qword |= OVERHEAT_INTERRUPT_ENABLE;
+  MsrData.Qword |= ((UINT64)OVERHEAT_INTERRUPT_ENABLE);
   AsmWriteMsr64 (EFI_MSR_IA32_PACKAGE_THERM_INTERRUPT, MsrData.Qword);
 
   return EFI_SUCCESS;
@@ -970,8 +970,8 @@ PackageDigitalThermalSensorSetThreshold (
     //
     // Enable interrupts
     //
-    MsrData.Qword |= TH1_ENABLE;
-    MsrData.Qword |= TH2_ENABLE;
+    MsrData.Qword |= ((UINT64)TH1_ENABLE);
+    MsrData.Qword |= ((UINT64)TH2_ENABLE);
 
     //
     // If the high temp is at TjMax (offset == 0)
@@ -979,7 +979,7 @@ PackageDigitalThermalSensorSetThreshold (
     // causing many threshold crossings
     //
     if (MsrData.Bytes.SecondByte == 0x80) {
-      MsrData.Qword &= ~TH1_ENABLE;
+      MsrData.Qword &= ~((UINT64)TH1_ENABLE);
     }
 
     AsmWriteMsr64 (EFI_MSR_IA32_PACKAGE_THERM_INTERRUPT, MsrData.Qword);
@@ -989,7 +989,7 @@ PackageDigitalThermalSensorSetThreshold (
   //  Clear the threshold log bits
   //
   MsrData.Qword = AsmReadMsr64 (EFI_MSR_IA32_PACKAGE_THERM_STATUS);
-  MsrData.Qword &= ~THERM_STATUS_THRESHOLD_LOG_MASK;
+  MsrData.Qword &= ~((UINT64)THERM_STATUS_THRESHOLD_LOG_MASK);
   AsmWriteMsr64 (EFI_MSR_IA32_PACKAGE_THERM_STATUS, MsrData.Qword);
 
   return EFI_SUCCESS;

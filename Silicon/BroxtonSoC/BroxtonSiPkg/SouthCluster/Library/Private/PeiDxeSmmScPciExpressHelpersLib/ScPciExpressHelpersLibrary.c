@@ -1648,7 +1648,7 @@ PcieCheckPmConfig (
     Operation = CalculateAspm;
   } else {
     Operation = ManualAspm;
-    *AspmVal &= RootPortConfig->Aspm;
+    *AspmVal &= (UINT16)(RootPortConfig->Aspm);
   }
 
   //
@@ -1837,7 +1837,7 @@ PcieSetPm (
     Operation = CalculateAspm;
   } else {
     Operation = ManualAspm;
-    AspmVal &= RootPortConfig->Aspm;
+    AspmVal &= (UINT16)(RootPortConfig->Aspm);
   }
 
   //

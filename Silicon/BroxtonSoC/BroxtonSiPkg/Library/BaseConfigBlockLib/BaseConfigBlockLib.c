@@ -136,7 +136,7 @@ AddConfigBlock (
   if (OffsetIndex == 0) {
     LastUsedOffset = 0;
   } else {
-    LastUsedOffsetPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + (UINTN) ((OffsetIndex - 1) * 4));
+    LastUsedOffsetPtr = (UINT32 *) ((UINTN) ConfigBlkTblAddrPtr + ConfigBlkTblHdrSize + ((((UINTN)OffsetIndex) - 1) * 4));
     LastUsedOffset = (UINT32) *LastUsedOffsetPtr;
   }
   *OffsetTblPtr = LastUsedOffset + ConfigBlkSize;
@@ -144,7 +144,7 @@ AddConfigBlock (
   ConfigBlkTblAddrPtr->AvailableBlocks--;
   ConfigBlkTblAddrPtr->AvailableSize = ConfigBlkTblAddrPtr->AvailableSize - ConfigBlkSize;
 
-  TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + (UINTN) ConfigBlkTblHdrSize + (UINTN) (NumOfBlocks * 4) + (UINTN) LastUsedOffset);
+  TempConfigBlk = (CONFIG_BLOCK *) ((UINTN) ConfigBlkTblAddrPtr + (UINTN) ConfigBlkTblHdrSize + (((UINTN)NumOfBlocks) * 4) + (UINTN) LastUsedOffset);
   TempConfigBlk->Header.Size = ConfigBlkSize;
   TempConfigBlk->Header.Revision = ConfigBlkAddrPtr->Header.Revision;
   TempConfigBlk->Header.Guid = ConfigBlkAddrPtr->Header.Guid;

@@ -158,7 +158,7 @@ CreateVariableHobs (
     return EFI_INVALID_PARAMETER;
   }
 
-  VariableStoreBase   = (EFI_PHYSICAL_ADDRESS) ((UINTN) NvStorageFvHeader + (UINTN)NvStorageFvHeader->HeaderLength);
+  VariableStoreBase   = (EFI_PHYSICAL_ADDRESS) ((UINTN) NvStorageFvHeader + (UINTN)(NvStorageFvHeader->HeaderLength));
   VariableStoreHeader = (VARIABLE_STORE_HEADER *) (UINTN) VariableStoreBase;
 
   DEBUG ((EFI_D_INFO, "  VariableStoreHeader at 0x%x. VariableStoreSize = %d\n", VariableStoreHeader, (UINTN) VariableStoreHeader->Size));

@@ -424,13 +424,6 @@ SetPlatformBootMode (
     CopyMem (&PlatformSetupId.SetupName, SAFE_SETUP_NAME, StrSize (SAFE_SETUP_NAME));
     PlatformSetupId.PlatformBootMode = PLATFORM_SAFE_MODE;
 
-  } else if (0) {
-    //
-    // Manufacturing mode
-    //
-    CopyMem (&PlatformSetupId.SetupName, MANUFACTURE_SETUP_NAME, StrSize (MANUFACTURE_SETUP_NAME));
-    PlatformSetupId.PlatformBootMode = PLATFORM_MANUFACTURING_MODE;
-
   } else {
     //
     // Default to normal mode.

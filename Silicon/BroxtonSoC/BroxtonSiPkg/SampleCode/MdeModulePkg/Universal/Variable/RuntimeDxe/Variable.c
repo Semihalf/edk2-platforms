@@ -1323,7 +1323,7 @@ Reclaim (
   // Install the new variable if it is not NULL.
   //
   if (NewVariable != NULL) {
-    if ((UINTN) (CurrPtr - ValidBuffer) + NewVariableSize > VariableStoreHeader->Size) {
+    if ((UINTN) ((UINTN)(CurrPtr) - (UINTN)(ValidBuffer)) + NewVariableSize > VariableStoreHeader->Size) {
       //
       // No enough space to store the new variable.
       //
@@ -1419,7 +1419,7 @@ Reclaim (
     // If volatile variable store, just copy valid buffer.
     //
     SetMem ((UINT8 *) (UINTN) VariableBase, VariableStoreHeader->Size, 0xff);
-    CopyMem ((UINT8 *) (UINTN) VariableBase, ValidBuffer, (UINTN) (CurrPtr - ValidBuffer));
+    CopyMem ((UINT8 *) (UINTN) VariableBase, ValidBuffer, ((UINTN)CurrPtr - (UINTN)ValidBuffer));
     Status  = EFI_SUCCESS;
   } else {
     //

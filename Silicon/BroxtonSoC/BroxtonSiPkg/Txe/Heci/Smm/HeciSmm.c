@@ -242,7 +242,7 @@ SetHeci2Active (
 
   DEBUG ((EFI_D_INFO, "SetHeci2Active: Setting HECI2 to active...\n"));
 
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER *) (UINTN) (mHeci_HeciBar + H_CSR);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER *) (((UINTN)mHeci_HeciBar) + ((UINTN)H_CSR));
 
   while ((Mmio32 (mHeci_HeciBar, R_HECI_DEVIDLEC) & B_HECI_DEVIDLEC_CIP) == B_HECI_DEVIDLEC_CIP);
 
@@ -307,9 +307,9 @@ BOOLEAN HeciSendHandle (
   if (mHeci_LeftSize == 0) {
     return TRUE;
   }
-  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + H_CSR);
-  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) (UINTN) (mHeci_HeciBar + SEC_CSR_HA);
-  WriteBuffer = (UINT32 *) (UINTN) (mHeci_HeciBar + H_CB_WW);
+  HostControlReg = (volatile HECI_HOST_CONTROL_REGISTER  *) (((UINTN)mHeci_HeciBar) + ((UINTN)H_CSR));
+  SecControlReg = (volatile HECI_SEC_CONTROL_REGISTER  *) (((UINTN)mHeci_HeciBar) + ((UINTN)SEC_CSR_HA));
+  WriteBuffer = (UINT32 *) (((UINTN)mHeci_HeciBar) + ((UINTN)H_CB_WW));
   MessageBody = (UINT32*) mHeci_Message;
 
   MaxBuffer = HostControlReg->r.H_CBD - 0x10;

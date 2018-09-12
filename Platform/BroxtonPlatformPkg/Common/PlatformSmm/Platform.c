@@ -556,7 +556,7 @@ CpuSmmSxWorkAround(
     // If C State enabled, disable it before going into S3
     // The MSR will be restored back during S3 wake
     //
-    MsrValue &= ~B_EFI_MSR_PMG_CST_CONFIG_IO_MWAIT_REDIRECTION_ENABLE;
+    MsrValue &= ~((UINT64)B_EFI_MSR_PMG_CST_CONFIG_IO_MWAIT_REDIRECTION_ENABLE);
     AsmWriteMsr64 (EFI_MSR_PMG_CST_CONFIG, MsrValue);
   }
 }

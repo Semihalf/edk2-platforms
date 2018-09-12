@@ -626,7 +626,7 @@ SendSpiCmd (
   // sources after the flash cycle .
   //
   SmiEnSave   = IoRead32 ((UINTN)(UINT16)(ABase + R_SMI_EN));
-  IoWrite32 ((UINTN) (UINT16) (ABase + R_SMI_EN), SmiEnSave & (UINT32) (~B_SMI_EN_GBL_SMI));
+  IoWrite32 ((UINTN)(((UINT16)ABase) + ((UINT16)R_SMI_EN)), SmiEnSave & (UINT32) (~B_SMI_EN_GBL_SMI));
   BiosCtlSave = MmioRead8 (SpiBaseAddress + R_SPI_BCR) & B_SPI_BCR_SRC;
 
   //

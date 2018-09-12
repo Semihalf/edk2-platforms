@@ -89,6 +89,7 @@ PeiFspCpuPolicyInit (
 
   VariableSize = sizeof (SYSTEM_CONFIGURATION);
   SystemConfiguration = AllocateZeroPool (VariableSize);
+  ASSERT (SystemConfiguration != NULL);
 
   Status = VariableServices->GetVariable (
                                VariableServices,

@@ -226,7 +226,9 @@ NhltEndpointDump (
   DEBUG ((DEBUG_INFO, " Endpoint->EndpointConfig.CapabilitiesSize = %d B\n", Endpoint->EndpointConfig.CapabilitiesSize));
   DEBUG ((DEBUG_INFO, " Endpoint->EndpointConfig.Capabilities:"));
   for (i = 0; i < (Endpoint->EndpointConfig.CapabilitiesSize ) ; i++) {
-    if (i % 16 == 0) DEBUG ((DEBUG_INFO, "\n"));
+    if (i % 16 == 0) {
+		DEBUG ((DEBUG_INFO, "\n"));
+	}
     DEBUG ((DEBUG_INFO, "0x%02x, ", Endpoint->EndpointConfig.Capabilities[i]));
   }
 

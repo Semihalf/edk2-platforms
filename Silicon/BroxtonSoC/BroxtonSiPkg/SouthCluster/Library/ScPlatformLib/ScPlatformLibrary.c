@@ -115,7 +115,7 @@ ScPmTimerStall (
   // one I/O operation, and maybe generate SMI
   //
   while ((Counts != 0) || (RemainingTick > CurrentTick)) {
-    CurrentTick = IoRead32 ((UINTN) (AcpiBaseAddr + R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
+    CurrentTick = IoRead32 ((UINTN)(AcpiBaseAddr) + (UINTN)(R_ACPI_PM1_TMR)) & B_ACPI_PM1_TMR_VAL;
     //
     // Check if timer overflow
     //

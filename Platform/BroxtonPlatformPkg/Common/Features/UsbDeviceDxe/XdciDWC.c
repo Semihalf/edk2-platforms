@@ -22,7 +22,7 @@ UsbRegRead (
   IN UINT32    Offset
   )
 {
-  volatile UINT32 *addr = (volatile UINT32 *)(UINTN)(Base + Offset);
+  volatile UINT32 *addr = (volatile UINT32 *)((UINTN)(Base) + (UINTN)(Offset));
   return *addr;
 }
 
@@ -33,7 +33,7 @@ UsbRegWrite (
   IN UINT32    val
   )
 {
-  volatile UINT32 *addr = (volatile UINT32 *)(UINTN)(Base + Offset);
+  volatile UINT32 *addr = (volatile UINT32 *)((UINTN)(Base) + (UINTN)(Offset));
   *addr = val;
 }
 
@@ -1852,9 +1852,9 @@ DwcXdciCoreInit (
   //
   // Prepare a Buffer for SETUP packet
   //
-  LocalCoreHandle->Trbs = (DWC_XDCI_TRB *)(UINTN)((UINT32)(UINTN)
+  LocalCoreHandle->Trbs = (DWC_XDCI_TRB *)((UINTN)
                             LocalCoreHandle->UnalignedTrbs +
-                            (DWC_XDCI_TRB_BYTE_ALIGNMENT -
+                            (UINTN)(DWC_XDCI_TRB_BYTE_ALIGNMENT -
                             ((UINT32)(UINTN)LocalCoreHandle->UnalignedTrbs %
                             DWC_XDCI_TRB_BYTE_ALIGNMENT)));
 
@@ -3954,9 +3954,9 @@ UsbXdciCoreReinit (
   //
   // Prepare a Buffer for SETUP packet
   //
-  LocalCoreHandle->Trbs = (DWC_XDCI_TRB *)(UINTN)((UINT32)(UINTN)
+  LocalCoreHandle->Trbs = (DWC_XDCI_TRB *)((UINTN)
                             LocalCoreHandle->UnalignedTrbs +
-                            (DWC_XDCI_TRB_BYTE_ALIGNMENT -
+                            (UINTN)(DWC_XDCI_TRB_BYTE_ALIGNMENT -
                             ((UINT32)(UINTN)LocalCoreHandle->UnalignedTrbs %
                             DWC_XDCI_TRB_BYTE_ALIGNMENT)));
 

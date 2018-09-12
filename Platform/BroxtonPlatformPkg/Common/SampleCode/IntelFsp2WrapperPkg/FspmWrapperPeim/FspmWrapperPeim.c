@@ -111,7 +111,7 @@ PeiFspMemoryInit (
   DEBUG ((DEBUG_INFO, "PcdFspmBaseAddress = 0x%X\n", PcdGet32 (PcdFspmBaseAddress)));
   DEBUG ((DEBUG_INFO, "FspmHeaderPtr = 0x%X\n", FspmHeaderPtr));
   DEBUG ((DEBUG_INFO, "FspmHeaderPtr->CfgRegionSize = 0x%X\n", FspmHeaderPtr->CfgRegionSize));
-
+  ASSERT (FspmHeaderPtr != NULL);
   FspmUpdDataPtr = (FSPM_UPD *) AllocateZeroPool ((UINTN) FspmHeaderPtr->CfgRegionSize);
   ASSERT (FspmUpdDataPtr != NULL);
   SourceData = (UINTN *) ((UINTN) FspmHeaderPtr->ImageBase + (UINTN) FspmHeaderPtr->CfgRegionOffset);
@@ -119,6 +119,7 @@ PeiFspMemoryInit (
 
   DEBUG ((DEBUG_INFO, "FspWrapperPlatformInitPreMem enter\n"));
   FspmUpdDataPtr = UpdateFspUpdConfigs (PeiServices, FspmUpdDataPtr);
+  ASSERT (FspmUpdDataPtr != NULL);
   FspPolicyInitPreMem (FspmUpdDataPtr);
 
   DEBUG ((DEBUG_INFO, "  NvsBufferPtr        - 0x%x\n", FspmUpdDataPtr->FspmArchUpd.NvsBufferPtr));

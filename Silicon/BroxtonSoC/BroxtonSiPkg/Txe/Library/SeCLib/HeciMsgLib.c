@@ -1172,7 +1172,7 @@ HeciSetSeCEnableMsg (
   EFI_HECI_PROTOCOL     *Heci;
   HECI_FWS_REGISTER     SeCFirmwareStatus;
   UINTN                 HeciPciAddressBase;
-  UINT16                TimeOut;
+  UINT32                TimeOut;
 
   TimeOut = 0;
 

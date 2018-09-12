@@ -88,14 +88,14 @@ InstallSmbiosType16 (
   }
   MaxSockets = ChannelASlotNum + ChannelBSlotNum;
   if (mMemInfoHob->MemInfoData.ddrType == 0) {
-    if ((MAX_RANK_CAPACITY_DDR4 * SA_MC_MAX_SIDES * MaxSockets) < SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY) {
+    if ((MAX_RANK_CAPACITY_DDR4 * SA_MC_MAX_SIDES * (UINT64)(MaxSockets)) < SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY) {
       SmbiosTableType16Data.MaximumCapacity = MAX_RANK_CAPACITY_DDR4 * SA_MC_MAX_SIDES * MaxSockets;
     } else {
       SmbiosTableType16Data.MaximumCapacity = SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY;
       SmbiosTableType16Data.ExtendedMaximumCapacity = ((UINT64) MAX_RANK_CAPACITY_DDR4) * SA_MC_MAX_SIDES * MaxSockets * 1024; // Convert from KB to Byte
     }
   } else {
-    if ((MAX_RANK_CAPACITY * SA_MC_MAX_SIDES * MaxSockets) < SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY) {
+    if ((MAX_RANK_CAPACITY * SA_MC_MAX_SIDES * (UINT64)(MaxSockets)) < SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY) {
       SmbiosTableType16Data.MaximumCapacity = MAX_RANK_CAPACITY * SA_MC_MAX_SIDES * MaxSockets;
     } else {
       SmbiosTableType16Data.MaximumCapacity = SMBIOS_TYPE16_USE_EXTENDED_MAX_CAPACITY;

@@ -139,8 +139,8 @@ Open (
 
     Mmio64AndThenOr (MCH_BASE_ADDRESS, 0x6848, 0, 0xFF);
 
-    SmmAccess->SmramDesc[Index].RegionState &= ~(EFI_SMRAM_CLOSED |EFI_ALLOCATED);
-    SmmAccess->SmramDesc[Index].RegionState |= EFI_SMRAM_OPEN;
+    SmmAccess->SmramDesc[Index].RegionState &= ~((UINT64)(EFI_SMRAM_CLOSED |EFI_ALLOCATED));
+    SmmAccess->SmramDesc[Index].RegionState |= (UINT64)(EFI_SMRAM_OPEN);
   }
   SmmAccess->SmmAccess.OpenState = TRUE;
 
@@ -181,7 +181,7 @@ Close (
       continue;
     }
 
-    SmmAccess->SmramDesc[Index].RegionState &= ~EFI_SMRAM_OPEN;
+    SmmAccess->SmramDesc[Index].RegionState &= ~((UINT64)(EFI_SMRAM_OPEN));
     SmmAccess->SmramDesc[Index].RegionState |= (UINTN)(EFI_SMRAM_CLOSED |EFI_ALLOCATED);
   }
   SmmAccess->SmmAccess.OpenState = FALSE;

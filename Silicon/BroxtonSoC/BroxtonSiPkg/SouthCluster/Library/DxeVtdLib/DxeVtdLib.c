@@ -547,6 +547,7 @@ UpdateDmarOnReadyToBoot (
   SC_VTD_CONFIG                   *VtdConfig;
 
   AcpiTableProtocol = NULL;
+  FwVol = NULL;
   DmarAcpiTable = NULL;
   Index       = 0;
 

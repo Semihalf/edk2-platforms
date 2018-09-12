@@ -525,6 +525,8 @@ ProcessTcgPp (
   EFI_TCG2_PHYSICAL_PRESENCE         Tcg2PpData;
   EFI_PHYSICAL_PRESENCE              TcgPpData;
   UINTN                              TcgPpDataSize;
+  
+  Status = EFI_SUCCESS;
 
   TcgPpData.PPRequest = TCG_PHYSICAL_PRESENCE_NO_ACTION;
   Tcg2PpData.PPRequest = TCG2_PHYSICAL_PRESENCE_NO_ACTION;

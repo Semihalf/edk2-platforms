@@ -443,7 +443,7 @@ PciBusEvent (
                         &Supports
                         );
 
-      Supports &= EFI_PCI_DEVICE_ENABLE;
+      Supports &= (UINT64)EFI_PCI_DEVICE_ENABLE;
       //
       // Work around start, PMC command register IO enable(BIT0) will always read back as 0, though it supports IO
       // so the attributes for IO will not be set, here we set it
