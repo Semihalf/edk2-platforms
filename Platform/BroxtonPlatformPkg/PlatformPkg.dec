@@ -212,6 +212,8 @@
   gPlatformModuleTokenSpaceGuid.HdaVerbTableEntryNum|0|UINT8|0x8000001E
 
   gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid|{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }|VOID*|0x8000001F
+  ## This PCD is used to enable or disable PCIE port 3
+  gPlatformModuleTokenSpaceGuid.PcdPciePort3Enable|TRUE|BOOLEAN|0x80000020
 
   
   ## MemoryCheck value for checking memory before boot OS.

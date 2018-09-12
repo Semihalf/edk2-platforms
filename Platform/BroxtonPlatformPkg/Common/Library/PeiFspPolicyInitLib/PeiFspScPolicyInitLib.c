@@ -1,7 +1,7 @@
 /** @file
   Implementation of Fsp SC Policy Initialization.
 
-  Copyright (c) 2015 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -282,6 +282,8 @@ PeiFspScPolicyInit (
       FspsUpd->FspsConfig.PcieRpNonSnoopLatencyOverrideValue[PortIndex]       = SystemConfiguration->PchPcieNonSnoopLatencyOverrideValue[PortIndex];
       FspsUpd->FspsConfig.PtmEnable[PortIndex]                                = TRUE;
     }
+  FspsUpd->FspsConfig.PcieRootPortEn[3]                                     = PcdGetBool(PcdPciePort3Enable);
+
 #if (ENBDT_PF_ENABLE == 1)
     FspsUpd->FspsConfig.PcieRpClkReqSupported[0] = TRUE;
     FspsUpd->FspsConfig.PcieRpClkReqNumber   [0] = 2;
