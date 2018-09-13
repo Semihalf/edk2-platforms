@@ -414,32 +414,28 @@ AddSmbiosManuCallback (
     ForType1InputData->SystemUuid.Data1 = (UINT32) StrHexToUint64 (Uuid);
     ForType1InputData->SystemUuid.Data2 = (UINT16) StrHexToUint64 (Uuid + 9);
     ForType1InputData->SystemUuid.Data3 = (UINT16) StrHexToUint64 (Uuid + 14);
-    ForType1InputData->SystemUuid.Data4[0] = (UINT8) StrHexToUint64 (Uuid + 19);
+    ForType1InputData->SystemUuid.Data4[0] = (UINT8) (StrHexToUint64 (Uuid + 19) >> 8);
     ForType1InputData->SystemUuid.Data4[1] = (UINT8) StrHexToUint64 (Uuid + 21);
     TempData = StrHexToUint64 (Uuid + 24);
     for(Index = sizeof(ForType1InputData->SystemUuid.Data4)/sizeof(UINT8); Index > 2; Index--) {
       ForType1InputData->SystemUuid.Data4[Index-1] = (UINT8) TempData;
       TempData = TempData >> 8;
     }
-
-    ForType1InputData->SystemUuid.Data4[0] = (UINT8) StrHexToUint64 (Uuid + 19);
-
-    } else if (MacAddressString != NULL) {
-      ForType1InputData->SystemUuid.Data1 = (UINT32)MacAddressString [0] + (((UINT32)MacAddressString [1]) << 16);
-      ForType1InputData->SystemUuid.Data2 = (UINT16)MacAddressString [2];
-      ForType1InputData->SystemUuid.Data3 = (UINT16)MacAddressString [3];
-      ForType1InputData->SystemUuid.Data4[0] = (UINT8)MacAddressString [4];
-      ForType1InputData->SystemUuid.Data4[1] = (UINT8)(MacAddressString [5]);
-      ForType1InputData->SystemUuid.Data4[2] = (UINT8)MacAddressString [6];
-      ForType1InputData->SystemUuid.Data4[3] = (UINT8)(MacAddressString [7]);
-      ForType1InputData->SystemUuid.Data4[4] = (UINT8)(MacAddressString [8]);
-      ForType1InputData->SystemUuid.Data4[5] = (UINT8)(MacAddressString [9]);
-      ForType1InputData->SystemUuid.Data4[6] = (UINT8)(MacAddressString [10]);
-      ForType1InputData->SystemUuid.Data4[7] = (UINT8)(MacAddressString [11]);
+  } else if (MacAddressString != NULL) {
+    ForType1InputData->SystemUuid.Data1 = (UINT32)MacAddressString [0] + (((UINT32)MacAddressString [1]) << 16);
+    ForType1InputData->SystemUuid.Data2 = (UINT16)MacAddressString [2];
+    ForType1InputData->SystemUuid.Data3 = (UINT16)MacAddressString [3];
+    ForType1InputData->SystemUuid.Data4[0] = (UINT8)MacAddressString [4];
+    ForType1InputData->SystemUuid.Data4[1] = (UINT8)(MacAddressString [5]);
+    ForType1InputData->SystemUuid.Data4[2] = (UINT8)MacAddressString [6];
+    ForType1InputData->SystemUuid.Data4[3] = (UINT8)(MacAddressString [7]);
+    ForType1InputData->SystemUuid.Data4[4] = (UINT8)(MacAddressString [8]);
+    ForType1InputData->SystemUuid.Data4[5] = (UINT8)(MacAddressString [9]);
+    ForType1InputData->SystemUuid.Data4[6] = (UINT8)(MacAddressString [10]);
+    ForType1InputData->SystemUuid.Data4[7] = (UINT8)(MacAddressString [11]);
   }
 
   CopyMem ((UINT8 *) (&SmbiosRecord->Uuid),&ForType1InputData->SystemUuid,16);
-
 
 
   SmbiosRecord->WakeUpType = (UINT8)ForType1InputData->SystemWakeupType;
