@@ -58,7 +58,6 @@ MinnowBoard3ModulePostMemInitCallback (
   UINT8                            FabId;
   UINT8                            ResetType;
   UINTN                            BufferSize;
-  UINT8                            MaxSpeed;
   UINTN                            VariableSize;
   EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariableServices;
   SYSTEM_CONFIGURATION             SystemConfiguration;
@@ -125,13 +124,7 @@ MinnowBoard3ModulePostMemInitCallback (
   //
   // Set PcdeMMCHostMaxSpeed
   //
-  if ((SystemConfiguration.ScceMMCHostMaxSpeed == 0) || (SystemConfiguration.ScceMMCHostMaxSpeed == 1)) {
-    MaxSpeed = EMMC_HS200_MODE;
-    PcdSet8 (PcdeMMCHostMaxSpeed, (UINT8) MaxSpeed);
-  } else {
-    MaxSpeed = EMMC_DDR50_MODE;
-    PcdSet8 (PcdeMMCHostMaxSpeed, (UINT8) MaxSpeed);
-  }
+  PcdSet8 (PcdeMMCHostMaxSpeed, (UINT8) (SystemConfiguration.ScceMMCHostMaxSpeed));
 
   //
   // Add init steps here
