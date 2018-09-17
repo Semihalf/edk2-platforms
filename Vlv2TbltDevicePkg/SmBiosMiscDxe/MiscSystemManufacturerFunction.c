@@ -206,11 +206,14 @@ AddSmbiosManuCallback (
   CHAR16                            *Uuid;
   UINT64                            TempData;
   UINTN                             Index;
+  static BOOLEAN                    RemoveTable = TRUE;
+  EFI_SMBIOS_TABLE_HEADER           *Record;
 
 
 
-
+if (Event != NULL) {
   gBS->CloseEvent (Event);   // Unload this event.
+}
 
   DEBUG ((EFI_D_INFO, "Executing AddSmbiosManuCallback.\n"));
 
@@ -453,6 +456,21 @@ AddSmbiosManuCallback (
   // Now we have got the full smbios record, call smbios protocol to add this record.
   //
   SmbiosHandle = SMBIOS_HANDLE_PI_RESERVED;
+  if (RemoveTable == TRUE) {
+    Status = EFI_SUCCESS;
+    while (!EFI_ERROR(Status)) {
+      Status = Smbios->GetNext (Smbios, &SmbiosHandle, NULL, &Record, NULL);
+      if (Record->Type == SMBIOS_TYPE_SYSTEM_INFORMATION) {
+        Status = Smbios-> Remove(
+                            Smbios,
+                            SmbiosHandle
+                            );
+        RemoveTable = FALSE;
+        break;
+      }
+   }
+ }
+
   Status = Smbios-> Add(
                       Smbios,
                       NULL,
@@ -481,6 +499,9 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
   static BOOLEAN        CallbackIsInstalledManu = FALSE;
   EFI_EVENT             AddSmbiosManuCallbackEvent;
 
+
+  Status = AddSmbiosManuCallback (NULL, RecordData);
+
   if (CallbackIsInstalledManu == FALSE) {
     CallbackIsInstalledManu = TRUE;   // Prevent more than 1 callback.
     DEBUG ((EFI_D_INFO, "Create Smbios Manu callback.\n"));
@@ -492,10 +513,9 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscSystemManufacturer)
                RecordData,
                &AddSmbiosManuCallbackEvent
                );
-    return Status;
   }
 
-  return EFI_SUCCESS;
+  return Status;
 
 }
 
