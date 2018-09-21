@@ -29,6 +29,7 @@
 #include <Library/PcdLib.h>
 #include <Library/PeiServicesLib.h>
 #include <Library/TimerLib.h>
+#include <Library/ScSerialIoUartLib.h>
 
 #include <Ppi/BoardInitSignalling.h>
 

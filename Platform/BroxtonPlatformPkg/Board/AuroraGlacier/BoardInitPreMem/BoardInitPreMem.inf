@@ -30,6 +30,7 @@
 [LibraryClasses]
   PeiServicesLib
   PcdLib
+  PchSerialIoUartLib
 
 [Packages]
   MdePkg/MdePkg.dec

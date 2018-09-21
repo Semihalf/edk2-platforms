@@ -1,7 +1,7 @@
 /** @file
   Header file for PCH Serial IO UART Lib implementation.
 
-  Copyright (c) 2014 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -100,6 +100,27 @@ BOOLEAN
 EFIAPI
 PchSerialIoUartPoll (
   IN  UINT8     UartNumber
+  );
+
+UINT8
+EFIAPI
+PchGetScratchpadRegister (
+  IN UINT8  UartNumber
+  );
+
+VOID
+PchSetScratchpadRegister (
+  IN UINT8  UartNumber,
+  IN UINT8  Value
+  );
+
+UINT8
+EFIAPI
+PchGetDebugPort (VOID);
+
+VOID
+PchSetDebugPort (
+  IN UINT8  UartNumber
   );
 
 #endif // _PEI_DXE_SMM_PCH_SERIAL_IO_UART_LIB_H_

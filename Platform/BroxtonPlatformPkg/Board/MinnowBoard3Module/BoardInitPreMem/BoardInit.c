@@ -18,6 +18,7 @@
 #include <Library/PcdLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
+#include <Library/ScSerialIoUartLib.h>
 #include <Guid/PlatformInfo.h>
 #include <Ppi/BoardInitSignalling.h>
 #include "BoardInit.h"
@@ -77,19 +78,20 @@ MinnowBoard3ModulePreMemInit (
   // Pre Mem Board Init
   //
   Status = Minnow3ModuleGetEmbeddedBoardIdFabId (PeiServices, &BoardId, &FabId);
-
   if (BoardId != (UINT8) BOARD_ID_MINNOW_MODULE) {
-
     return EFI_SUCCESS;
   }
+
+  if (FabId == FAB_ID_A) {
+    PchSetDebugPort (0);
+  } else {
+    PchSetDebugPort (2);
+  }
+
   DEBUG ((EFI_D_INFO,  "This is MinnowBoard3 Next\n"));
 
   PcdSet8 (PcdBoardId, BoardId);
   PcdSet8 (PcdFabId,   FabId);
-
-  //
-  //PcdSet8 (PcdSerialIoUartNumber, 0);
-  //
 
   //
   // Set board specific function as dynamic PCD to be called by common platform code

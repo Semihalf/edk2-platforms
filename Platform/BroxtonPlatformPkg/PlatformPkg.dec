@@ -202,8 +202,6 @@
   gPlatformModuleTokenSpaceGuid.PcdTi3100AudioCodecEnable|FALSE|BOOLEAN|0x80000019
   ##
   gPlatformModuleTokenSpaceGuid.PcdUpdatePcieConfigFunc|2|UINT64|0x8000001A
-  ## SerialIo Uart Configuration
-  #gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|2|UINT8|0x8000001B
   ## This PCD used to select eMMCHostMaxSpeed
   gPlatformModuleTokenSpaceGuid.PcdeMMCHostMaxSpeed|0x00|UINT8|0x8000001C
   ## This PCD points to verb table of HD audio.
@@ -336,6 +334,14 @@
   ## The PCD is used to specify if TrEEPlatform module support TXT provision.
   gClientCommonModuleTokenSpaceGuid.PcdTpm2TxtProvisionSupport|FALSE|BOOLEAN|0x00010027
 
+  ## Specifies maximum number of PPIs provided by SecCore.
+  # @Prompt Maximum number of PPIs provided by SecCore.
+  gPlatformModuleTokenSpaceGuid.PcdSecCoreMaxPpiSupported|0x6|UINT32|0x10001010
+
+  ## SerialIo Uart Configuration, used for debug output and ConSplitter
+  ## NOTE: See BoardInitPreMem\BoardInit.c for individual board use.
+  gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|2|UINT8|0x8000001B
+
   ##
   ## SMBIOS defaults
   ##
@@ -391,9 +397,3 @@
   gPlatformModuleTokenSpaceGuid.PcdLogoFileGuid|{0x1b, 0x9a, 0x3d, 0x71, 0x49, 0x88, 0x47, 0xc5, 0xb7, 0x2a, 0xb0, 0x7d, 0xc5, 0x10, 0x60, 0xc4 }|VOID*|0x10001004
   gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid|{ 0x99, 0x8b, 0xB2, 0x7B, 0xBB, 0x61, 0xD5, 0x11, 0x9A, 0x5D, 0x00, 0x90, 0x27, 0x3F, 0xC1, 0x4D }|VOID*|0x10001005
 
-[PcdsFixedAtBuild]
-  ## Specifies maximum number of PPIs provided by SecCore.
-  # @Prompt Maximum number of PPIs provided by SecCore.
-  gPlatformModuleTokenSpaceGuid.PcdSecCoreMaxPpiSupported|0x6|UINT32|0x10001010
-  ## SerialIo Uart Configuration
-  gPlatformModuleTokenSpaceGuid.PcdSerialIoUartNumber|2|UINT8|0x10001011

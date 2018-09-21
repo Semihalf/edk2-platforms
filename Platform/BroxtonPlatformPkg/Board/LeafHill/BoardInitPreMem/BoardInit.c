@@ -1,7 +1,7 @@
 /** @file
   Board Init driver.
 
-  Copyright (c) 2010 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -18,6 +18,7 @@
 #include <Library/PcdLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
+#include <Library/ScSerialIoUartLib.h>
 #include <Guid/PlatformInfo_Aplk.h>
 #include <Ppi/BoardInitSignalling.h>
 #include "BoardInit.h"
@@ -78,6 +79,8 @@ LeafHillPreMemInit (
   if (BoardId != (UINT8) BOARD_ID_LFH_CRB) {
     return EFI_SUCCESS;
   }
+
+  PchSetDebugPort (2);
 
   DEBUG ((EFI_D_INFO,  "This is LeafHill CRB.\n"));
 

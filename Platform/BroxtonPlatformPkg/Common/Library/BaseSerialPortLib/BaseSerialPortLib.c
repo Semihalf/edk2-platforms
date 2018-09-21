@@ -1,7 +1,7 @@
 /** @file
   Serial I/O Port library functions with no library constructor/destructor.
 
-  Copyright (c) 2012 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2012 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -58,113 +58,6 @@
 
 #define MAX_BAUD_RATE     115200
 
-UINT8
-SerialPortReadRegister (
-  UINTN  Offset
-  )
-{
-  return IoRead8 ((UINTN) PcdGet64 (PcdSerialRegisterBase) + Offset);
-}
-
-UINT8
-SerialPortWriteRegister (
-  UINTN  Offset,
-  UINT8  Value
-  )
-{
-  return IoWrite8 ((UINTN) PcdGet64 (PcdSerialRegisterBase) + Offset, Value);
-}
-
-RETURN_STATUS
-EFIAPI
-UARTInitialize (
-  VOID
-  )
-
-/**
-  Initialize Serial Port.
-
-  The Baud Rate Divisor registers are programmed and the LCR
-  is used to configure the communications format. Hard coded
-  UART config comes from globals in DebugSerialPlatform lib.
-
-  @param  None
-
-  @retval None
-
-**/
-{
-  UINTN          Divisor;
-  UINTN          TempDivisor;
-  UINT32         BaudRate;
-  BOOLEAN        Initialized;
-
-  //
-  // Calculate divisor for baud generator
-  //
-  BaudRate = PcdGet32 (PcdSerialBaudRate);
-  if ((BaudRate == 0) || ((BaudRate % 9600) != 0)) {
-    //
-    // If Serail Baud Rate is not valid, set it to the default value
-    //
-    BaudRate = PcdGet32 (PcdSerialBaudRate);
-  }
-  Divisor = MAX_BAUD_RATE / BaudRate;
-
-  //
-  // See if the serial port is already initialized
-  //
-  Initialized = TRUE;
-  if ((SerialPortReadRegister (FCR_OFFSET) & (FCR_FIFOE | FCR_FIFO64)) !=
-      (PcdGet8 (PcdSerialFifoControl)      & (FCR_FIFOE | FCR_FIFO64))) {
-    Initialized = FALSE;
-  }
-  if ((SerialPortReadRegister (LCR_OFFSET) & 0x3F) != (PcdGet8 (PcdSerialLineControl) & 0x3F)) {
-    Initialized = FALSE;
-  }
-  SerialPortWriteRegister (LCR_OFFSET, (UINT8) (SerialPortReadRegister (LCR_OFFSET) | DLAB));
-  TempDivisor = (UINTN) SerialPortReadRegister (BAUD_HIGH_OFFSET);
-  TempDivisor = TempDivisor << 8;
-  TempDivisor |= (UINTN) SerialPortReadRegister (BAUD_LOW_OFFSET);
-  SerialPortWriteRegister (LCR_OFFSET, (UINT8) (SerialPortReadRegister (LCR_OFFSET) & ~DLAB));
-  if (TempDivisor != Divisor) {
-    Initialized = FALSE;
-  }
-  if (Initialized) {
-    return RETURN_SUCCESS;
-  }
-
-  //
-  // Set communications format
-  //
-  SerialPortWriteRegister (LCR_OFFSET, DLAB);
-
-  //
-  // Configure baud rate
-  //
-  SerialPortWriteRegister (BAUD_HIGH_OFFSET, (UINT8) (Divisor >> 8));
-  SerialPortWriteRegister (BAUD_LOW_OFFSET, (UINT8) (Divisor & 0xff));
-
-  //
-  // Switch back to bank 0
-  //
-  SerialPortWriteRegister (LCR_OFFSET, (UINT8) (PcdGet8 (PcdSerialLineControl) & 0x3F));
-
-  //
-  // Enable and reset FIFOs
-  // Strip reserved bits from PcdSerialFifoControl
-  //
-  SerialPortWriteRegister (FCR_OFFSET, (UINT8) (PcdGet8 (PcdSerialFifoControl) & 0x27));
-
-  //
-  // Put Modem Control Register(MCR) into its reset state of 0x00.
-  //
-  SerialPortWriteRegister (MCR_OFFSET, 0x00);
-
-  return RETURN_SUCCESS;
-}
-
-
 RETURN_STATUS
 EFIAPI
 SerialPortInitialize (
@@ -172,110 +65,40 @@ SerialPortInitialize (
   )
 {
   //
-  //PchSerialIoUartInit (PcdGet8 (PcdSerialIoUartNumber), TRUE, 115200, 3, FALSE);
+  // Initialize all 4 UARTs for possible debug use. All 4 UART PADs are programmed appropriately at this point.
+  // We store the Debug Serial port in the scratchpad register of the UARTs.
   //
-  PchSerialIoUartInit (0, TRUE, 115200, 3, FALSE);
-  PchSerialIoUartInit (2, TRUE, 115200, 3, FALSE);
+  PchSerialIoUartInit (0,
+                       (PcdGet8 (PcdSerialFifoControl) & FCR_FIFOE) ? TRUE : FALSE,
+                       PcdGet32 (PcdSerialBaudRate),
+                       PcdGet8 (PcdSerialLineControl),
+                       PcdGetBool (PcdSerialUseHardwareFlowControl));
+
+  PchSerialIoUartInit (1,
+                       (PcdGet8 (PcdSerialFifoControl) & FCR_FIFOE) ? TRUE : FALSE,
+                       PcdGet32 (PcdSerialBaudRate),
+                       PcdGet8 (PcdSerialLineControl),
+                       PcdGetBool (PcdSerialUseHardwareFlowControl));
+
+  PchSerialIoUartInit (2,
+                       (PcdGet8 (PcdSerialFifoControl) & FCR_FIFOE) ? TRUE : FALSE,
+                       PcdGet32 (PcdSerialBaudRate),
+                       PcdGet8 (PcdSerialLineControl),
+                       PcdGetBool (PcdSerialUseHardwareFlowControl));
+
+  PchSerialIoUartInit (3,
+                       (PcdGet8 (PcdSerialFifoControl) & FCR_FIFOE) ? TRUE : FALSE,
+                       PcdGet32 (PcdSerialBaudRate),
+                       PcdGet8 (PcdSerialLineControl),
+                       PcdGetBool (PcdSerialUseHardwareFlowControl));
+
+  //
+  // Set default debug port now that we have initiazed the UARTs
+  //
+  PchSetDebugPort (PcdGet8 (PcdSerialIoUartNumber));
 
   return RETURN_SUCCESS;
 }
-
-
-/**
-  Write data to serial device.
-
-  If the buffer is NULL, then return 0;
-  if NumberOfBytes is zero, then return 0.
-
-  @param[in]  Buffer           Point of data buffer which need to be writed.
-  @param[in]  NumberOfBytes    Number of output bytes which are cached in Buffer.
-
-  @retval     0                Write data failed.
-  @retval     !0               Actual number of bytes writed to serial device.
-
-**/
-UINTN
-EFIAPI
-UARTDbgOut (
-  IN UINT8     *Buffer,
-  IN UINTN     NumberOfBytes
-  )
-{
-  UINTN  Result;
-  UINTN  FifoSize;
-  UINTN  Index;
-
-  if (NULL == Buffer) {
-    return 0;
-  }
-
-  //
-  // Compute the maximum size of the Tx FIFO
-  //
-  FifoSize = 1;
-  if ((PcdGet8 (PcdSerialFifoControl) & FCR_FIFOE) != 0) {
-    if ((PcdGet8 (PcdSerialFifoControl) & FCR_FIFO64) == 0) {
-      FifoSize = 16;
-    } else {
-      FifoSize = 64;
-    }
-  }
-
-  Result = NumberOfBytes;
-
-  while (NumberOfBytes != 0) {
-    //
-    // Wait for the serial port to be ready, to make sure both the transmit FIFO
-    // and shift register empty.
-    //
-    while ((SerialPortReadRegister (LSR_OFFSET) & LSR_TXRDY) == 0);
-
-    //
-    // Fill then entire Tx FIFO
-    //
-    for (Index = 0; Index < FifoSize && NumberOfBytes != 0; Index++, NumberOfBytes--, Buffer++) {
-      if (PcdGetBool (PcdSerialUseHardwareFlowControl)) {
-        if (PcdGetBool (PcdSerialDetectCable)) {
-          //
-          // Wait for both DSR and CTS to be set
-          //   DSR is set if a cable is connected.
-          //   CTS is set if it is ok to transmit data
-          //
-          //   DSR  CTS  Description                               Action
-          //   ===  ===  ========================================  ========
-          //    0    0   No cable connected.                       Wait
-          //    0    1   No cable connected.                       Wait
-          //    1    0   Cable connected, but not clear to send.   Wait
-          //    1    1   Cable connected, and clear to send.       Transmit
-          //
-          while ((SerialPortReadRegister (MSR_OFFSET) & (MSR_DSR | MSR_CTS)) != (MSR_DSR | MSR_CTS));
-        } else {
-          //
-          // Wait for both DSR and CTS to be set OR for DSR to be clear.
-          //   DSR is set if a cable is connected.
-          //   CTS is set if it is ok to transmit data
-          //
-          //   DSR  CTS  Description                               Action
-          //   ===  ===  ========================================  ========
-          //    0    0   No cable connected.                       Transmit
-          //    0    1   No cable connected.                       Transmit
-          //    1    0   Cable connected, but not clear to send.   Wait
-          //    1    1   Cable connected, and clar to send.        Transmit
-          //
-          while ((SerialPortReadRegister (MSR_OFFSET) & (MSR_DSR | MSR_CTS)) == (MSR_DSR));
-        }
-      }
-
-      //
-      // Write byte to the transmit buffer.
-      //
-      SerialPortWriteRegister (TXBUF_OFFSET, *Buffer);
-    }
-  }
-
-  return Result;
-}
-
 
 /**
   Common function to write trace data to a chosen debug interface like
@@ -292,72 +115,10 @@ SerialPortWrite (
   IN UINTN     NumberOfBytes
   )
 {
-
-  PchSerialIoUartOut (PcdGet8 (PcdSerialIoUartNumber), Buffer, NumberOfBytes);
+  PchSerialIoUartOut (PchGetDebugPort (), Buffer, NumberOfBytes);
 
   return RETURN_SUCCESS;
 }
-
-/**
-  Read data from serial device and save the datas in buffer.
-
-  If the buffer is NULL, then return 0;
-  if NumberOfBytes is zero, then return 0.
-
-  @param[out]  Buffer           Point of data buffer which need to be writed.
-  @param[in]   NumberOfBytes    Number of output bytes which are cached in Buffer.
-
-  @retval         0             Read data failed.
-  @retval        !0             Actual number of bytes raed to serial device.
-
-**/
-UINTN
-EFIAPI
-UARTDbgIn (
-  OUT UINT8     *Buffer,
-  IN  UINTN     NumberOfBytes
-  )
-{
-  UINTN    Result;
-  UINT8    Mcr;
-
-  if (NULL == Buffer) {
-    return 0;
-  }
-
-  Result = NumberOfBytes;
-
-  Mcr = (UINT8) (SerialPortReadRegister (MCR_OFFSET) & ~MCR_RTS);
-
-  for (Result = 0; NumberOfBytes-- != 0; Result ++, Buffer ++) {
-    //
-    // Wait for the serial port to have some data.
-    //
-    while ((SerialPortReadRegister (LSR_OFFSET) & LSR_RXDA) == 0) {
-      if (PcdGetBool (PcdSerialUseHardwareFlowControl)) {
-        //
-        // Set RTS to let the peer send some data
-        //
-        SerialPortWriteRegister (MCR_OFFSET, (UINT8) (Mcr | MCR_RTS));
-      }
-    }
-
-    if (PcdGetBool (PcdSerialUseHardwareFlowControl)) {
-      //
-      // Clear RTS to prevent peer from sending data
-      //
-      SerialPortWriteRegister (MCR_OFFSET, Mcr);
-    }
-
-    //
-    // Read byte from the receive buffer.
-    //
-    *Buffer = SerialPortReadRegister (RXBUF_OFFSET);
-  }
-
-  return Result;
-}
-
 
 /**
   Common function to Read data from UART serial device, USB serial device and save the datas in buffer.
@@ -374,51 +135,10 @@ SerialPortRead (
   )
 {
 
-  PchSerialIoUartIn (PcdGet8 (PcdSerialIoUartNumber), Buffer, NumberOfBytes, FALSE);
- 
+  PchSerialIoUartIn (PchGetDebugPort (), Buffer, NumberOfBytes, FALSE);
+
   return RETURN_SUCCESS;
 }
-
-
-/**
-  Polls a serial device to see if there is any data waiting to be read.
-
-  Polls a serial device to see if there is any data waiting to be read.
-  If there is data waiting to be read from the serial device, then TRUE is returned.
-  If there is no data waiting to be read from the serial device, then FALSE is returned.
-
-  @retval  TRUE           Data is waiting to be read from the serial device.
-  @retval  FALSE          There is no data waiting to be read from the serial device.
-
-**/
-BOOLEAN
-EFIAPI
-UARTDbgPoll (
-  VOID
-  )
-{
-  //
-  // Read the serial port status
-  //
-  if ((SerialPortReadRegister (LSR_OFFSET) & LSR_RXDA) != 0) {
-    if (PcdGetBool (PcdSerialUseHardwareFlowControl)) {
-      //
-      // Clear RTS to prevent peer from sending data
-      //
-      SerialPortWriteRegister (MCR_OFFSET, (UINT8) (SerialPortReadRegister (MCR_OFFSET) & ~ MCR_RTS));
-    }
-    return TRUE;
-  }
-
-  if (PcdGetBool (PcdSerialUseHardwareFlowControl)) {
-    //
-    // Set RTS to let the peer send some data
-    //
-    SerialPortWriteRegister (MCR_OFFSET, (UINT8) (SerialPortReadRegister (MCR_OFFSET) | MCR_RTS));
-  }
-  return FALSE;
-}
-
 
 /**
   Polls a serial device to see if there is any data waiting to be read.
@@ -441,7 +161,7 @@ SerialPortPoll (
   BOOLEAN   Status;
 
   Status = FALSE;
-  Status |= PchSerialIoUartPoll (PcdGet8 (PcdSerialIoUartNumber));
+  Status |= PchSerialIoUartPoll (PchGetDebugPort ());
 
   return Status;
 }

@@ -71,15 +71,17 @@ BensonGlacierPreMemInit (
     return EFI_SUCCESS;
   }
 
+  PchSetDebugPort (2);
+
   DEBUG ((EFI_D_INFO,  "This is Benson Glacier board.\n"));
-  
+
   Status = BensonGetFabId (PeiServices, &FabId);
   if (FabId == FAB_ID_B) {
     DEBUG ((EFI_D_INFO,  "This is Benson Glacier FAB B.\n"));
   } else if (FabId == FAB_ID_A) {
     DEBUG ((EFI_D_INFO,  "This is Benson Glacier FAB A.\n"));
   }
-  
+
   PcdSet8 (PcdBoardId, BoardId);
   PcdSet8 (PcdFabId, FabId);
 

@@ -18,6 +18,7 @@
 #include <Library/PcdLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
+#include <Library/ScSerialIoUartLib.h>
 #include <Guid/PlatformInfo_Aplk.h>
 #include <Ppi/BoardInitSignalling.h>
 #include "BoardInit.h"
@@ -78,6 +79,8 @@ Up2PreMemInit (
   if (BoardId != (UINT8) BOARD_ID_UP2) {//MyBoardPorting
     return EFI_SUCCESS;
   }
+
+  PchSetDebugPort (0);
 
   DEBUG ((EFI_D_INFO,  "This is Up2.\n"));
 

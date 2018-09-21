@@ -1,7 +1,7 @@
 /** @file
   Serial driver for standard UARTS on an ISA bus.
 
-  Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -1652,7 +1652,7 @@ IsaSerialWrite (
 
   CharBuffer  = (UINT8 *) Buffer;
 
-  PchSerialIoUartOut (PcdGet8 (PcdSerialIoUartNumber), CharBuffer, *BufferSize);
+  PchSerialIoUartOut (PchGetDebugPort (), CharBuffer, *BufferSize);
 
   gBS->RestoreTPL (Tpl);
 
@@ -1696,7 +1696,7 @@ IsaSerialRead (
 
   Tpl     = gBS->RaiseTPL (TPL_NOTIFY);
 
-  *BufferSize = PchSerialIoUartIn(PcdGet8 (PcdSerialIoUartNumber), Buffer, *BufferSize, FALSE);
+  *BufferSize = PchSerialIoUartIn (PchGetDebugPort (), Buffer, *BufferSize, FALSE);
 
   gBS->RestoreTPL (Tpl);
 

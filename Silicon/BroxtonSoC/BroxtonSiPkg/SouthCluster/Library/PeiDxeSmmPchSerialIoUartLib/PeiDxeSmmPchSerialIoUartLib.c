@@ -3,7 +3,7 @@
   All function in this library is available for PEI, DXE, and SMM,
   But do not support UEFI RUNTIME environment call.
 
-  Copyright (c) 2014 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2014 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -45,6 +45,7 @@
 #define R_PCH_SERIAL_IO_NATIVE_UART_LCR        0x0C
 #define R_PCH_SERIAL_IO_NATIVE_UART_MCR        0x10
 #define R_PCH_SERIAL_IO_NATIVE_UART_LSR        0x14
+#define R_PCH_SERIAL_IO_NATIVE_UART_SCR        0x1C
 #define R_PCH_SERIAL_IO_NATIVE_UART_USR        0x7C
 
 #define B_PCH_SERIAL_IO_UART_IIR_FIFOSE   BIT7|BIT6
@@ -157,6 +158,83 @@ PchSerialIoUartInit (
 
   SerialIo16550Init (Bar, FifoEnable, BaudRate, LineControl, HardwareFlowControl, ShiftOffset);
   return TRUE;
+}
+
+UINT8
+EFIAPI
+PchGetScratchpadRegister (
+  IN UINT8  UartNumber
+  )
+{
+  volatile UINTN  Base;
+
+  if (UartNumber > 3) {
+    return 0xFF;  // In case of invalid UART device
+  }
+
+  Base = FindSerialIoBar (UartNumber + PchSerialIoIndexUart0, 0);
+
+  if ((Base == 0xFFFFFFFF) || ((Base & 0xFFFFFF00) == 0x0)) {
+    return 0xFF;  // In case of invalid base
+  }
+
+  return (UINT8) (MmioRead32 (Base + R_PCH_SERIAL_IO_NATIVE_UART_SCR) & 0xFF);
+}
+
+VOID
+PchSetScratchpadRegister (
+  IN UINT8  UartNumber,
+  IN UINT8  Value
+  )
+{
+  volatile UINTN  Base;
+
+  if (UartNumber > 3) {
+    return;  // In case of invalid UART device
+  }
+
+  Base = FindSerialIoBar (UartNumber + PchSerialIoIndexUart0, 0);
+
+  if ((Base == 0xFFFFFFFF) || ((Base & 0xFFFFFF00) == 0x0)) {
+    return;  // In case of invalid base
+  }
+
+   MmioWrite32 (Base + R_PCH_SERIAL_IO_NATIVE_UART_SCR, Value);
+
+  return;
+}
+
+UINT8
+EFIAPI
+PchGetDebugPort (VOID)
+{
+  UINT8   Scratchpad;
+  UINT8   UartPort;
+
+  for (UartPort = 0; UartPort <= 3; UartPort++) {
+    Scratchpad = PchGetScratchpadRegister (UartPort);
+    if ((Scratchpad != 0x00) && (Scratchpad != 0xFF)) {
+      return UartPort;
+    }
+  }
+  return 0xFF;
+}
+
+VOID
+PchSetDebugPort (
+  IN UINT8  UartNumber
+  )
+{
+  UINT8   UartPort;
+
+  for (UartPort = 0; UartPort <= 3; UartPort++) {
+    if (UartPort == UartNumber) {
+      PchSetScratchpadRegister (UartPort, 0x01);
+    } else {
+      PchSetScratchpadRegister (UartPort, 0x00);
+    }
+  }
+  return;
 }
 
 
