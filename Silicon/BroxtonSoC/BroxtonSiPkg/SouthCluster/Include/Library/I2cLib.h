@@ -28,7 +28,8 @@
 #define   I2C_ROUTINE_DELAY           10
 #define   INVALID_I2C_ADDRESS         0xFF
 #define   MAX_I2C_ADDRESS             0x7F
-#define   MAX_I2C_BUS                 7
+#define   MAX_I2C_BUS                 8
+#define   I2C_SMBUS_BUS               MAX_I2C_BUS
 
 
 ////
@@ -40,6 +41,13 @@ typedef enum {
   High_Speed     = 3,
   Max_Speed      = 3
 } I2C_SPEED_ENUM;
+
+
+////
+//// Externs
+////
+extern BOOLEAN   gI2cDebugFlag;
+extern BOOLEAN   gI2cQuietFlag;
 
 
 ////

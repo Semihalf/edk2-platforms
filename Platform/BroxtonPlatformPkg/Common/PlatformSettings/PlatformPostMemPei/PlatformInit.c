@@ -280,7 +280,7 @@ BXTPolicyInit (
 
   PeiGetSectionFromFv (PeiLogoGuid, &Buffer, &Size);
   if (Buffer == NULL) {
-    DEBUG (( DEBUG_ERROR, "Could not locate PeiLogo"));
+    DEBUG ((DEBUG_ERROR, "Could not locate PeiLogo"));
   }
 
   //
@@ -290,7 +290,7 @@ BXTPolicyInit (
   PeiGetSectionFromFv (VbtGuid, &Buffer, &Size);
 
   if (Buffer == NULL) {
-    DEBUG (( DEBUG_ERROR, "Could not locate VBT"));
+    DEBUG ((DEBUG_ERROR, "Could not locate VBT"));
   }
 
 
@@ -330,7 +330,7 @@ ConfigurePmicIMON (
 
   StallCount = 0;
   while (StallCount < 1000) {
-    Data = MmioRead32 (MchBar + R_BIOS_MAILBOX_INTERFACE); 
+    Data = MmioRead32 (MchBar + R_BIOS_MAILBOX_INTERFACE);
     if ((Data & BIT31) == BIT31) {
       MicroSecondDelay (1);
     } else {
@@ -355,7 +355,7 @@ ConfigurePmicIMON (
   if ((PkgPwrSKU & 0x07FFF) >= 0x0903){
     MmioWrite32 ( (MchBar + R_BIOS_MAILBOX_DATA), 0xe8330466);
     MmioWrite32 ( (MchBar + R_BIOS_MAILBOX_INTERFACE), 0x8000001d);
-  } else { 
+  } else {
     MmioWrite32 ( (MchBar + R_BIOS_MAILBOX_DATA), 0xed3303b3);
     MmioWrite32 ( (MchBar + R_BIOS_MAILBOX_INTERFACE), 0x8000001d);
   }
@@ -412,7 +412,7 @@ PlatformInitEntryPoint (
   }
 
   PWM_Fan_Start ();
-  
+
   ConfigurePmicIMON();
 
   //
@@ -422,7 +422,11 @@ PlatformInitEntryPoint (
   if (BoardPostMemInitFunc != NULL) {
     BoardPostMemInitFunc (PeiServices, PlatformInfo);
   }
-  // MultiPlatformInfoInit(PeiServices, PlatformInfo);
+
+  //
+  // Set PCD flag to indicate that we have performed the GPIO initialization
+  //
+  PcdSetBool (PcdAfterGpioInitFlag, TRUE);
 
   //
   // Set the new boot mode

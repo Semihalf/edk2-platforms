@@ -39,6 +39,7 @@
 [Pcd]
   gEfiBxtTokenSpaceGuid.PcdPmcGcrBaseAddress          ## SOMETIMES_CONSUMES
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress   ## SOMETIMES_CONSUMES
+  gSiPkgTokenSpaceGuid.PcdAfterGpioInitFlag
 
 [Sources]
   I2cLib.c

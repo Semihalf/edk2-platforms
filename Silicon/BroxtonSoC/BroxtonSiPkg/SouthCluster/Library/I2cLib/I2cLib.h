@@ -31,11 +31,6 @@
 #include <ScRegs/RegsI2c.h>
 
 //
-// Externs
-//
-extern BOOLEAN   gI2cDebugFlag;
-
-//
 // Structures
 //
 typedef struct _I2C_LPSS_PCI_DEVICE_INFO {
@@ -55,6 +50,12 @@ typedef struct _LPSS_I2C_CLOCK_SCL_INFO {
   UINT16       HS_SCL_HCNT;
   UINT16       HS_SCL_LCNT;
 } LPSS_I2C_CLOCK_SCL_INFO;
+
+typedef struct _LPSS_I2C_GPIO_MODE {
+  UINT32       Offset;
+  BOOLEAN      Mode1Flag;
+  BOOLEAN      Mode2Flag;
+} LPSS_I2C_GPIO_MODE;
 
 #endif // _I2C_COMMON_H_
 

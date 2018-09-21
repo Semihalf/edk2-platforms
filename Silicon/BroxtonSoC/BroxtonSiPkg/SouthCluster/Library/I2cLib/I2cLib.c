@@ -18,7 +18,7 @@
 //
 // List of I2C controllers
 //
-I2C_LPSS_PCI_DEVICE_INFO  mI2cLpssPciDeviceList[] = {
+I2C_LPSS_PCI_DEVICE_INFO  mI2cLpssPciDeviceList[MAX_I2C_BUS + 1] = {
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C0, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*0), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*0) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C1, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*1), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*1) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C0,   PCI_FUNCTION_NUMBER_LPSS_I2C2, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*2), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*2) + LPSS_I2C_TMP_BAR1_OFFSET},
@@ -26,6 +26,7 @@ I2C_LPSS_PCI_DEVICE_INFO  mI2cLpssPciDeviceList[] = {
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C4, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*4), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*4) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C5, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*5), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*5) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C6, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*6), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*6) + LPSS_I2C_TMP_BAR1_OFFSET},
+  {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C7, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7) + LPSS_I2C_TMP_BAR1_OFFSET},
   {0, DEFAULT_PCI_BUS_NUMBER_SC, PCI_DEVICE_NUMBER_LPSS_I2C1,   PCI_FUNCTION_NUMBER_LPSS_I2C7, LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7), LPSS_I2C0_TMP_BAR0 + (LPSS_I2C_TMP_BAR0_DELTA*7) + LPSS_I2C_TMP_BAR1_OFFSET}
 };
 #define I2C_LPSS_PCI_DEVICE_NUMBER  (sizeof (mI2cLpssPciDeviceList) / sizeof (I2C_LPSS_PCI_DEVICE_INFO))
@@ -33,7 +34,7 @@ I2C_LPSS_PCI_DEVICE_INFO  mI2cLpssPciDeviceList[] = {
 //
 // List of I2C controller clock values
 //
-LPSS_I2C_CLOCK_SCL_INFO  mLPSS_I2C_CLOCK_SCL_INFO[] = {
+LPSS_I2C_CLOCK_SCL_INFO  mLPSS_I2C_CLOCK_SCL_INFO[MAX_I2C_BUS + 1] = {
   {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
   {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
   {0x244, 0x2D0, 0x64, 0xC8, 0x06, 0x13},
@@ -41,6 +42,7 @@ LPSS_I2C_CLOCK_SCL_INFO  mLPSS_I2C_CLOCK_SCL_INFO[] = {
   {0x244, 0x2DA, 0x1E, 0x50, 0x06, 0x13},
   {0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
   {0x244, 0x2D0, 0x69, 0xC8, 0x06, 0x13},
+  {0x244, 0x2D0, 0x70, 0xC8, 0x06, 0x13},
   {0x244, 0x2D0, 0x70, 0xC8, 0x06, 0x13}
 };
 #define LPSS_I2C_CLOCK_SCL_INFO_NUMBER  (sizeof (mLPSS_I2C_CLOCK_SCL_INFO) / sizeof (LPSS_I2C_CLOCK_SCL_INFO))
@@ -48,26 +50,53 @@ LPSS_I2C_CLOCK_SCL_INFO  mLPSS_I2C_CLOCK_SCL_INFO[] = {
 //
 // List of I2C controller PAD settings
 //
-BXT_GPIO_PAD_INIT  mI2C_LPSS_PAD_INFO[] = {
-  BXT_GPIO_PAD_CONF (L"GPIO_124 LPSS_I2C0_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0000, WEST),
+BXT_GPIO_PAD_INIT  mI2C_LPSS_PAD_INFO[(MAX_I2C_BUS + 1) * 2] = {
+  BXT_GPIO_PAD_CONF (L"GPIO_124 LPSS_I2C0_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0000, WEST),      // LPSS I2C0
   BXT_GPIO_PAD_CONF (L"GPIO_125 LPSS_I2C0_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0008, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_126 LPSS_I2C1_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0010, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_126 LPSS_I2C1_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0010, WEST),      // LPSS I2C1
   BXT_GPIO_PAD_CONF (L"GPIO_127 LPSS_I2C1_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0018, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_128 LPSS_I2C2_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0020, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_128 LPSS_I2C2_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0020, WEST),      // LPSS I2C2
   BXT_GPIO_PAD_CONF (L"GPIO_129 LPSS_I2C2_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0028, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_130 LPSS_I2C3_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0030, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_130 LPSS_I2C3_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0030, WEST),      // LPSS I2C3
   BXT_GPIO_PAD_CONF (L"GPIO_131 LPSS_I2C3_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0038, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_132 LPSS_I2C4_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0040, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_132 LPSS_I2C4_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0040, WEST),      // LPSS I2C4
   BXT_GPIO_PAD_CONF (L"GPIO_133 LPSS_I2C4_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0048, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_134 LPSS_I2C5_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0050, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_134 LPSS_I2C5_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0050, WEST),      // LPSS I2C5
   BXT_GPIO_PAD_CONF (L"GPIO_135 LPSS_I2C5_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0058, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_136 LPSS_I2C6_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0060, WEST),
+  BXT_GPIO_PAD_CONF (L"GPIO_136 LPSS_I2C6_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0060, WEST),      // LPSS I2C6
   BXT_GPIO_PAD_CONF (L"GPIO_137 LPSS_I2C6_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0068, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_138 LPSS_I2C7_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0070, WEST),
-  BXT_GPIO_PAD_CONF (L"GPIO_139 LPSS_I2C7_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0078, WEST)
+  BXT_GPIO_PAD_CONF (L"GPIO_138 LPSS_I2C7_SDA", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0070, WEST),      // LPSS I2C7
+  BXT_GPIO_PAD_CONF (L"GPIO_139 LPSS_I2C7_SCL", M1, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D0RxDRx0I, EnPu, GPIO_PADBAR + 0x0078, WEST),
+  BXT_GPIO_PAD_CONF (L"SMB_CLK",                M2, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0100, SOUTHWEST), // SMB_CLK  --> LPSS I2C7
+  BXT_GPIO_PAD_CONF (L"SMB_DATA",               M2, NA, NA, NA, NA, Wake_Disabled, P_20K_H, NA, NA, D1RxDRx1I, EnPu, GPIO_PADBAR + 0x0108, SOUTHWEST)
 };
 
+LPSS_I2C_GPIO_MODE mModeAllowed[(MAX_I2C_BUS + 1) * 2] = {
+// Offset       M1     M2
+//==========================================
+  {W_GPIO_124,  TRUE,  FALSE}, // LPSS I2C0 SDA
+  {W_GPIO_125,  TRUE,  FALSE}, // LPSS I2C0 SCL
+  {W_GPIO_126,  TRUE,  FALSE}, // LPSS I2C1 SDA
+  {W_GPIO_127,  TRUE,  FALSE}, // LPSS I2C1 SCL
+  {W_GPIO_128,  TRUE,  FALSE}, // LPSS I2C2 SDA
+  {W_GPIO_129,  TRUE,  FALSE}, // LPSS I2C2 SCL
+  {W_GPIO_130,  TRUE,  FALSE}, // LPSS I2C3 SDA
+  {W_GPIO_131,  TRUE,  FALSE}, // LPSS I2C3 SCL
+  {W_GPIO_132,  TRUE,  FALSE}, // LPSS I2C4 SDA
+  {W_GPIO_133,  TRUE,  FALSE}, // LPSS I2C4 SCL
+  {W_GPIO_134,  TRUE,  TRUE},  // LPSS I2C5 SDA
+  {W_GPIO_135,  TRUE,  TRUE},  // LPSS I2C5 SCL
+  {W_GPIO_136,  TRUE,  TRUE},  // LPSS I2C6 SDA
+  {W_GPIO_137,  TRUE,  TRUE},  // LPSS I2C6 SCL
+  {W_GPIO_138,  TRUE,  TRUE},  // LPSS I2C7 SDA
+  {W_GPIO_139,  TRUE,  TRUE},  // LPSS I2C7 SCL
+  {SW_SMB_CLK,  FALSE, TRUE},  // SMBUS SCL
+  {SW_SMB_DATA, FALSE, TRUE}   // SMBUS SDA
+};
+#define LPSS_I2C_GPIO_MODE_NUMBER  (sizeof (mModeAllowed) / sizeof (LPSS_I2C_GPIO_MODE))
+
 BOOLEAN   gI2cDebugFlag = FALSE;
+BOOLEAN   gI2cQuietFlag = FALSE;
 
 ////
 //// Internal I2C functions
@@ -135,7 +164,7 @@ I2cDisable (
 
 Exit:
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -177,7 +206,7 @@ I2cEnable (
 
 Exit:
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -290,19 +319,39 @@ I2cGetTxFifo (
 }
 
 EFI_STATUS
+I2cVerifyPad (
+  IN   UINT32   PadOffset
+  )
+{
+  UINT8           index;
+  BXT_CONF_PAD0   padConfg0;
+  EFI_STATUS      Status;
+
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Verifying pad 0x%08x...\n", __FUNCTION__, __LINE__, PadOffset));
+
+  Status = EFI_UNSUPPORTED;
+  for (index = 0; index < LPSS_I2C_GPIO_MODE_NUMBER; index++) {
+    if (PadOffset == mModeAllowed[index].Offset) {
+      padConfg0.padCnf0 = GpioPadRead (PadOffset + BXT_GPIO_PAD_CONF0_OFFSET);
+      if ((mModeAllowed[index].Mode1Flag && (padConfg0.r.PMode == M1)) || (mModeAllowed[index].Mode2Flag && (padConfg0.r.PMode == M2))) {
+        Status = EFI_SUCCESS;
+      }
+    }
+  }
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning --> %r\n", __FUNCTION__, __LINE__, Status));
+  return Status;
+}
+
+EFI_STATUS
 I2cProgramPad (
   IN   UINT8   Bus
   )
 {
+  UINT32       CommAndOffset;
   UINT8        index;
   EFI_STATUS   Status;
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PADs for bus #%d\n", __FUNCTION__, __LINE__, Bus));
-
-  //
-  // Initialize variables
-  //
-  Status = EFI_SUCCESS;
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PADs for bus #%d\n", __FUNCTION__, __LINE__, Bus));
 
   //
   // Sanity checks
@@ -316,8 +365,15 @@ I2cProgramPad (
   // Program SDA/SCL
   //
   for (index = 0; index < 2; index++) {
-    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PAD %s\n", __FUNCTION__, __LINE__, mI2C_LPSS_PAD_INFO[(Bus * 2) + index].pad_name));
-    GpioPadConfigTable (1, &mI2C_LPSS_PAD_INFO[(Bus * 2) + index]);
+    CommAndOffset = (((UINT32) mI2C_LPSS_PAD_INFO[(Bus * 2) + index].Community) << 16) + mI2C_LPSS_PAD_INFO[(Bus * 2) + index].MMIO_ADDRESS;
+    Status = I2cVerifyPad (CommAndOffset);
+    if (EFI_ERROR (Status)) {
+      if (! PcdGetBool (PcdAfterGpioInitFlag)) {
+        if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Programming PAD %s\n", __FUNCTION__, __LINE__, mI2C_LPSS_PAD_INFO[(Bus * 2) + index].pad_name));
+        GpioPadConfigTable (1, &mI2C_LPSS_PAD_INFO[(Bus * 2) + index]);
+        Status = EFI_SUCCESS;
+      }
+    }
   }
 
   //
@@ -359,47 +415,47 @@ I2cSetBusFrequency (
   //
   Status = EFI_SUCCESS;
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet bus: %d\n", __FUNCTION__, __LINE__, Bus));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet bus: %d\n", __FUNCTION__, __LINE__, Bus));
   ASSERT ((Bus < LPSS_I2C_CLOCK_SCL_INFO_NUMBER));
   //
   //  Set the 100 KHz clock divider according to SV result and I2C spec
   //
   MmioWrite32 (I2cBaseAddress + R_IC_SS_SCL_HCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].SS_SCL_HCNT);
   MmioWrite32 (I2cBaseAddress + R_IC_SS_SCL_LCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].SS_SCL_LCNT);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SS_SCL_HCNT: 0x%08X, R_IC_SS_SCL_LCNT: 0x%08X\r\n",
-                       __FUNCTION__,
-                       __LINE__,
-                       MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_HCNT),
-                       MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_LCNT)));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SS_SCL_HCNT: 0x%08X, R_IC_SS_SCL_LCNT: 0x%08X\r\n",
+                                               __FUNCTION__,
+                                               __LINE__,
+                                               MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_HCNT),
+                                               MmioRead32 (I2cBaseAddress + R_IC_SS_SCL_LCNT)));
   //
   //  Set the 400 KHz clock divider according to SV result and I2C spec
   //
   MmioWrite32 (I2cBaseAddress + R_IC_FS_SCL_HCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].FS_SCL_HCNT);
   MmioWrite32 (I2cBaseAddress + R_IC_FS_SCL_LCNT, (UINT16) mLPSS_I2C_CLOCK_SCL_INFO[Bus].FS_SCL_LCNT);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_FS_SCL_HCNT: 0x%08X, R_IC_FS_SCL_LCNT: 0x%08X\r\n",
-                       __FUNCTION__,
-                       __LINE__,
-                       MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_HCNT),
-                       MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_LCNT)));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_FS_SCL_HCNT: 0x%08X, R_IC_FS_SCL_LCNT: 0x%08X\r\n",
+                                               __FUNCTION__,
+                                               __LINE__,
+                                               MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_HCNT),
+                                               MmioRead32 (I2cBaseAddress + R_IC_FS_SCL_LCNT)));
   //
   //  Set the 3.4MHz clock divider according to SV result and I2C spec
   //
   MmioWrite32 (I2cBaseAddress + R_IC_HS_SCL_HCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[Bus].HS_SCL_HCNT);
   MmioWrite32 (I2cBaseAddress + R_IC_HS_SCL_LCNT, (UINT16)mLPSS_I2C_CLOCK_SCL_INFO[Bus].HS_SCL_LCNT);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_HS_SCL_HCNT: 0x%08X, R_IC_HS_SCL_LCNT: 0x%08X\r\n",
-                       __FUNCTION__,
-                       __LINE__,
-                       MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_HCNT),
-                       MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_LCNT)));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_HS_SCL_HCNT: 0x%08X, R_IC_HS_SCL_LCNT: 0x%08X\r\n",
+                                               __FUNCTION__,
+                                               __LINE__,
+                                               MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_HCNT),
+                                               MmioRead32 (I2cBaseAddress + R_IC_HS_SCL_LCNT)));
 
   //
   // Set hold register
   //
   MmioWrite32 (I2cBaseAddress + R_IC_SDA_HOLD, (UINT16) 0x06);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SDA_HOLD: 0x%08X\r\n", __FUNCTION__, __LINE__, MmioRead32 (I2cBaseAddress + R_IC_SDA_HOLD)));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cBusFrequencySet R_IC_SDA_HOLD: 0x%08X\r\n", __FUNCTION__, __LINE__, MmioRead32 (I2cBaseAddress + R_IC_SDA_HOLD)));
 
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -444,7 +500,10 @@ ProgramPciLpssI2C (
   //
   // Set PADs to I2C mode
   //
-  I2cProgramPad (Bus);
+  Status = I2cProgramPad (Bus);
+  if (EFI_ERROR (Status)) {
+    goto Exit;
+  }
 
   //
   // Check PMC disable register
@@ -453,28 +512,28 @@ ProgramPciLpssI2C (
   Data32  = MmioRead32 (PmcBase + R_PMC_FUNC_DIS);
 
   if (Data32 == 0xFFFFFFFF) {
-    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() PMC disable register not available. [%08x]\n", __FUNCTION__, __LINE__, PMC_BASE_ADDRESS));
+    if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() PMC disable register not available. [%08x]\n", __FUNCTION__, __LINE__, PMC_BASE_ADDRESS));
   } else {
     if ((Data32 & I2cPortDisable[Bus]) != 0) {
       // This I2C port is disabled. Turn it on.
       Data32 &= ~I2cPortDisable[Bus];
       MmioWrite32 (PmcBase + R_PMC_FUNC_DIS, Data32);
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() enable I2C controller #%x\n", __FUNCTION__, __LINE__, Bus));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() enable I2C controller #%x\n", __FUNCTION__, __LINE__, Bus));
       // Make sure it took.
       if (Data32 != MmioRead32 (PmcBase + R_PMC_FUNC_DIS)) {
-        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C() failed to enable I2C controller #%x [%08x:%08x]\n",
-            __FUNCTION__,
-            __LINE__,
-            Bus,
-            Data32,
-            MmioRead32 (PmcBase + R_PMC_FUNC_DIS)));
+        if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C() failed to enable I2C controller #%x [%08x:%08x]\n",
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    Bus,
+                                    Data32,
+                                    MmioRead32 (PmcBase + R_PMC_FUNC_DIS)));
         Status = EFI_DEVICE_ERROR;
         goto Exit;
       }
     }
   }
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C()------------BusNo=%x\n", __FUNCTION__, __LINE__, Bus));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C()------------BusNo=%x\n", __FUNCTION__, __LINE__, Bus));
 
   PciMmBase = MmPciAddress (
                 mI2cLpssPciDeviceList[Bus].Segment,
@@ -483,12 +542,12 @@ ProgramPciLpssI2C (
                 mI2cLpssPciDeviceList[Bus].FunctionNum,
                 0
                 );
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Program Pci Lpss I2C Device  %x %x %x PciMmBase:%x\n",
-                       __FUNCTION__,
-                       __LINE__,
-                       mI2cLpssPciDeviceList[Bus].BusNum,
-                       mI2cLpssPciDeviceList[Bus].DeviceNum,
-                       mI2cLpssPciDeviceList[Bus].FunctionNum, PciMmBase));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Program Pci Lpss I2C Device  %x %x %x PciMmBase:%x\n",
+                                               __FUNCTION__,
+                                               __LINE__,
+                                               mI2cLpssPciDeviceList[Bus].BusNum,
+                                               mI2cLpssPciDeviceList[Bus].DeviceNum,
+                                               mI2cLpssPciDeviceList[Bus].FunctionNum, PciMmBase));
 
   //
   // Check if device present
@@ -504,11 +563,11 @@ ProgramPciLpssI2C (
       if ((I2CBar0 != (UINT32) mI2cLpssPciDeviceList[Bus].Bar0) || (I2CBar1 != (UINT32) mI2cLpssPciDeviceList[Bus].Bar1)) {
         mI2cLpssPciDeviceList[Bus].Bar0 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;     // get the address allocated.
         mI2cLpssPciDeviceList[Bus].Bar1 = MmioRead32 (PciMmBase + R_LPSS_IO_BAR1) & B_LPSS_IO_BAR_BA;
-        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Get bar0:0x%x bar1:0x%x\n",
-                             __FUNCTION__,
-                             __LINE__,
-                             mI2cLpssPciDeviceList[Bus].Bar0,
-                             mI2cLpssPciDeviceList[Bus].Bar1));
+        if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Get bar0:0x%x bar1:0x%x\n",
+                                                     __FUNCTION__,
+                                                     __LINE__,
+                                                     mI2cLpssPciDeviceList[Bus].Bar0,
+                                                     mI2cLpssPciDeviceList[Bus].Bar1));
       }
     } else {
       //
@@ -533,16 +592,16 @@ ProgramPciLpssI2C (
     //
     MmioWrite32 (mI2cLpssPciDeviceList[Bus].Bar0 + R_LPSS_IO_MEM_RESETS, B_LPSS_IO_MEM_HC_RESET_REL | B_LPSS_IO_MEM_iDMA_RESET_REL);
 
-    if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() Programmed()\n", __FUNCTION__, __LINE__));
+    if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ProgramPciLpssI2C() Programmed()\n", __FUNCTION__, __LINE__));
     Status = EFI_SUCCESS;
     goto Exit;
   } else {
-     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Pci Lpss I2C Device  %x %x %x does not exist!\n",
-       __FUNCTION__,
-       __LINE__,
-       mI2cLpssPciDeviceList[Bus].BusNum,
-       mI2cLpssPciDeviceList[Bus].DeviceNum,
-       mI2cLpssPciDeviceList[Bus].FunctionNum));
+     if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Pci Lpss I2C Device  %x %x %x does not exist!\n",
+                                 __FUNCTION__,
+                                 __LINE__,
+                                 mI2cLpssPciDeviceList[Bus].BusNum,
+                                 mI2cLpssPciDeviceList[Bus].DeviceNum,
+                                 mI2cLpssPciDeviceList[Bus].FunctionNum));
 
      Status = EFI_NOT_READY;
      goto Exit;
@@ -550,7 +609,7 @@ ProgramPciLpssI2C (
 
 Exit:
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -616,7 +675,7 @@ I2cInit (
                 0
                 );
   BaseAddress = MmioRead32 (PciMmBase + R_LPSS_IO_BAR) & B_LPSS_IO_BAR_BA;
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%08x:0x%08x \n", __FUNCTION__, __LINE__, BaseAddress, (UINT32) mI2cLpssPciDeviceList[Bus].Bar0));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%08x:0x%08x \n", __FUNCTION__, __LINE__, BaseAddress, (UINT32) mI2cLpssPciDeviceList[Bus].Bar0));
 
   //
   // Skip reinit if targeting the same I2C bus
@@ -633,7 +692,7 @@ I2cInit (
   //
   Status = ProgramPciLpssI2C (Bus);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C failed! %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - ProgramPciLpssI2C failed! %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
 
@@ -641,7 +700,7 @@ I2cInit (
   // Retrieve I2C MMIO base address
   //
   BaseAddress = (UINT32) mI2cLpssPciDeviceList[Bus].Bar0;
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%x \n", __FUNCTION__, __LINE__, BaseAddress));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2CBaseAddress = 0x%x \n", __FUNCTION__, __LINE__, BaseAddress));
 
   //
   // Reset controller
@@ -664,7 +723,7 @@ I2cInit (
 
 Exit:
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -696,7 +755,7 @@ I2cPoll (
   }
 
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -722,7 +781,7 @@ I2cRead (
   UINT32      Data32;
   EFI_STATUS  Status;
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
 
   //
   // Sanity checks
@@ -748,7 +807,7 @@ Exit:
   // Display error messages
   //
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -783,7 +842,7 @@ I2cReset (
     MicroSecondDelay (10);
     NumTries--;
     if (0 == NumTries) {
-      DEBUG ((DEBUG_ERROR, "%a(#%4d) - Try timeout\n", __FUNCTION__, __LINE__));
+      if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a(#%4d) - Try timeout\n", __FUNCTION__, __LINE__));
       Status = EFI_DEVICE_ERROR;
       goto Exit;
     }
@@ -797,7 +856,7 @@ I2cReset (
   // Disable I2C controller
   //
   Status = I2cDisable (I2cBaseAddress);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cDisable Status = %r\n", __FUNCTION__, __LINE__, Status));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cDisable Status = %r\n", __FUNCTION__, __LINE__, Status));
   if (EFI_ERROR (Status)) {
     goto Exit;
   }
@@ -847,13 +906,13 @@ I2cReset (
   // Set I2C Mode
   //
   MmioWrite32 (I2cBaseAddress + R_IC_CON, I2cMode);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cMode: 0x%04x\r\n", __FUNCTION__, __LINE__, I2cMode));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cMode: 0x%04x\r\n", __FUNCTION__, __LINE__, I2cMode));
   MicroSecondDelay (I2C_ROUTINE_DELAY);
   //
   // Enable I2C controller
   //
   Status = I2cEnable (I2cBaseAddress);
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cEnable Status = %r\n", __FUNCTION__, __LINE__, Status));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - I2cEnable Status = %r\n", __FUNCTION__, __LINE__, Status));
   if (EFI_ERROR (Status)) {
     goto Exit;
   }
@@ -871,7 +930,7 @@ I2cReset (
 
 Exit:
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -924,9 +983,9 @@ I2cSendCommand (
     //
     if ((I2cGetRawStatus (I2cBaseAddress) & I2C_INTR_TX_ABRT) != 0) {
       TxAbortStatus = I2cGetTxAbortStatus (I2cBaseAddress);
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+      if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
       //
       // Clear TX Abort
       //
@@ -941,7 +1000,7 @@ I2cSendCommand (
       // Set status
       //
       if (TxAbortStatus & (I2C_ABRT_7B_ADDR_NOACK | I2C_ABRT_10ADDR1_NOACK | I2C_ABRT_10ADDR2_NOACK)) {
-        DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
+        if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
         Status = EFI_NO_RESPONSE;
       } else {
         Status = EFI_DEVICE_ERROR;
@@ -953,7 +1012,7 @@ I2cSendCommand (
     //
     if (((I2cGetStatus (I2cBaseAddress) & STAT_RFNE) != 0) && ReadFlag) {
       *Data = MmioRead32 (I2cBaseAddress + R_IC_DATA_CMD) & 0xFF;
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%02x was received [%d:%d]\n", __FUNCTION__, __LINE__, *Data, Start, End));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%02x was received [%d:%d]\n", __FUNCTION__, __LINE__, *Data, Start, End));
       MicroSecondDelay (FIFO_WRITE_DELAY);
       //
       // Now empty the RX FIFO if stop bit set
@@ -962,8 +1021,8 @@ I2cSendCommand (
         MmioRead32 (I2cBaseAddress + R_IC_DATA_CMD);
         MicroSecondDelay (FIFO_WRITE_DELAY);
       }
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
-      if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+      if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
       Status = EFI_SUCCESS;
       goto Exit;
     }
@@ -994,7 +1053,7 @@ I2cSendCommand (
     while (!ReadFlag) {
       if ((I2cGetRawStatus (I2cBaseAddress) & I2C_INTR_TX_ABRT) != 0) {
         TxAbortStatus = I2cGetTxAbortStatus (I2cBaseAddress);
-        DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
+        if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - TX ABRT [%04x]\n", __FUNCTION__, __LINE__, TxAbortStatus));
         //
         // Clear TX Abort
         //
@@ -1009,16 +1068,16 @@ I2cSendCommand (
         // Set status
         //
         if (TxAbortStatus & (I2C_ABRT_7B_ADDR_NOACK | I2C_ABRT_10ADDR1_NOACK | I2C_ABRT_10ADDR2_NOACK)) {
-          DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
+          if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a(#%4d) - Nobody home!\n", __FUNCTION__, __LINE__));
           Status = EFI_NO_RESPONSE;
         } else {
           Status = EFI_DEVICE_ERROR;
         }
       }
       if (I2cGetTxFifo (I2cBaseAddress) == 0) {
-        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%04x was sent [%d:%d]\n", __FUNCTION__, __LINE__, Data32, Start, End));
-        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
-        if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
+        if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - MmioRead32, byte 0x%04x was sent [%d:%d]\n", __FUNCTION__, __LINE__, Data32, Start, End));
+        if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - RX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetRxFifo (I2cBaseAddress)));
+        if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - TX FIFO = %04x\n", __FUNCTION__, __LINE__, I2cGetTxFifo (I2cBaseAddress)));
         Status = EFI_SUCCESS;
         goto Exit;
       }
@@ -1026,7 +1085,7 @@ I2cSendCommand (
       if (Count++ < 1024) { //to avoid sys hung without ul-pmc device on RVP
         continue; //Waiting the last request to get data and make (ReceiveDataEnd > ReadBuffer) =TRUE.
       } else {
-        DEBUG ((DEBUG_ERROR, "%a (#%4d) - hardware timeout, 1024 times try!\n", __FUNCTION__, __LINE__));
+        if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - hardware timeout, 1024 times try!\n", __FUNCTION__, __LINE__));
         Status = EFI_TIMEOUT;
         goto Exit;
       }
@@ -1049,7 +1108,7 @@ Exit:
   // Display error messages
   //
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r   [%x]\n", __FUNCTION__, __LINE__, Status, CountOut));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r   [%x]\n", __FUNCTION__, __LINE__, Status, CountOut));
   }
   return Status;
 }
@@ -1073,7 +1132,7 @@ I2cSetOffset (
   UINT8        index;
   EFI_STATUS   Status;
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
 
   //
   //  Sanity checks
@@ -1116,7 +1175,7 @@ Exit:
   // Display error messages
   //
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -1142,7 +1201,7 @@ I2cWrite (
   UINT32      Data32;
   EFI_STATUS  Status;
 
-  if (gI2cDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+  if (gI2cDebugFlag && !gI2cQuietFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
 
   //
   // Send CMD for write
@@ -1157,7 +1216,7 @@ I2cWrite (
   // Display error messages
   //
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
   return Status;
 }
@@ -1198,7 +1257,7 @@ ByteReadI2C_Basic (
   //
   Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
   //
@@ -1210,7 +1269,7 @@ ByteReadI2C_Basic (
       //
       // Something went wrong. Bail from this for loop.
       //
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cRead() = %r\n", __FUNCTION__, __LINE__, Status));
+      if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cRead() = %r\n", __FUNCTION__, __LINE__, Status));
       break;
     }
   }
@@ -1254,7 +1313,7 @@ ByteWriteI2C_Basic (
   //
   Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
   //
@@ -1266,7 +1325,7 @@ ByteWriteI2C_Basic (
       //
       // Something went wrong. Bail from this for loop.
       //
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cWrite() = %r\n", __FUNCTION__, __LINE__, Status));
+      if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cWrite() = %r\n", __FUNCTION__, __LINE__, Status));
       break;
     }
   }
@@ -1304,7 +1363,7 @@ ByteReadI2C (
   //
   Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
   //
@@ -1312,12 +1371,12 @@ ByteReadI2C (
   //
   Status = I2cSetOffset (I2cBaseAddress, &Offset, 1);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
     goto Exit;
   }
   Status = ByteReadI2C_Basic (BusNo, SlaveAddress, ReadBytes, ReadBuffer, TRUE, TRUE);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteReadI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteReadI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
 
@@ -1355,7 +1414,7 @@ ByteWriteI2C (
   //
   Status = I2cInit (BusNo, SlaveAddress, Standard_Speed, &I2cBaseAddress);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cInit() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
   //
@@ -1363,12 +1422,12 @@ ByteWriteI2C (
   //
   Status = I2cSetOffset (I2cBaseAddress, &Offset, 1);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - I2cSetOffset() = %r [%02x:%02x:%04x]\n", __FUNCTION__, __LINE__, Status, BusNo, SlaveAddress, Offset));
     goto Exit;
   }
   Status = ByteWriteI2C_Basic (BusNo, SlaveAddress, WriteBytes, WriteBuffer, FALSE, TRUE);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteWriteI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
+    if (!gI2cQuietFlag) DEBUG ((DEBUG_ERROR, "%a (#%4d) - ByteWriteI2C_Basic() = %r\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
 

@@ -1,7 +1,7 @@
 ## @file
 #  Component description file for PlatformInit module.
 #
-#  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -31,8 +31,8 @@
 
 [Packages]
   MdePkg/MdePkg.dec
-  MdeModulePkg/MdeModulePkg.dec
   BroxtonPlatformPkg/PlatformPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
   IntelFrameworkPkg/IntelFrameworkPkg.dec
   BroxtonSiPkg/BroxtonSiPkg.dec
   UefiCpuPkg/UefiCpuPkg.dec
@@ -123,6 +123,7 @@
   gPlatformModuleTokenSpaceGuid.PcdBoardPostMemInitFunc
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
   gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
+  gSiPkgTokenSpaceGuid.PcdAfterGpioInitFlag
 
 [Depex]
   gDramPolicyPpiGuid
