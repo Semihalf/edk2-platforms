@@ -181,11 +181,14 @@ Minnow3ModuleMultiPlatformGpioProgram (
     //
     // PAD programming
     //
-    DEBUG ((DEBUG_INFO, "%a(#%4d) - PAD programming, Board ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId));
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - PAD programming, Board ID: 0x%X   Fab ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId, PlatformInfoHob->BoardRev));
     GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_N)  / sizeof (mMinnow3Module_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
     GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_NW) / sizeof (mMinnow3Module_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
     GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_W)  / sizeof (mMinnow3Module_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
     GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_SW) / sizeof (mMinnow3Module_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
+    if (PlatformInfoHob->BoardRev == FAB_ID_C) {
+      GpioPadConfigTable (sizeof (mMinnow3Module_GpioInitData_FabC) / sizeof (mMinnow3Module_GpioInitData_FabC[0]), mMinnow3Module_GpioInitData_FabC);
+    }
     DEBUG ((DEBUG_INFO, "%a(#%4d) - PAD programming done\n", __FUNCTION__, __LINE__));
 
     //
@@ -199,11 +202,15 @@ Minnow3ModuleMultiPlatformGpioProgram (
     //
     // Dump GPIO tables
     //
-    DEBUG ((DEBUG_INFO, "%a(#%4d) - Dump Community pad registers, Board ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId));
+    DEBUG ((DEBUG_INFO, "%a(#%4d) - Dump Community pad registers, Board ID: 0x%X   Fab ID: 0x%X\n", __FUNCTION__, __LINE__, PlatformInfoHob->BoardId, PlatformInfoHob->BoardRev));
     DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_N)  / sizeof (mMinnow3Module_GpioInitData_N[0]),  PlatformInfoHob->PlatformGpioSetting_N);
     DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_NW) / sizeof (mMinnow3Module_GpioInitData_NW[0]), PlatformInfoHob->PlatformGpioSetting_NW);
     DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_W)  / sizeof (mMinnow3Module_GpioInitData_W[0]),  PlatformInfoHob->PlatformGpioSetting_W);
     DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_SW) / sizeof (mMinnow3Module_GpioInitData_SW[0]), PlatformInfoHob->PlatformGpioSetting_SW);
+    if (PlatformInfoHob->BoardRev == FAB_ID_C) {
+      DEBUG ((DEBUG_INFO, "\n\n%a(#%4d) - Dumping Fab C specific changes...\n", __FUNCTION__, __LINE__));
+      DumpGpioPadTable (sizeof (mMinnow3Module_GpioInitData_FabC) / sizeof (mMinnow3Module_GpioInitData_FabC[0]), mMinnow3Module_GpioInitData_FabC);
+    }
 
     //
     // Now program any EEPROM defined GPIOs

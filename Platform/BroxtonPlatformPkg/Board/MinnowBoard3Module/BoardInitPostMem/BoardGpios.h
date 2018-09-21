@@ -146,7 +146,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_N[] =
 //
 // North West Community
 //
-BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_NW [] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_NW[] =
 {
   //
   //                 Group Pin#:  pad_name,     PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger, Wake_Enabled, Term_H_L,Inverted,GPI_ROUT,IOSstae,  IOSTerm,     MMIO_Offset    ,  Community
@@ -233,7 +233,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_NW [] =
 //
 // West Community
 //
-BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_W [] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_W[] =
 {
   //
   //                   Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L, Inverted,GPI_ROUT,IOSstae, IOSTerm,     MMIO_Offset    , Community
@@ -290,7 +290,7 @@ BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_W [] =
  //
  // South West Community
  //
-BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_SW[]=
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_SW[] =
 {
   //
   //                  Group Pin#:  pad_name,       PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L,Inverted,GPI_ROUT,IOSstae,  IOSTerm,   MMIO_Offset     ,  Community
@@ -316,17 +316,19 @@ BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_SW[]=
   BXT_GPIO_PAD_CONF(L"GPIO_170 SDIO_D3",           M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0090, SOUTHWEST), // NC
   BXT_GPIO_PAD_CONF(L"GPIO_171 SDIO_CMD",          M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,     NA   ,DisPuPd, GPIO_PADBAR+0x0098, SOUTHWEST), // NC
   BXT_GPIO_PAD_CONF(L"GPIO_172 SDCARD_CLK",        M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00A0, SOUTHWEST), // SDIO_CLK
-  BXT_GPIO_PAD_CONF(L"GPIO_179 SDCARD_CLK_FB",     M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,        NA,     NA, GPIO_PADBAR+0x00A8, SOUTHWEST), //
-  BXT_GPIO_PAD_CONF(L"GPIO_173 SDCARD_D0",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00B0, SOUTHWEST), // SDIO_D0
-  BXT_GPIO_PAD_CONF(L"GPIO_174 SDCARD_D1",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00B8, SOUTHWEST), // SDIO_D1
-  BXT_GPIO_PAD_CONF(L"GPIO_175 SDCARD_D2",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00C0, SOUTHWEST), // SDIO_D2
-  BXT_GPIO_PAD_CONF(L"GPIO_176 SDCARD_D3",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00C8, SOUTHWEST), // SDIO_D3
-  BXT_GPIO_PAD_CONF(L"GPIO_177 SDCARD_CD_B",       M0   ,    GPI   , GPIO_D,  NA     ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,     NA, GPIO_PADBAR+0x00D0, SOUTHWEST), // SDIO_1V8_CD#
-  BXT_GPIO_PAD_CONF(L"GPIO_178 SDCARD_CMD",        M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00D8, SOUTHWEST), // SDIO_CMD
+  BXT_GPIO_PAD_CONF(L"GPIO_173 SDCARD_D0",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00A8, SOUTHWEST), // SDIO_D0
+  BXT_GPIO_PAD_CONF(L"GPIO_174 SDCARD_D1",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00B0, SOUTHWEST), // SDIO_D1
+  BXT_GPIO_PAD_CONF(L"GPIO_175 SDCARD_D2",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00B8, SOUTHWEST), // SDIO_D2
+  BXT_GPIO_PAD_CONF(L"GPIO_176 SDCARD_D3",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00C0, SOUTHWEST), // SDIO_D3
+  BXT_GPIO_PAD_CONF(L"GPIO_177 SDCARD_CD_B",       M0   ,    GPI   , GPIO_D,  NA     ,   Edge     , Wake_Disabled, P_NONE ,    NA   ,    NA,    TxDRxE,     NA, GPIO_PADBAR+0x00C8, SOUTHWEST), // SDIO_1V8_CD#
+  BXT_GPIO_PAD_CONF(L"GPIO_178 SDCARD_CMD",        M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00D0, SOUTHWEST), // SDIO_CMD
+  BXT_GPIO_PAD_CONF(L"GPIO_179 SDCARD_CLK_FB",     M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,        NA,     NA, GPIO_PADBAR+0x00D8, SOUTHWEST), //
   BXT_GPIO_PAD_CONF(L"GPIO_186 SDCARD_LVL_WP",     M0   ,    GPI   , GPIO_D,  NA     ,   Edge     , Wake_Disabled, P_20K_L, Inverted,    NA,Last_Value,   SAME, GPIO_PADBAR+0x00E0, SOUTHWEST), // SDIO_1V8_WP
   BXT_GPIO_PAD_CONF(L"GPIO_182 EMMC0_STROBE",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x00E8, SOUTHWEST), // EMMC_STROBE
   BXT_GPIO_PAD_CONF(L"GPIO_183 SDIO_PWR_DOWN_B",   M0   ,    GPO   , GPIO_D,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,     NA   ,   EnPd, GPIO_PADBAR+0x00F0, SOUTHWEST), // SDIO_PWR_EN_1V8
   BXT_GPIO_PAD_CONF(L"SMB_ALERTB",                 M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,IOS_Masked,   SAME, GPIO_PADBAR+0x00F8, SOUTHWEST), // SMB_ALERT#
+  BXT_GPIO_PAD_CONF(L"SMB_CLK",                    M2   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA, D1RxDRx1I,   EnPu, GPIO_PADBAR+0x0100, SOUTHWEST), // SMB_CLK  --> LPSS I2C7 SCL
+  BXT_GPIO_PAD_CONF(L"SMB_DATA",                   M2   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA, D1RxDRx1I,   EnPu, GPIO_PADBAR+0x0108, SOUTHWEST), // SMB_DATA --> LPSS I2C7 SDA
   BXT_GPIO_PAD_CONF(L"LPC_ILB_SERIRQ",             M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,IOS_Masked,   SAME, GPIO_PADBAR+0x0110, SOUTHWEST), // SERIRQ
   BXT_GPIO_PAD_CONF(L"LPC_CLKOUT0",                M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x0118, SOUTHWEST), // LPC_CLKOUT0
   BXT_GPIO_PAD_CONF(L"LPC_CLKOUT1",                M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x0120, SOUTHWEST), // LPC_CLKOUT1
@@ -338,12 +340,63 @@ BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_SW[]=
   BXT_GPIO_PAD_CONF(L"LPC_FRAMEB",                 M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x0150, SOUTHWEST), // LPC_FRAME#
 };
 
-BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_FAB2[] =
+BXT_GPIO_PAD_INIT  mMinnow3Module_GpioInitData_FabC[] =
 {
   //
-  //                  Group Pin#:  pad_name,    PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,  Wake_Enabled ,Term_H_L,Inverted, GPI_ROUT, IOSstae, IOSTerm,     MMIO_Offset  ,Community
+  //                  Group Pin#:  pad_name,       PMode,GPIO_Config,HostSw,GPO_STATE,INT_Trigger,Wake_Enabled, Term_H_L,Inverted,GPI_ROUT,IOSstae,  IOSTerm,   MMIO_Offset     ,  Community
   //
-  BXT_GPIO_PAD_CONF(L"GPIO_6",                   M0   ,    GPI   ,GPIO_D,   NA    ,   Level    , Wake_Disabled, P_20K_L,   NA    ,IOAPIC,    TxDRxE,    NA,  GPIO_PADBAR+0x0030,  NORTH),     // LID#
+  // SW Community C0
+  BXT_GPIO_PAD_CONF(L"GPIO_166 SDIO_CLK",          M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA, D0RxDRx0I,   SAME, GPIO_PADBAR+0x0070, SOUTHWEST), // SDIO_CLK
+  BXT_GPIO_PAD_CONF(L"GPIO_167 SDIO_D0",           M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x0078, SOUTHWEST), // SDIO_D0
+  BXT_GPIO_PAD_CONF(L"GPIO_168 SDIO_D1",           M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x0080, SOUTHWEST), // SDIO_D1
+  BXT_GPIO_PAD_CONF(L"GPIO_169 SDIO_D2",           M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x0088, SOUTHWEST), // SDIO_D3
+  BXT_GPIO_PAD_CONF(L"GPIO_170 SDIO_D3",           M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x0090, SOUTHWEST), // SDIO_D4
+  BXT_GPIO_PAD_CONF(L"GPIO_171 SDIO_CMD",          M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x0098, SOUTHWEST), // SDIO_CMD
+  BXT_GPIO_PAD_CONF(L"GPIO_173 SDCARD_D0",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x00A8, SOUTHWEST), // SDIO_D0
+  BXT_GPIO_PAD_CONF(L"GPIO_174 SDCARD_D1",         M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x00B0, SOUTHWEST), // SDIO_D1
+  BXT_GPIO_PAD_CONF(L"GPIO_177 SDCARD_CD_B",       M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,   SAME, GPIO_PADBAR+0x00C8, SOUTHWEST), // SDIO_1V8_CD#
+  BXT_GPIO_PAD_CONF(L"GPIO_178 SDCARD_CMD",        M0   ,    GPI   ,  NA   ,  NA     ,   Edge     , Wake_Disabled, P_20K_H,    NA   ,    NA,    TxDRxE,   SAME, GPIO_PADBAR+0x00D0, SOUTHWEST), // SDIO_CMD
+  BXT_GPIO_PAD_CONF(L"GPIO_186 SDCARD_LVL_WP",     M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x00E0, SOUTHWEST), // SDIO_1V8_WP
+  BXT_GPIO_PAD_CONF(L"GPIO_183 SDIO_PWR_DOWN_B",   M0   ,    GPO   ,  NA   ,  HI     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x00F0, SOUTHWEST), // SDIO_PWR_EN_1V8
+  // NW Community C4
+  BXT_GPIO_PAD_CONF(L"GPIO_196 PANEL1_VDDEN",      M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0048, NORTHWEST), // PNL_1_VDDEN
+  BXT_GPIO_PAD_CONF(L"GPIO_197 PANEL1_BKLTEN",     M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0050, NORTHWEST), // PNL_1_BKLTEN
+  BXT_GPIO_PAD_CONF(L"GPIO_198 PANEL1_BKLTCTL",    M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0058, NORTHWEST), // PNL_1_BKLCTL
+  BXT_GPIO_PAD_CONF(L"GPIO_104 GP_SSP_0_CLK",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x01E8, NORTHWEST), // SIO_SPI_SCLK
+  BXT_GPIO_PAD_CONF(L"GPIO_105 GP_SSP_0_FS0",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x01F0, NORTHWEST), // SIO_SPI_CS0#
+  BXT_GPIO_PAD_CONF(L"GPIO_106 GP_SSP_0_FS1",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x01F8, NORTHWEST), // SIO_SPI_CS1#
+  BXT_GPIO_PAD_CONF(L"GPIO_109 GP_SSP_0_RXD",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0200, NORTHWEST), // SIO_SPI_MISO
+  BXT_GPIO_PAD_CONF(L"GPIO_110 GP_SSP_0_TXD",      M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0208, NORTHWEST), // SIO_SPI_MOSI
+  // N  Community C5
+  BXT_GPIO_PAD_CONF(L"GPIO_2",                     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0010, NORTH),     // GPIO9
+  BXT_GPIO_PAD_CONF(L"GPIO_3",                     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0018, NORTH),     // GPIO10
+  BXT_GPIO_PAD_CONF(L"GPIO_4",                     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0020, NORTH),     // GPIO11
+  BXT_GPIO_PAD_CONF(L"GPIO_6",                     M0   ,    GPI   ,  NA   ,  NA     ,   BothEdge , Wake_Disabled, P_20K_H,    NA   ,   SCI,Last_Value,   SAME, GPIO_PADBAR+0x0030, NORTH),     // LID#
+  BXT_GPIO_PAD_CONF(L"GPIO_7",                     M0   ,    GPI   ,  NA   ,  NA     ,   Edge     , Wake_Disabled, P_20K_H, Inverted,   SCI,Last_Value,   SAME, GPIO_PADBAR+0x0038, NORTH),     // SLEEP#
+  BXT_GPIO_PAD_CONF(L"GPIO_13",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0068, NORTH),     // GPIO7
+  BXT_GPIO_PAD_CONF(L"GPIO_14",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x0070, NORTH),     // GPIO8
+  BXT_GPIO_PAD_CONF(L"GPIO_21",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x00A8, NORTH),     // FORCE_RECOV#
+  BXT_GPIO_PAD_CONF(L"GPIO_22",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x00B0, NORTH),     // BOOT_SEL2#
+  BXT_GPIO_PAD_CONF(L"GPIO_23",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x00B8, NORTH),     // BOOT_SEL1#
+  BXT_GPIO_PAD_CONF(L"GPIO_24",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x00C0, NORTH),     // BOOT_SEL0#
+  BXT_GPIO_PAD_CONF(L"GPIO_25",                    M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x00C8, NORTH),     // TEST#
+  BXT_GPIO_PAD_CONF(L"GPIO_40 LPSS_UART0_CTS_B",   M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,DisPuPd, GPIO_PADBAR+0x0140, NORTH),     // SER0_RTS#
+  BXT_GPIO_PAD_CONF(L"GPIO_41 LPSS_UART0_CTS_B",   M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,   HizRx1I,DisPuPd, GPIO_PADBAR+0x0148, NORTH),     // SER0_CTS#
+  BXT_GPIO_PAD_CONF(L"GPIO_64 GP_CAMERASB02",      M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x01A0, NORTH),     // CAM0_RST#
+  BXT_GPIO_PAD_CONF(L"GPIO_65 GP_CAMERASB03",      M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x01A8, NORTH),     // CAM1_RST#
+  BXT_GPIO_PAD_CONF(L"GPIO_66 GP_CAMERASB04",      M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x01B0, NORTH),     // CAM0_PWR#
+  BXT_GPIO_PAD_CONF(L"GPIO_67 GP_CAMERASB05",      M0   ,    GPO   ,  NA   ,  LO     ,   NA       , Wake_Disabled, P_20K_L,    NA   ,    NA,   HizRx0I,   SAME, GPIO_PADBAR+0x01B8, NORTH),     // CAM1_PWR#
+  // W  Community C7
+  BXT_GPIO_PAD_CONF(L"GPIO_126 LPSS_I2C1_SDA",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0010, WEST),      // GP_DDCDATA
+  BXT_GPIO_PAD_CONF(L"GPIO_127 LPSS_I2C1_SCL",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0018, WEST),      // GP_DDCCLK
+  BXT_GPIO_PAD_CONF(L"GPIO_134 LPSS_I2C5_SDA",     M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_1K_H ,    NA   ,    NA, D0RxDRx0I,   EnPu, GPIO_PADBAR+0x0050, WEST),      // I2C_CAM1_DAT
+  BXT_GPIO_PAD_CONF(L"GPIO_135 LPSS_I2C5_SCL",     M1   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_1K_H ,    NA   ,    NA, D0RxDRx0I,   EnPu, GPIO_PADBAR+0x0058, WEST),      // I2C_CAM1_CK
+  BXT_GPIO_PAD_CONF(L"GPIO_136 LPSS_I2C6_SDA",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0060, WEST),      // I2C_GP_DAT
+  BXT_GPIO_PAD_CONF(L"GPIO_137 LPSS_I2C6_SCL",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0068, WEST),      // I2C_GP_CK
+  BXT_GPIO_PAD_CONF(L"GPIO_138 LPSS_I2C7_SDA",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0070, WEST),      // HWCONF5
+  BXT_GPIO_PAD_CONF(L"GPIO_139 LPSS_I2C7_SCL",     M0   ,    GPI   ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0078, WEST),      // HWCONF4
+  BXT_GPIO_PAD_CONF(L"GPIO_148 ISH_GPIO_2",        M3   ,    NA    ,  NA   ,  NA     ,   NA       , Wake_Disabled, P_NONE ,    NA   ,    NA,IOS_Masked,   SAME, GPIO_PADBAR+0x0090, WEST),      // HDA_SDI
+  BXT_GPIO_PAD_CONF(L"PMU_AC_PRESENT",             M0   ,    GPO   ,  NA   ,  HI     ,   NA       , Wake_Disabled, P_20K_H,    NA   ,    NA,Last_Value,   SAME, GPIO_PADBAR+0x0118, WEST),      // ACPRESENT
 };
 
 #endif

@@ -168,10 +168,17 @@ typedef enum {
 } APL_BOARD_ID_LIST;
 
 typedef enum {
-  FAB1 = 0,
-  FAB2 = 1,
-  FAB3 = 2,
+  FAB1             = 0,
+  FAB2             = 1,
+  FAB3             = 2,
+  FAB_ID_RVP_B_C   = 0x0,       // For Broxton FAB B/C, special define
+  FAB_ID_A         = 0x1,       // FAB A
+  FAB_ID_B         = 0x2,       // FAB B
+  FAB_ID_C         = 0x3,       // FAB C
   FAB_ID_D         = 0x4,       // FAB D
+  FAB_ID_E         = 0x5,       // FAB E
+  FAB_ID_F         = 0x6,       // FAB F
+  UNKNOWN_FAB      = 0xFF       // Unknown FAB
 } FAB_ID_LIST;
 
 typedef enum {
