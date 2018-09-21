@@ -111,7 +111,7 @@
   gHiiExportDatabaseGuid                  = { 0x1b838190, 0x4625, 0x4ead, { 0xab, 0xc9, 0xcd, 0x5e, 0x6a, 0xf1, 0x8f, 0xe0 } }
 
   gEfiHtBistHobGuid                       = { 0xBE644001, 0xE7D4, 0x48B1, { 0xB0, 0x96, 0x8B, 0xA0, 0x47, 0xBC, 0x7A, 0xE7 } }
-  gEfiTscFrequencyGuid                = { 0xdba6a7e3, 0xbb57, 0x4be7, { 0x8a, 0xf8, 0xd5, 0x78, 0xdb, 0x7e, 0x56, 0x87 }}
+  gEfiTscFrequencyGuid                    = { 0xdba6a7e3, 0xbb57, 0x4be7, { 0x8a, 0xf8, 0xd5, 0x78, 0xdb, 0x7e, 0x56, 0x87 } }
 
   # GUID for EEPROM variables - {EE96CA33-5F59-4594-9869-07F79AA3C06F}
   gEepromVariableGuid                     = { 0xEE96CA33, 0x5F59, 0x4594, { 0x98, 0x69, 0x07, 0xF7, 0x9A, 0xA3, 0xC0, 0x6F } }
@@ -213,7 +213,6 @@
   ## This PCD is used to enable or disable PCIE port 3
   gPlatformModuleTokenSpaceGuid.PcdPciePort3Enable|TRUE|BOOLEAN|0x80000020
 
-  
   ## MemoryCheck value for checking memory before boot OS.
   ## To save the boot performance, the default MemoryCheck is set to 0.
   gClientCommonModuleTokenSpaceGuid.PcdPlatformMemoryCheck|0|UINT8|0x40000005
@@ -295,12 +294,6 @@
   gPlatformModuleTokenSpaceGuid.PcdFlashFvIBBLSize|0x00001000|UINT32|0x20000003
   gPlatformModuleTokenSpaceGuid.PcdFlashNvStorageBase|0xFFF60000|UINT32|0x20000007
   gPlatformModuleTokenSpaceGuid.PcdFlashNvStorageSize|0x00010000|UINT32|0x20000008
-  gPlatformModuleTokenSpaceGuid.PcdFlashObbPayloadMappedBase|0xFFC82040|UINT32|0x2000000B
-  gPlatformModuleTokenSpaceGuid.PcdFlashObbPayloadSize|0x002DA000|UINT32|0x2000000C
-  gPlatformModuleTokenSpaceGuid.PcdFlashIbbRegionMappedBase|0xFF980000|UINT32|0x2000000D
-  gPlatformModuleTokenSpaceGuid.PcdFlashIbbRegionSize|0x0007A000|UINT32|0x2000000E
-  gPlatformModuleTokenSpaceGuid.PcdFlashObbRegionMappedBase|0xFFC82000|UINT32|0x2000000F
-  gPlatformModuleTokenSpaceGuid.PcdFlashObbRegionSize|0x002DB000|UINT32|0x20000010
   gClientCommonModuleTokenSpaceGuid.PcdMaxConsoleDeviceNum|0x05|UINT8|0x10000007
   gMinnowModuleTokenSpaceGuid.PcdDefaultFabId|0x03|UINT8|0x20000001
   gEfiIchTokenSpaceGuid.PcdPeiIchEhciControllerMemoryBaseAddress|0xFD000000|UINT32|0x30000019
@@ -371,7 +364,6 @@
   gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList|{0xFF, 0xFF, 0xFF, 0xFF}|VOID*|0xEEEE2005
 
 [PcdsPatchableInModule]
-
   ## MemoryCheck value for checking memory before boot OS.
   ## To save the boot performance, the default MemoryCheck is set to 0.
   gClientCommonModuleTokenSpaceGuid.PcdPlatformMemoryCheck|0|UINT8|0x40000005

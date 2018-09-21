@@ -46,11 +46,11 @@ PrintSetupVariableData (
 
   for (Index = 0; Index < DataSize; Index++) {
     if (Index % 0x10 == 0) {
-      DEBUG ((EFI_D_INFO, "\n%08X:", Index));
+      DEBUG ((DEBUG_INFO, "\n%08X:", Index));
     }
-    DEBUG ((EFI_D_INFO, " %02X", *Data8++));
+    DEBUG ((DEBUG_INFO, " %02X", *Data8++));
   }
-  DEBUG ((EFI_D_INFO, "\n"));
+  DEBUG ((DEBUG_INFO, "\n"));
 }
 
 
@@ -81,7 +81,7 @@ CreateDefaultVariableHob (
     return EFI_INVALID_PARAMETER;
   }
 
-  DEBUG ((EFI_D_INFO, "Total size requested for HOB = %d.\n", (sizeof (VARIABLE_STORE_HEADER) + DefaultVariableDataSize + HEADER_ALIGNMENT - 1)));
+  DEBUG ((DEBUG_INFO, "Total size requested for HOB = %d.\n", (sizeof (VARIABLE_STORE_HEADER) + DefaultVariableDataSize + HEADER_ALIGNMENT - 1)));
 
   VariableStoreHeaderHob = (VARIABLE_STORE_HEADER *) BuildGuidHob (&VariableStoreHeader->Signature,
                                                                    sizeof (VARIABLE_STORE_HEADER) + DefaultVariableDataSize + HEADER_ALIGNMENT - 1);
@@ -90,7 +90,7 @@ CreateDefaultVariableHob (
     return EFI_OUT_OF_RESOURCES;
   }
 
-  DEBUG ((EFI_D_INFO, "Default HOB allocated at 0x%x\n", VariableStoreHeaderHob));
+  DEBUG ((DEBUG_INFO, "Default HOB allocated at 0x%x\n", VariableStoreHeaderHob));
 
   //
   // Copy the variable store header to the beginning of the HOB
@@ -148,27 +148,27 @@ CreateVariableHobs (
   VARIABLE_HEADER                   *LastVariableStoreVariableHeader  = NULL;
   SYSTEM_CONFIGURATION              *SystemConfiguration              = NULL;
 
-  DEBUG ((EFI_D_INFO, "Loading variable defaults from NvStorage...\n"));
-  DEBUG ((EFI_D_INFO, "  NvStorageHeader at 0x%x\n", NvStorageFvHeader));
+  DEBUG ((DEBUG_INFO, "Loading variable defaults from NvStorage...\n"));
+  DEBUG ((DEBUG_INFO, "  NvStorageHeader at 0x%x\n", NvStorageFvHeader));
 
   if (NvStorageFvHeader == NULL \
     || NvStorageFvHeader->Signature != EFI_FVH_SIGNATURE \
     || !CompareGuid (&gEfiSystemNvDataFvGuid, &NvStorageFvHeader->FileSystemGuid)) {
-    DEBUG ((EFI_D_ERROR, "  NvStorage FV passed to gather setup defaults is invalid!\n"));
+    DEBUG ((DEBUG_ERROR, "  NvStorage FV passed to gather setup defaults is invalid!\n"));
     return EFI_INVALID_PARAMETER;
   }
 
   VariableStoreBase   = (EFI_PHYSICAL_ADDRESS) ((UINTN) NvStorageFvHeader + (UINTN)(NvStorageFvHeader->HeaderLength));
   VariableStoreHeader = (VARIABLE_STORE_HEADER *) (UINTN) VariableStoreBase;
 
-  DEBUG ((EFI_D_INFO, "  VariableStoreHeader at 0x%x. VariableStoreSize = %d\n", VariableStoreHeader, (UINTN) VariableStoreHeader->Size));
+  DEBUG ((DEBUG_INFO, "  VariableStoreHeader at 0x%x. VariableStoreSize = %d\n", VariableStoreHeader, (UINTN) VariableStoreHeader->Size));
 
   AuthenticatedVariableStore = (BOOLEAN) CompareGuid (&VariableStoreHeader->Signature, &gEfiAuthenticatedVariableGuid);
 
   StartVariableStoreVariableHeader = (VARIABLE_HEADER *) HEADER_ALIGN (VariableStoreHeader + 1);
   LastVariableStoreVariableHeader = (VARIABLE_HEADER *) HEADER_ALIGN ((CHAR8 *) VariableStoreHeader + VariableStoreHeader->Size);
 
-  DEBUG ((EFI_D_INFO, "  StartVariableStoreVariableHeader at 0x%x. LastVariableSearchHeader at 0x%x\n", StartVariableStoreVariableHeader, LastVariableStoreVariableHeader));
+  DEBUG ((DEBUG_INFO, "  StartVariableStoreVariableHeader at 0x%x. LastVariableSearchHeader at 0x%x\n", StartVariableStoreVariableHeader, LastVariableStoreVariableHeader));
 
   ASSERT (StartVariableStoreVariableHeader < LastVariableStoreVariableHeader);
 
@@ -196,20 +196,20 @@ CreateVariableHobs (
       VariableState    = ((AUTHENTICATED_VARIABLE_HEADER *) VariableSearchHeader)->State;
     }
 
-    DEBUG ((EFI_D_INFO, "  VariableName at 0x%x.\n", VariableName));
+    DEBUG ((DEBUG_INFO, "  VariableName at 0x%x.\n", VariableName));
 
     VariableSearchCandidateDataPtr = (UINT8 *) (((CHAR8 *) VariableSearchHeader + VariableHeaderSize) \
                                        + VariableNameSize \
                                        + GET_PAD_SIZE (VariableNameSize));
 
-    DEBUG ((EFI_D_INFO, "  VariableSearchCandidatePtr at 0x%x.\n", (UINTN) VariableSearchCandidateDataPtr));
-    DEBUG ((EFI_D_INFO, "    Variable name is %s.\n", VariableName));
-    DEBUG ((EFI_D_INFO, "    Variable data size is %d bytes.\n", VariableDataSize));
+    DEBUG ((DEBUG_INFO, "  VariableSearchCandidatePtr at 0x%x.\n", (UINTN) VariableSearchCandidateDataPtr));
+    DEBUG ((DEBUG_INFO, "    Variable name is %s.\n", VariableName));
+    DEBUG ((DEBUG_INFO, "    Variable data size is %d bytes.\n", VariableDataSize));
 
     if (CompareGuid (&VariableGuid, &gEfiSetupVariableGuid) \
       && !StrCmp (L"Setup", VariableName) \
       && (VariableState == VAR_ADDED)) {
-      DEBUG ((EFI_D_INFO, "  Found the Setup defaults via BPDT to cache.\n"));
+      DEBUG ((DEBUG_INFO, "  Found the Setup defaults via BPDT to cache.\n"));
 
       SystemConfiguration   = (SYSTEM_CONFIGURATION *) VariableSearchCandidateDataPtr;
       SetupVariableSize     = VariableDataSize;
@@ -225,13 +225,13 @@ CreateVariableHobs (
   }
 
   if (!FoundVariableDefaults) {
-    DEBUG ((EFI_D_ERROR, "Could not find the setup defaults in the NvStorage FV!\n"));
+    DEBUG ((DEBUG_ERROR, "Could not find the setup defaults in the NvStorage FV!\n"));
     return EFI_NOT_FOUND;
   }
 
-  DEBUG ((EFI_D_INFO, "  Setup data before update at address 0x%x\n", SystemConfiguration));
-  DEBUG ((EFI_D_INFO, "  Size of data in Setup header = %d bytes. Size of SYSTEM_CONFIGURATION = %d bytes.\n", SetupVariableSize, sizeof (SYSTEM_CONFIGURATION)));
-  DEBUG ((EFI_D_INFO, "  Printing system configuration variable data read from the FV:\n"));
+  DEBUG ((DEBUG_INFO, "  Setup data before update at address 0x%x\n", SystemConfiguration));
+  DEBUG ((DEBUG_INFO, "  Size of data in Setup header = %d bytes. Size of SYSTEM_CONFIGURATION = %d bytes.\n", SetupVariableSize, sizeof (SYSTEM_CONFIGURATION)));
+  DEBUG ((DEBUG_INFO, "  Printing system configuration variable data read from the FV:\n"));
   PrintSetupVariableData ((UINT8 *) SystemConfiguration, VariableDataSize);
 
   //
@@ -239,19 +239,19 @@ CreateVariableHobs (
   //
   Status = UpdateSetupDataValues (SystemConfiguration);
   if (EFI_ERROR (Status)) {
-    DEBUG ((EFI_D_ERROR, "  Couldn't override memory and platform information system configuration values.\n"));
+    DEBUG ((DEBUG_ERROR, "  Couldn't override memory and platform information system configuration values.\n"));
   }
 
-  DEBUG ((EFI_D_INFO, "  Total size of data to copy for default HOB = %d bytes.\n", (UINT32) ((VariableSearchCandidateDataPtr + VariableDataSize) - (UINTN) StartVariableStoreVariableHeader)));
+  DEBUG ((DEBUG_INFO, "  Total size of data to copy for default HOB = %d bytes.\n", (UINT32) ((VariableSearchCandidateDataPtr + VariableDataSize) - (UINTN) StartVariableStoreVariableHeader)));
 
   Status = CreateDefaultVariableHob (VariableStoreHeader, (UINT32) ((VariableSearchCandidateDataPtr + VariableDataSize) - (UINTN) StartVariableStoreVariableHeader));
   if (EFI_ERROR (Status)) {
-    DEBUG ((EFI_D_ERROR, "  Error occurred creating the default variable HOB. Variable data is invalid.\n"));
+    DEBUG ((DEBUG_ERROR, "  Error occurred creating the default variable HOB. Variable data is invalid.\n"));
     ASSERT_EFI_ERROR (Status);
     return Status;
   }
 
-  DEBUG ((EFI_D_INFO, "Successfully read Setup defaults.\n"));
+  DEBUG ((DEBUG_INFO, "Successfully read Setup defaults.\n"));
 
   return Status;
 }
@@ -279,22 +279,22 @@ ParseObbPayload (
   UINT32                           FspSImageBase;
   VOID                             *Memory;
 
-  DEBUG ((EFI_D_INFO, "Parsing and checking OBB Payload\n"));
+  DEBUG ((DEBUG_INFO, "Parsing and checking OBB Payload\n"));
 
   FvHeader = (EFI_FIRMWARE_VOLUME_HEADER *) PayloadPtr;
   PayloadTail = (UINTN) PayloadPtr + PayloadSize;
-  DEBUG ((EFI_D_INFO, "FvHeader = 0x%x; PayloadTail = 0x%x\n", (UINT32) FvHeader, PayloadTail));
+  DEBUG ((DEBUG_INFO, "FvHeader = 0x%x; PayloadTail = 0x%x\n", (UINT32) FvHeader, PayloadTail));
 
   FspHeader = (FSP_INFO_HEADER *) FspFindFspHeader ((UINT32) FvHeader);
   if (FspHeader == NULL) {
-    DEBUG ((EFI_D_INFO, "Cannot find FSP-S header!\n"));
+    DEBUG ((DEBUG_INFO, "Cannot find FSP-S header!\n"));
     return EFI_DEVICE_ERROR;
   }
   FspSImageBase = FspHeader->ImageBase;
-  DEBUG ((EFI_D_INFO, "FSP-S FV Base = 0x%X\n", (UINT32) FvHeader));
-  DEBUG ((EFI_D_INFO, "FSP-S FV Length = 0x%X\n", (UINT32) FvHeader->FvLength));
-  DEBUG ((EFI_D_INFO, "FSP-S Fsp Base = 0x%X\n", (UINT32) FspSImageBase));
-  DEBUG ((EFI_D_INFO, "FSP-S Fsp Size = 0x%X\n", FspHeader->ImageSize));
+  DEBUG ((DEBUG_INFO, "FSP-S FV Base = 0x%X\n", (UINT32) FvHeader));
+  DEBUG ((DEBUG_INFO, "FSP-S FV Length = 0x%X\n", (UINT32) FvHeader->FvLength));
+  DEBUG ((DEBUG_INFO, "FSP-S Fsp Base = 0x%X\n", (UINT32) FspSImageBase));
+  DEBUG ((DEBUG_INFO, "FSP-S Fsp Size = 0x%X\n", FspHeader->ImageSize));
 
   //
   // Copy to FSP-S to preferred base. The preferred base is defined in FSP Integration Guide.
@@ -311,7 +311,7 @@ ParseObbPayload (
 
   while ((UINT32) FvHeader < PayloadTail) {
     if (FvHeader->Signature != EFI_FVH_SIGNATURE) {
-      DEBUG ((EFI_D_ERROR, "Found Fv with invalid signature -- Stop parsing OBB.\n"));
+      DEBUG ((DEBUG_ERROR, "Found Fv with invalid signature -- Stop parsing OBB.\n"));
       break;
     }
 
@@ -320,13 +320,13 @@ ParseObbPayload (
     } else {
       FvName = (EFI_GUID *) ((UINTN) FvHeader + FvHeader->ExtHeaderOffset);
     }
-    DEBUG ((EFI_D_INFO, "Found Fv with GUID: %g\n", FvName));
+    DEBUG ((DEBUG_INFO, "Found Fv with GUID: %g\n", FvName));
 
     if (CompareGuid (&FvHeader->FileSystemGuid, &gEfiSystemNvDataFvGuid)) {
-      DEBUG ((EFI_D_INFO, "NVStorage FV at 0x%x.\n", (UINT32) FvHeader));
+      DEBUG ((DEBUG_INFO, "NVStorage FV at 0x%x.\n", (UINT32) FvHeader));
       Status = PeiServicesLocatePpi (&gEfiPeiReadOnlyVariable2PpiGuid, 0, NULL, (VOID **) &VariableServices);
       if (EFI_ERROR (Status)) {
-        DEBUG ((EFI_D_ERROR, "Could not locate EFI_PEI_READ_ONLY_VARIABLE2_PPI.\n"));
+        DEBUG ((DEBUG_ERROR, "Could not locate EFI_PEI_READ_ONLY_VARIABLE2_PPI.\n"));
         ASSERT_EFI_ERROR (Status);
         return EFI_NOT_FOUND;
       }
@@ -343,18 +343,18 @@ ParseObbPayload (
                                    );
 
       if (Status == EFI_NOT_FOUND || FdoEnabledGuidHob != NULL) {
-        DEBUG ((EFI_D_INFO, "Initializing variable defaults from BPDT...\n"));
+        DEBUG ((DEBUG_INFO, "Initializing variable defaults from BPDT...\n"));
 
         //
         // Create the variable default HOB
         //
         Status = CreateVariableHobs (FvHeader);
       } else if (EFI_ERROR (Status)) {
-        DEBUG ((EFI_D_ERROR, "Unable to read Setup variable to determine if defauls should be loaded.\n"));
+        DEBUG ((DEBUG_ERROR, "Unable to read Setup variable to determine if defauls should be loaded.\n"));
         ASSERT_EFI_ERROR (Status);
       }
     } else if (CompareGuid (FvName, &gObbyFirmwareFileSystemFvGuid)) {
-      DEBUG ((EFI_D_INFO, "Found OBBY: Saving info and skipping Install FV.\n"));
+      DEBUG ((DEBUG_INFO, "Found OBBY: Saving info and skipping Install FV.\n"));
       GuidHobPtr = GetFirstGuidHob (&gEfiPlatformInfoGuid);
       ASSERT (GuidHobPtr != NULL);
       PlatformInfo = GET_GUID_HOB_DATA (GuidHobPtr);
@@ -404,12 +404,16 @@ GetFvNotifyCallback (
   IN VOID                       *Ppi
   )
 {
-  EFI_STATUS                    Status = EFI_SUCCESS;
-  EFI_BOOT_MODE                 BootMode;
-  BPDT_PAYLOAD_DATA             *BpdtPayloadPtr;
+  EFI_STATUS                     Status = EFI_SUCCESS;
+  EFI_BOOT_MODE                  BootMode;
+  BPDT_PAYLOAD_DATA             *ObbPayloadPtr;
   EFI_HOB_GUID_TYPE             *GuidHobPtr;
   BPDT_HEADER                   *Bp1HdrPtr;
   BPDT_HEADER                   *Bp2HdrPtr;
+  SUBPART_DIR_HEADER            *DirectoryHeader;
+  SUBPART_DIR_ENTRY             *DirectoryEntry;
+  VOID                          *ObbDataPtr;
+  UINT32                         ObbDataSize;
 
   PeiServicesGetBootMode (&BootMode);
 
@@ -419,10 +423,10 @@ GetFvNotifyCallback (
   //
   GuidHobPtr = GetFirstGuidHob (&gEfiBpdtLibBp2DataGuid);
   if (GuidHobPtr != NULL) {
-    DEBUG ((EFI_D_INFO, "GetFvNotifyCallback already called. Skipping.\n"));
+    DEBUG ((DEBUG_INFO, "GetFvNotifyCallback already called. Skipping.\n"));
     return Status;
   }
-  
+
   //
   // Locate headers of both Boot partion 1 and 2
   //
@@ -436,7 +440,15 @@ GetFvNotifyCallback (
   //
   //  Get the OBB payload, shadow it, and check the hash before processing it.
   //
-  GetBpdtPayloadData (BootPart2, BpdtObb, &BpdtPayloadPtr);
+  Status = GetBpdtPayloadData (BootPart2, BpdtObb, &ObbPayloadPtr);
+  if (EFI_ERROR (Status)) {
+    DEBUG((DEBUG_ERROR, "ERROR: Failed to find OBB, Status = %r\n", Status));
+    CpuDeadLoop();
+  }
+  DirectoryHeader = (SUBPART_DIR_HEADER *) ObbPayloadPtr->DataPtr;
+  DirectoryEntry  = (SUBPART_DIR_ENTRY *) ((UINTN) DirectoryHeader + sizeof (SUBPART_DIR_HEADER));
+  ObbDataPtr      = (VOID *) ((UINTN) DirectoryHeader + DirectoryEntry->EntryOffset);
+  ObbDataSize     = ObbPayloadPtr->Size - 0x1000;
 
 #if (BOOT_GUARD_ENABLE == 1)
   //
@@ -448,15 +460,15 @@ GetFvNotifyCallback (
   if (BootMode != BOOT_ON_S3_RESUME) {
     Status = LocateAndVerifyHashBpm (HashObb);
     if (EFI_ERROR (Status)) {
-      DEBUG((EFI_D_ERROR, "Verify OBB failed, Status = %r\n", Status));
+      DEBUG((DEBUG_ERROR, "Verify OBB failed, Status = %r\n", Status));
       CpuDeadLoop();
     }
   }
 #endif
 
-  DEBUG ((EFI_D_INFO, "GetFvNotifyCallback: Processing OBB Payload.\n"));
+  DEBUG ((DEBUG_INFO, "GetFvNotifyCallback: Processing OBB Payload.\n"));
 
-  ParseObbPayload ((UINT8*) PcdGet32 (PcdFlashObbPayloadMappedBase), PcdGet32 (PcdFlashObbPayloadSize), BootMode);
+  ParseObbPayload ((UINT8*) ObbDataPtr, ObbDataSize, BootMode);
 
   //
   // Set Zephr ID

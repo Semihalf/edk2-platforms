@@ -73,22 +73,13 @@
   DEFINE FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_SIZE       = 0x00040000
 
   DEFINE FLASH_REGION_FV_IBBM_OFFSET                              = $(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_OFFSET) + $(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_SIZE)
-  DEFINE FLASH_REGION_FV_IBBL_SIZE                                = 0x00001000
-
   DEFINE FLASH_REGION_FV_IBBM_SIZE                                = $(BLD_IBBM_SIZE)
+
+  DEFINE FLASH_REGION_FV_IBBL_SIZE                                = 0x00001000
   DEFINE FLASH_REGION_FV_IBBL_OFFSET                              = $(FLASH_SIZE) - $(FLASH_REGION_FV_IBBL_SIZE)
 
   DEFINE FLASH_FV_RECOVERY_BASE                                   = 0xFFF80000
   DEFINE FLASH_FV_RECOVERY_SIZE                                   = 0x00080000
-
-  DEFINE FLASH_OBB_PAYLOAD_MAPPED_BASE                            = 0xFFC82040
-  DEFINE FLASH_OBB_PAYLOAD_SIZE                                   = 0x002EA000
-
-  DEFINE FLASH_IBB_REGION_MAPPED_BASE                             = 0xFF980000
-  DEFINE FLASH_IBB_REGION_SIZE                                    = 0x0007A000
-
-  DEFINE FLASH_OBB_REGION_MAPPED_BASE                             = 0xFFC82000
-  DEFINE FLASH_OBB_REGION_SIZE                                    = 0x002EB000
 
 ################################################################################
 #
@@ -122,12 +113,6 @@
   SET gPlatformModuleTokenSpaceGuid.PcdFlashAreaSize                   = $(FLASH_AREA_SIZE)
   SET gPlatformModuleTokenSpaceGuid.PcdFlashNvStorageBase              = $(FLASH_BASE) + $(FLASH_REGION_VPD_OFFSET)
   SET gPlatformModuleTokenSpaceGuid.PcdFlashNvStorageSize              = $(FLASH_REGION_VPD_SIZE) + $(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_WORKING_SIZE) + $(FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_SIZE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashObbPayloadMappedBase       = $(FLASH_OBB_PAYLOAD_MAPPED_BASE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashObbPayloadSize             = $(FLASH_OBB_PAYLOAD_SIZE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashIbbRegionMappedBase        = $(FLASH_IBB_REGION_MAPPED_BASE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashIbbRegionSize              = $(FLASH_IBB_REGION_SIZE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashObbRegionMappedBase        = $(FLASH_OBB_REGION_MAPPED_BASE)
-  SET gPlatformModuleTokenSpaceGuid.PcdFlashObbRegionSize              = $(FLASH_OBB_REGION_SIZE)
 
 ################################################################################
 #
@@ -242,24 +227,24 @@
   INF $(PLATFORM_PACKAGE_COMMON)/SampleCode/IntelFsp2WrapperPkg/FspsWrapperPeim/FspsWrapperPeim.inf
 
   INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformPostMemPei/PlatformPostMemPei.inf
-  
+
 !if $(PEI_DISPLAY_ENABLE) == TRUE
   FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid) {
     SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Tianocore.bmp
   }
-  
+
   # VBT For Leaf Hill (File Guid is gPeiLeafHillVbtGuid)
   FILE FREEFORM = 6AE80680-5E3F-4E63-A5F5-78E5214F13FE {
     SECTION RAW = $(PLATFORM_NAME)/Board/LeafHill/Vbt/VbtBxtMipi.bin
     SECTION UI = "IntelGopVbt1"
   }
-  
+
   # VBT For Minnowboard 3 (File Guid is gPeiMinnowBoard3VbtGuid)
   FILE FREEFORM = E08CA6D5-8D02-43ae-ABB1-952CC787C933 {
     SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3/Vbt/VbtBxtMipi.bin
     SECTION UI = "IntelGopVbt1"
   }
-  
+
   # VBT For Minnowboard 3 Module (File Guid is gPeiMinnow3ModuleVbtGuid)
   FILE FREEFORM = 1F9CBB42-107E-46A4-A2CB-92F586F9FB31 {
     SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Vbt/VbtBxtMipi.bin
@@ -317,7 +302,7 @@
   #
   INF $(PLATFORM_PACKAGE_COMMON)/PlatformSettings/PlatformVTdInfoPei/PlatformVTdInfoPei.inf
   INF IntelSiliconPkg/Feature/VTd/IntelVTdPmrPei/IntelVTdPmrPei.inf
-  
+
 [FV.FVIBBM]
   BlockSize          = $(FLASH_BLOCK_SIZE)
   FvBaseAddress      = 0xFEF45000
@@ -612,11 +597,11 @@ APRIORI DXE {
   INF $(PLATFORM_PACKAGE_COMMON)/Console/GraphicsOutputDxe/GraphicsOutputDxe.inf
 
   FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid) {
-  SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Tianocore.bmp
+    SECTION RAW = $(PLATFORM_PACKAGE_COMMON)/Binaries/Logo/Tianocore.bmp
   }
-  
+
   FILE FREEFORM = PCD(gPlatformModuleTokenSpaceGuid.PcdLogoFileGuid) {
-  SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3/Logo/MinnowBoardLogo.bmp
+    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3/Logo/MinnowBoardLogo.bmp
   }
 
   INF $(PLATFORM_PACKAGE_COMMON)/PnpDxe/PnpDxe.inf
@@ -711,7 +696,7 @@ APRIORI DXE {
   #
   INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
   INF $(PLATFORM_PACKAGE_COMMON)/Features/Smbios/SmBiosMiscDxe/SmBiosMiscDxe.inf
-  
+
   #
   #SM Bus
   #
@@ -721,7 +706,7 @@ APRIORI DXE {
   # LAN/Network
   #
 !if $(NETWORK_ENABLE) == TRUE
-  
+
   FILE DRIVER = 51B24E4E-FDD2-4047-BE4D-131873A457B2 {
     SECTION PE32 = BroxtonPlatformPkg/Common/Binaries/UNDI/AX88179/AX88179_178A_UEFI_V2.8.0_X64.efi
     SECTION UI = "UNDI"
@@ -782,7 +767,7 @@ APRIORI DXE {
   #
   INF  $(PLATFORM_PACKAGE_COMMON)/Acpi/UsbTypeCDxe/UsbTypeCDxe.inf
 
-  
+
   #
   # VT-d for MDA Protection
   #
