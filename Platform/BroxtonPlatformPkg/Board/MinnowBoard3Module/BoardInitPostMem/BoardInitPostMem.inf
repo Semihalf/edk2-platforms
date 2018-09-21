@@ -66,6 +66,7 @@
   gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdeMMCHostMaxSpeed
+  gPlatformModuleTokenSpaceGuid.PcdPciePort3Enable
 
 [Guids]
   gEfiPlatformInfoGuid

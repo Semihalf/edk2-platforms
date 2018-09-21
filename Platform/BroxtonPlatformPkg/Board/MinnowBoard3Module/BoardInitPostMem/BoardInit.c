@@ -127,6 +127,11 @@ MinnowBoard3ModulePostMemInitCallback (
   PcdSet8 (PcdeMMCHostMaxSpeed, (UINT8) (SystemConfiguration.ScceMMCHostMaxSpeed));
 
   //
+  // Set PcdPciePort3Enable
+  //
+  PcdSetBool(PcdPciePort3Enable, SystemConfiguration.PcieRootPortEn[3]);
+
+  //
   // Add init steps here
   //
   //

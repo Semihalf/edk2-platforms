@@ -151,7 +151,12 @@ LeafHillPostMemInitCallback (
   PcdSet8(HdaEndpointI2sRenderSKPVirtualBusId, 5); //I2S6
   PcdSet8(HdaEndpointI2sRenderHPVirtualBusId, 5);  //I2S6
   PcdSet8(HdaEndpointI2sCaptureVirtualBusId, 5);   //I2S6
-  
+
+  //
+  // Set PcdPciePort3Enable
+  //
+  PcdSetBool(PcdPciePort3Enable, SystemConfiguration.PcieRootPortEn[3]);
+
   //
   // Add init steps here
   //

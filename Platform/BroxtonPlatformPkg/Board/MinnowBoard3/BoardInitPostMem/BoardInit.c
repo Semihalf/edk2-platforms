@@ -157,6 +157,12 @@ MinnowBoard3PostMemInitCallback (
   PcdSet8(HdaEndpointI2sRenderHPVirtualBusId, 0);  // I2S1
   PcdSet8(HdaEndpointI2sCaptureVirtualBusId, 0);   // I2S1
 
+
+  //
+  // Set PcdPciePort3Enable
+  //
+  PcdSetBool(PcdPciePort3Enable, SystemConfiguration.PcieRootPortEn[3]);
+
   //
   // Add init steps here
   //

@@ -146,6 +146,11 @@ AuroraGlacierPostMemInitCallback (
   PcdSet8(HdaEndpointI2sCaptureVirtualBusId, 1);   // I2S2
 
   //
+  // Set PcdPciePort3Enable
+  //
+  PcdSetBool(PcdPciePort3Enable, SystemConfiguration.PcieRootPortEn[3]);
+
+  //
   // Add init steps here
   //
   //
