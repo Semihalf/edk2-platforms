@@ -21,14 +21,14 @@
 //
 // HWCONF defines. Low = off & high = on
 //
-#define HWCONF_COMx     BIT0
-#define HWCONF_ECC      BIT1
-//#define HWCONF_COMx     BIT2
-//#define HWCONF_COMx     BIT3
-#define HWCONF_USB3     BIT4
-#define HWCONF_CAMERA   BIT5
-#define HWCONF_MEMORY   6
-#define HWCONF_MEMORY_MASK   (BIT6 | BIT7 | BIT8)
+#define MB3M_HWCONF_COMx     BIT0
+#define MB3M_HWCONF_ECC      BIT1
+//#define MB3M_HWCONF_COMx     BIT2
+//#define MB3M_HWCONF_COMx     BIT3
+#define MB3M_HWCONF_USB3     BIT4
+#define MB3M_HWCONF_CAMERA   BIT5
+#define MB3M_HWCONF_MEMORY   6
+#define MB3M_HWCONF_MEMORY_MASK   (BIT6 | BIT7 | BIT8)
 
 typedef struct {
   UINT32   CommAndOffset;

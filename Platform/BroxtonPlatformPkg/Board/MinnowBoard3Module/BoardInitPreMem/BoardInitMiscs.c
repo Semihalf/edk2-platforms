@@ -166,7 +166,7 @@ Mb3MUpdateFspmUpd (
   //
   // Translate into Memory Type
   //
-  MemoryType = (UINT8) ((HwconfStraps & HWCONF_MEMORY_MASK) >> HWCONF_MEMORY);
+  MemoryType = (UINT8) ((HwconfStraps & MB3M_HWCONF_MEMORY_MASK) >> MB3M_HWCONF_MEMORY);
   if (MemoryType == 0) {
     DEBUG ((DEBUG_INFO, "**** MB3 Module - SPD based memory init requested, but converted into Memory Profile type #4!\n"));
     MemoryType = 4; // LPDDR4 16Gbit 4 channels

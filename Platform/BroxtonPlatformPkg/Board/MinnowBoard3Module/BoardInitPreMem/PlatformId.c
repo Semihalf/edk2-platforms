@@ -19,96 +19,102 @@
 #include <Library/GpioLib.h>
 #include "PlatformId.h"
 
-PAD_ID_INFO gRawBoardIdPadInfo[] = {
+PAD_ID_INFO gMB3MRawBoardIdPadInfo[] = {
   {NW_PMIC_STDBY,   EnPd, P_20K_L}, // bit 0
   {NW_GPIO_213,     EnPd, P_20K_L}, // bit 1
   {NW_PMIC_RESET_B, EnPd, P_20K_L}, // bit 2
-  {NW_PMIC_PWRGOOD, EnPd, P_20K_L}, // bit 3
-  {N_GPIO_27,       EnPd, P_20K_L}, // bit 4
-  {N_GPIO_72,       EnPd, P_20K_L}, // bit 5
-  {N_GPIO_64,       EnPd, P_20K_L}  // bit 6
+  {N_GPIO_27,       EnPd, P_20K_L}, // bit 3
+  {N_GPIO_72,       EnPd, P_20K_L}, // bit 4
+  {N_GPIO_64,       EnPd, P_20K_L}  // bit 5
 };
 
 //
-// MinnowBoard v3 = 0x00000017
-//===========================================
-// NW_PMIC_STDBY   - BOARD_ID0 - 10k PU -> 1   xxxxxxx1
-// NW_GPIO_213     - BOARD_ID1 - 10k PU -> 1   xxxxxx1x
-// NW_PMIC_RESET_B - BOARD_ID2 - 10k PU -> 1   xxxxx1xx
-// NW_PMIC_PWRGOOD -           - 10k PD -> 0   xxxx0xxx
-// N_GPIO_27       - BOARD_ID3 - 10k PU -> 1   xxx1xxxx
-// N_GPIO_72       -           - Float  -> 0   xx0xxxxx
-// N_GPIO_64       -           - Float  -> 0   x0xxxxxx
-//===========================================  00010111b
+// MinnowBoard v3 = 0x0000000F
+//======================================================
+// NW_PMIC_STDBY   - BOARD_ID0           - 10k PU  -> 1   xxxxxxx1
+// NW_GPIO_213     - BOARD_ID1           - 10k PU  -> 1   xxxxxx1x
+// NW_PMIC_RESET_B - BOARD_ID2           - 10k PU  -> 1   xxxxx1xx
+// N_GPIO_27       - BOARD_ID3           - 10k PU  -> 1   xxxx1xxx
+// N_GPIO_72       - GP_CAMERA_GP72      - Float   -> 0   xxx0xxxx
+// N_GPIO_64       - GP_CAMERA_GP64      - Float   -> 0   xx0xxxxx
+//======================================================  00001111b
 
-// Benson Glacier = 0x00000024
-//===========================================
-// NW_PMIC_STDBY   - BOARD_ID0 - 10k PD -> 0   xxxxxxx0
-// NW_GPIO_213     - BOARD_ID1 - 10k PD -> 0   xxxxxx0x
-// NW_PMIC_RESET_B - BOARD_ID2 - 10k PU -> 1   xxxxx1xx
-// NW_PMIC_PWRGOOD -           - Float  -> 0   xxxx0xxx
-// N_GPIO_27       -           - Float  -> 0   xxx0xxxx
-// N_GPIO_72       - BOARD_ID3 - 10k PU -> 1   xx1xxxxx
-// N_GPIO_64       -           - Float  -> 0   x0xxxxxx
-//===========================================  00100100b
+// UpSquared = 0x00000010/11
+//======================================================
+// NW_PMIC_STDBY   - DDR_CH              - Unknown -> 1   xxxxxxx?
+// NW_GPIO_213     - mSATA_PCIe_SEL_N    - Float   -> 0   xxxxxx0x
+// NW_PMIC_RESET_B - NC                  - Float   -> 0   xxxxx0xx
+// N_GPIO_27       - FPGA_fw_reload      - Float   -> 0   xxxx0xxx
+// N_GPIO_72       - GP_CAMERASB10       - 1K PU   -> 1   xxx1xxxx
+// N_GPIO_64       - GP_CAMERASB2        - Float   -> 0   xx0xxxxx
+//======================================================  0001000?b
 
-// Aurora Glacier = 0x00000026
-//===========================================
-// NW_PMIC_STDBY   - BOARD_ID0 - 10k PD -> 0   xxxxxxx0
-// NW_GPIO_213     - BOARD_ID1 - 10k PU -> 1   xxxxxx1x
-// NW_PMIC_RESET_B - BOARD_ID2 - 10k PU -> 1   xxxxx1xx
-// NW_PMIC_PWRGOOD -           - Float  -> 0   xxxx0xxx
-// N_GPIO_27       -           - Float  -> 0   xxx0xxxx
-// N_GPIO_72       - BOARD_ID3 - 10k PU -> 1   xx1xxxxx
-// N_GPIO_64       -           - Float  -> 0   x0xxxxxx
-//===========================================  00100110b
+// Benson Glacier = 0x00000014
+//======================================================
+// NW_PMIC_STDBY   - BOARD_ID0           - 10k PD  -> 0   xxxxxxx0
+// NW_GPIO_213     - BOARD_ID1           - 10k PD  -> 0   xxxxxx0x
+// NW_PMIC_RESET_B - BOARD_ID2           - 10k PU  -> 1   xxxxx1xx
+// N_GPIO_27       - NC                  - Float   -> 0   xxxx0xxx
+// N_GPIO_72       - BOARD_ID3           - 10k PU  -> 1   xxx1xxxx
+// N_GPIO_64       - NC                  - Float   -> 0   xx0xxxxx
+//======================================================  00010100b
 
-// MinnowBoard v3 Module = 0x00000040
-//===========================================
-// NW_PMIC_STDBY   -           - Float  -> 0   xxxxxxx0
-// NW_GPIO_213     -           - Float  -> 0   xxxxxx0x
-// NW_PMIC_RESET_B -           - Float  -> 0   xxxxx0xx
-// NW_PMIC_PWRGOOD -           - Float  -> 0   xxxx0xxx
-// N_GPIO_27       -           - Float  -> 0   xxx0xxxx
-// N_GPIO_72       -           - Float  -> 0   xx0xxxxx
-// N_GPIO_64       -           - 10k PU -> 1   x1xxxxxx
-//===========================================  01000000b
+// Aurora Glacier = 0x00000016
+//======================================================
+// NW_PMIC_STDBY   - BOARD_ID0           - 10k PD  -> 0   xxxxxxx0
+// NW_GPIO_213     - BOARD_ID1           - 10k PU  -> 1   xxxxxx1x
+// NW_PMIC_RESET_B - BOARD_ID2           - 10k PU  -> 1   xxxxx1xx
+// N_GPIO_27       - NC                  - Float   -> 0   xxxx0xxx
+// N_GPIO_72       - BOARD_ID3           - 10k PU  -> 1   xxx1xxxx
+// N_GPIO_64       - NC                  - Float   -> 0   xx0xxxxx
+//======================================================  00010110b
 
-// LeafHill = 0x00000047
-//===========================================
-// NW_PMIC_STDBY   - BOARD_ID0 - 10k PU -> 1   xxxxxxx1
-// NW_GPIO_213     - BOARD_ID1 - 10k PU -> 1   xxxxxx1x
-// NW_PMIC_RESET_B - BOARD_ID2 - 10k PU -> 1   xxxxx1xx
-// NW_PMIC_PWRGOOD - BOARD_ID3 - 10k PD -> 0   xxxx0xxx
-// N_GPIO_27       -           - Float  -> 0   xxx0xxxx
-// N_GPIO_72       -           - Float  -> 0   xx0xxxxx
-// N_GPIO_64       -           - 0k PU  -> 1   x1xxxxxx
-//===========================================  01000111b
+// MinnowBoard v3 Module = 0x00000020
+//======================================================
+// NW_PMIC_STDBY   - NC                  - Float   -> 0   xxxxxxx0
+// NW_GPIO_213     - NC                  - Float   -> 0   xxxxxx0x
+// NW_PMIC_RESET_B - NC                  - Float   -> 0   xxxxx0xx
+// N_GPIO_27       - NC                  - Float   -> 0   xxxx0xxx
+// N_GPIO_72       - NC                  - Float   -> 0   xxx0xxxx
+// N_GPIO_64       - CAM0_RST#           - 10k PU  -> 1   xx1xxxxx
+//======================================================  00100000b
 
-TRANSLATE_ID_INFO gBoardIdInfo[] = {
-  {0x00000017, BOARD_ID_MINNOW,        "Minnow Board v3"},
-  {0x00000024, BOARD_ID_BENSON,        "Benson Glacier"},
-  {0x00000026, BOARD_ID_AURORA,        "Aurora Glacier"},
-  {0x00000040, BOARD_ID_MINNOW_MODULE, "Minnow Board v3 Module"},
-  {0x00000047, BOARD_ID_LFH_CRB,       "Leafhill"},
+// LeafHill = 0x00000027
+//======================================================
+// NW_PMIC_STDBY   - BOARD_ID0           - 10k PU  -> 1   xxxxxxx1
+// NW_GPIO_213     - BOARD_ID1           - 10k PU  -> 1   xxxxxx1x
+// NW_PMIC_RESET_B - BOARD_ID2           - 10k PU  -> 1   xxxxx1xx
+// N_GPIO_27       - SOC_GPIO27          - Float   -> 0   xxxx0xxx
+// N_GPIO_72       - NC                  - Float   -> 0   xxx0xxxx
+// N_GPIO_64       - MCSI1_XSHUTDN       - 0k PU   -> 1   xx1xxxxx
+//======================================================  00100111b
+
+TRANSLATE_ID_INFO gMB3MBoardIdInfo[] = {
+  {0x0000000F, BOARD_ID_MINNOW,        "Minnow Board v3"},
+  {0x00000010, BOARD_ID_UP2,           "Up Squared"},
+  {0x00000011, BOARD_ID_UP2,           "Up Squared"},
+  {0x00000014, BOARD_ID_BENSON,        "Benson Glacier"},
+  {0x00000016, BOARD_ID_AURORA,        "Aurora Glacier"},
+  {0x00000020, BOARD_ID_MINNOW_MODULE, "Minnow Board v3 Module"},
+  {0x00000027, BOARD_ID_LFH_CRB,       "Leafhill"},
   {0xFFFFFFFF, BOARD_ID_APL_UNKNOWN,   "Unknown Board ID"}
 };
 
-PAD_ID_INFO gRawFabIdPadInfo[] = {
+PAD_ID_INFO gMB3MRawFabIdPadInfo[] = {
   {SW_GPIO_207,     EnPd, P_20K_L}  // bit 0 - GPIO 207
 };
 
 // MinnowBoard v3 Module, Fab A = 0x00000000
-//===========================================
-// SW_GPIO_207                 - Float  -> 0   xxxxxxx0
-//===========================================  00000000b
+//======================================================
+// SW_GPIO_207     - NC                  - Float   -> 0   xxxxxxx0
+//======================================================  00000000b
 
 // MinnowBoard v3 Module, Fab C = 0x00000001
-//===========================================
-// SW_GPIO_207                 - 10k PU -> 1   xxxxxxx1
-//===========================================  00000001b
+//======================================================
+// SW_GPIO_207     - PCIE_WAKE_LAN1_1V8# - 10k PU  -> 1   xxxxxxx1
+//======================================================  00000001b
 
-TRANSLATE_ID_INFO gFabIdInfo[] = {
+TRANSLATE_ID_INFO gMB3MFabIdInfo[] = {
   {0x00000000,     FAB_ID_A, "Fab ID A"},
   {0x00000001,     FAB_ID_C, "Fab ID C"},
   {0xFFFFFFFF,  UNKNOWN_FAB, "Unknown Fab ID"}
@@ -199,16 +205,16 @@ Minnow3ModuleGetCommonBoardId (
   //
   // Get BoardId
   //
-  RawBoardId = Minnow3ModuleGetId (gRawBoardIdPadInfo, sizeof (gRawBoardIdPadInfo) / sizeof (gRawBoardIdPadInfo[0]));
+  RawBoardId = Minnow3ModuleGetId (gMB3MRawBoardIdPadInfo, sizeof (gMB3MRawBoardIdPadInfo) / sizeof (gMB3MRawBoardIdPadInfo[0]));
   DEBUG ((DEBUG_INFO, "%a(#%3d) - Raw BoardId: %02X\n", __FUNCTION__, __LINE__, RawBoardId));
 
   //
   // Convert from a 32-bit raw BoardId to an 8-bit one.
   //
-  for (index = 0; index < sizeof (gBoardIdInfo) / sizeof (gBoardIdInfo[0]); index++) {
-    if ((gBoardIdInfo[index].RawId == RawBoardId) || (gBoardIdInfo[index].RawId == 0xFFFFFFFF)) {
-      BoardId = gBoardIdInfo[index].TranslatedId;
-      DEBUG ((DEBUG_INFO, "%a(#%3d) - BoardId: %02X = %a\n", __FUNCTION__, __LINE__, BoardId, gBoardIdInfo[index].Description));
+  for (index = 0; index < sizeof (gMB3MBoardIdInfo) / sizeof (gMB3MBoardIdInfo[0]); index++) {
+    if ((gMB3MBoardIdInfo[index].RawId == RawBoardId) || (gMB3MBoardIdInfo[index].RawId == 0xFFFFFFFF)) {
+      BoardId = gMB3MBoardIdInfo[index].TranslatedId;
+      DEBUG ((DEBUG_INFO, "%a(#%3d) - BoardId: %02X = %a\n", __FUNCTION__, __LINE__, BoardId, gMB3MBoardIdInfo[index].Description));
       break;
     }
   }
@@ -230,16 +236,16 @@ Minnow3ModuleGetCommonFabId (
   //
   // Get FabId
   //
-  RawFabId = Minnow3ModuleGetId (gRawFabIdPadInfo, sizeof (gRawFabIdPadInfo) / sizeof (gRawFabIdPadInfo[0]));
+  RawFabId = Minnow3ModuleGetId (gMB3MRawFabIdPadInfo, sizeof (gMB3MRawFabIdPadInfo) / sizeof (gMB3MRawFabIdPadInfo[0]));
   DEBUG ((DEBUG_INFO, "%a(#%3d) - Raw FabId: %02X\n", __FUNCTION__, __LINE__, RawFabId));
 
   //
   // Convert from a 32-bit raw FabId to an 8-bit one.
   //
-  for (index = 0; index < sizeof (gFabIdInfo) / sizeof (gFabIdInfo[0]); index++) {
-    if ((gFabIdInfo[index].RawId == RawFabId) || (gFabIdInfo[index].RawId == 0xFFFFFFFF)) {
-      FabId = gFabIdInfo[index].TranslatedId;
-      DEBUG ((DEBUG_INFO, "%a(#%3d) - FabId: %02X = %a\n", __FUNCTION__, __LINE__, FabId, gFabIdInfo[index].Description));
+  for (index = 0; index < sizeof (gMB3MFabIdInfo) / sizeof (gMB3MFabIdInfo[0]); index++) {
+    if ((gMB3MFabIdInfo[index].RawId == RawFabId) || (gMB3MFabIdInfo[index].RawId == 0xFFFFFFFF)) {
+      FabId = gMB3MFabIdInfo[index].TranslatedId;
+      DEBUG ((DEBUG_INFO, "%a(#%3d) - FabId: %02X = %a\n", __FUNCTION__, __LINE__, FabId, gMB3MFabIdInfo[index].Description));
       break;
     }
   }
