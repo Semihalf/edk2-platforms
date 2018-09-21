@@ -40,7 +40,7 @@
   EepromDataLib.c
   EepromDataLib.h
   EepromDataNullLibConstructor.c
-  MemoryAllocationPei.c
   Null/EepromDataNullLib.c
   Null/EepromDataNullLib.h
+  Pei/MemoryAllocationPei.c
 

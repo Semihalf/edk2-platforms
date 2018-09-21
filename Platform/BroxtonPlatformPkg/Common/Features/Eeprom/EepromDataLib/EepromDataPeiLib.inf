@@ -34,6 +34,7 @@
   DebugLib
   EepromPlatformLib
   HobLib
+  I2cLib
   PcdLib
   PeiServicesLib
   PrintLib
@@ -57,16 +58,16 @@
   EepromDataLib.c
   EepromDataLib.h
   EepromDataLibConstructor.c
-  MemoryAllocationPei.c
   EEPROM/EepromDataEepromLib.c
   EEPROM/EepromDataEepromLib.h
-  EEPROM/HobDataPei.c
+  EEPROM/Pei/HobDataPei.c
   FV/EepromDataFvLib.c
   FV/EepromDataFvLib.h
-  FV/GetImagePei.c
+  FV/Pei/GetImagePei.c
   Memory/EepromDataMemoryLib.c
   Memory/EepromDataMemoryLib.h
-  Memory/HobDataPei.c
+  Memory/Pei/HobDataPei.c
   Null/EepromDataNullLib.c
   Null/EepromDataNullLib.h
+  Pei/MemoryAllocationPei.c
 
