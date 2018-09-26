@@ -73,8 +73,9 @@ set FSP_BIN_PKG_NAME=BroxtonFspBinPkg
 set STITCH_PATH=%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch
 set ResetVectorPath=%WORKSPACE%\%PLATFORM_RC_PACKAGE%\Cpu\ResetVector
 
-PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\GenBiosId;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\nasm\Win32
-PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\FCE;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\nasm\Win32
+PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\FCE
+PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\GenBiosId
+PATH=%PATH%;%WORKSPACE%\%PLATFORM_PATH%\Common\Tools\nasm\Win32
 
 ::**********************************************************************
 :: Parse command line arguments
@@ -268,8 +269,8 @@ if "%Arch%"=="IA32" (
     echo DEFINE X64_CONFIG              = TRUE                      >> %Build_Macros%
 )
 
-echo DEFINE UP2_BOARD                = %UP2_BOARD%               >> %Build_Macros%
-echo DEFINE MINNOW3_MODULE_BOARD     = %MINNOW3_MODULE_BOARD%    >> %Build_Macros%
+echo DEFINE UP2_BOARD               = %UP2_BOARD%               >> %Build_Macros%
+echo DEFINE MINNOW3_MODULE_BOARD    = %MINNOW3_MODULE_BOARD%    >> %Build_Macros%
 
 ::Stage of copy of BiosId.env in Conf/ with Platform_Type and Build_Target values removed
 
@@ -288,43 +289,63 @@ if /i "%~2" == "RELEASE" (
     echo BUILD_TYPE = D >> Conf\BiosId.env
 )
 
-if %BoardId%==BG (
-  if %FabId%==B (
+if "%BoardId%" == "BG" (
+  if "%FabId%" == "A" (
+    echo BOARD_REV = A >> Conf\BiosId.env
+  ) else if "%FabId%" == "B" (
     echo BOARD_REV = B >> Conf\BiosId.env
   ) else (
-    echo BOARD_REV = A >> Conf\BiosId.env
+    echo ERROR: Benson Glacier currently only supports Board Fab A & B^^^!
+    goto BldFail
   )
 )
 
-if %BoardId%==AG (
-  echo BOARD_REV = A >> Conf\BiosId.env
-)
-
-if %BoardId%==MN (
-  if %FabId%==B (
-    echo BOARD_REV = B >> Conf\BiosId.env
-  ) else (
+if "%BoardId%" == "AG" (
+  if "%FabId%" == "A" (
     echo BOARD_REV = A >> Conf\BiosId.env
+  ) else (
+    echo ERROR: Aurora Glacier currently only supports Board Fab A^^^!
+    goto BldFail
   )
 )
 
-if %BoardId%==MX (
-  if %FabId%==C (
+if "%BoardId%" == "MN" (
+  if "%FabId%" == "A" (
+    echo BOARD_REV = A >> Conf\BiosId.env
+  ) else if "%FabId%" == "B" (
+    echo BOARD_REV = B >> Conf\BiosId.env
+  ) else (
+    echo ERROR: Minnow Baord v3 currently only supports Board Fab A & B^^^!
+    goto BldFail
+  )
+)
+
+if "%BoardId%" == "MX" (
+  if "%FabId%" == "A" (
+    echo BOARD_REV = A >> Conf\BiosId.env
+  ) else if "%FabId%" == "C" (
     echo BOARD_REV = C >> Conf\BiosId.env
   ) else (
-    echo BOARD_REV = A >> Conf\BiosId.env
+    echo ERROR: Minnow Baord v3 Module currently only supports Board Fab A, B & C^^^!
+    goto BldFail
   )
 )
 
-if %BoardId%==LH (
-  if %FabId%==D (
+if "%BoardId%" == "LH" (
+  if "%FabId%" == "D" (
     echo BOARD_REV = D >> Conf\BiosId.env
+  ) else (
+    echo ERROR: Leaf Hill currently only supports Board Fab D^^^!
+    goto BldFail
   )
 )
 
-if %BoardId%==UP (
-  if %FabId%==A (
+if "%BoardId%" == "UP" (
+  if "%FabId%" == "A" (
     echo BOARD_REV = A >> Conf\BiosId.env
+  ) else (
+    echo ERROR: Up Squared currently only supports Board Fab A^^^!
+    goto BldFail
   )
 )
 
@@ -477,17 +498,93 @@ if not exist "%AutoGenPath%" (
 )
 findstr /L "_PCD_VALUE_" %AutoGenPath% > %STITCH_PATH%\FlashMap.h
 
+::
+:: NOTE: This cannot be inside an if..then block. It freaks out at the PowerShell execution.
+::
+if not exist "%STITCH_PATH%\FlashMap.h" (
+  echo ERROR: Couldn't find %STITCH_PATH%\FlashMap.h
+  goto BldFail
+)
+  echo.
+  echo Get NvStorage magic numbers...
+  ::
+  ::      %STITCH_PATH%\FlashMap.h has the information for the magic numbers below. Parse it.
+  ::        You'll need to account for both hex (0x000000) and int (1234567U) value types
+  ::        FLASH_REGION_VPD_OFFSET
+  ::          _PCD_VALUE_PcdFlashNvStorageBase - _PCD_VALUE_PcdFlashBaseAddress
+  ::        FLASH_REGION_VPD_SIZE + FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_WORKING_SIZE + FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_SIZE
+  ::          _PCD_VALUE_PcdFlashNvStorageSize
+  ::
+  ::                         Variable to find                 Position Variable      File to search
+  ::===========================================================================================================
+    call :FindVariableInFile _PCD_VALUE_PcdFlashNvStorageBase 3        NvStorageBase "%STITCH_PATH%\FlashMap.h"
+    call :FindVariableInFile _PCD_VALUE_PcdFlashBaseAddress   3        BaseAddress   "%STITCH_PATH%\FlashMap.h"
+    call :FindVariableInFile _PCD_VALUE_PcdFlashNvStorageSize 3        NvStorageSize "%STITCH_PATH%\FlashMap.h"
+    :: Find image offset as opposed to memory offset
+    del /f /q temp.pcd >NUL 2>&1
+    PowerShell ([uint32]$env:NvStorageBase - [uint32]$env:BaseAddress) > temp.pcd
+    set /p VpdOffset=<temp.pcd
+    del /f /q temp.pcd >NUL 2>&1
+    :: Force the variables we care about into DEC string format
+    set VpdSize=%NvStorageSize%
+    call :ForceToDec VpdOffset
+    call :ForceToDec VpdSize
+    :: Dump what we found
+    echo - NvStorageBase     = %NvStorageBase%
+    echo - BaseAddress       = %BaseAddress%
+    echo - NvStorageSize     = %NvStorageSize%
+    echo - VpdOffset         = %VpdOffset%
+    echo - VpdSize           = %VpdSize%
+    echo.
+
+::
+:: NOTE: This cannot be inside an if..then block. It freaks out at the PowerShell execution.
+::
+if not exist "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc" (
+  echo ERROR: Couldn't find %WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc
+  goto BldFail
+)
+  echo.
+  echo Get FSP magic number for rebase...
+  ::
+  ::  0xFEF7C000 = gIntelFsp2WrapperTokenSpaceGuid.PcdFlashFvFspBase = $(CAR_BASE_ADDRESS) + $(BLD_RAM_DATA_SIZE) + $(FSP_RAM_DATA_SIZE) + $(FSP_EMP_DATA_SIZE) + $(BLD_IBBM_SIZE)
+  :: %PLATFORM_PATH%\PlatformDsc\Defines.dsc has the information needed to calculate this magic number. Use it.
+  ::
+  ::                          Variable to find Position Variable       File to search
+  :: ========================================================================================================================
+    call :FindVariableInFile CAR_BASE_ADDRESS  4        CarBaseAddress "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc"
+    call :FindVariableInFile BLD_RAM_DATA_SIZE 4        BldRamDataSize "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc"
+    call :FindVariableInFile FSP_RAM_DATA_SIZE 4        FspRamDataSize "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc"
+    call :FindVariableInFile FSP_EMP_DATA_SIZE 4        FspEmpDataSize "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc"
+    call :FindVariableInFile BLD_IBBM_SIZE     4        BldIbbmSize    "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc"
+    :: Dump what we found
+    echo - CAR_BASE_ADDRESS  = %CarBaseAddress%
+    echo - BLD_RAM_DATA_SIZE = %BldRamDataSize%
+    echo - FSP_RAM_DATA_SIZE = %FspRamDataSize%
+    echo - FSP_EMP_DATA_SIZE = %FspEmpDataSize%
+    echo - BLD_IBBM_SIZE     = %BldIbbmSize%
+    :: Find magic number
+    del /f /q temp.pcd >NUL 2>&1
+    PowerShell ([uint32]$env:CarBaseAddress + [uint32]$env:BldRamDataSize + [uint32]$env:FspRamDataSize + [uint32]$env:FspEmpDataSize + [uint32]$env:BldIbbmSize) > temp.pcd
+    set /p FspBaseAddress=<temp.pcd
+    del /f /q temp.pcd >NUL 2>&1
+    call :ForceToHex FspBaseAddress
+    echo - FspBaseAddress    = %FspBaseAddress%
+    echo.
+
 echo Running FCE...
 copy /b %BUILD_PATH%\FV\FvIBBM.fv + /b %BUILD_PATH%\FV\Soc.fd /b %BUILD_PATH%\FV\Temp.fd
 :: Extract Hii data from build and store a copy in HiiDefaultData.txt
 :: UQI 0006 005C 0078 0030 0031 0030 0031 is for question prompt(STR_IPU_ENABLED)
 :: First 0006 is the length of string; Next six byte values are mapped to STR_IPU_ENABLED string value defined in Platform\BroxtonPlatformPkg\Common\PlatformSettings\PlatformSetupDxe\VfrStrings.uni.
 fce.exe read -i %BUILD_PATH%\FV\Temp.fd 0006 005C 0078 0030 0031 0030 0031 > %BUILD_PATH%\FV\HiiDefaultData.txt 2>>EDK2.log
+if ErrorLevel 1 goto BldFail
 :: Generate the Setup variable and save changes to BxtXXX.fd
 :: B73FE497-B92E-416e-8326-45AD0D270091 is the GUID of IBBM FV
 fce.exe update -i %BUILD_PATH%\FV\Temp.fd -s %BUILD_PATH%\FV\HiiDefaultData.txt -o %BUILD_PATH%\FV\Bxt%Arch%.fd  -g B73FE497-B92E-416e-8326-45AD0D270091 -a 1>>EDK2.log 2>&1
-split -f %BUILD_PATH%\FV\Bxt%Arch%.fd -s 0x35000 -o %BUILD_PATH%\FV\FvIBBM.fv
-
+if ErrorLevel 1 goto BldFail
+:: More magic numbers!!!
+split -f %BUILD_PATH%\FV\Bxt%Arch%.fd -s %BldIbbmSize% -o %BUILD_PATH%\FV\FvIBBM.fv
 if ErrorLevel 1 goto BldFail
 
 @echo off
@@ -496,13 +593,14 @@ if ErrorLevel 1 goto BldFail
 if "%BUILD_TYPE%"=="R" set BUILD_TYPE=R
 
 echo Copy BIOS...
-echo BIOS_Name=%BOARD_ID%%BOARD_REV%_%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%
+echo BIOS_Name = [%BOARD_ID%%BOARD_REV%_%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%]
 set BIOS_Name=%BOARD_ID%%BOARD_REV%_%Arch%_%BUILD_TYPE%_%VERSION_MAJOR%_%VERSION_MINOR%
 copy /y/b %BUILD_PATH%\FV\Soc.fd          %STITCH_PATH%\%BIOS_Name%.ROM >nul
 copy /y   %STITCH_PATH%\FlashMap.h        %STITCH_PATH%\%BIOS_Name%.map >nul
 
 set Storage_Folder=%STITCH_PATH%\%BIOS_Name%
 if not exist %Storage_Folder%  mkdir %Storage_Folder%
+echo Storage_Folder = %Storage_Folder%
 
 copy /y/b %BUILD_PATH%\FV\FvIBBL.fv  %Storage_Folder% >nul
 copy /y/b %BUILD_PATH%\FV\FvIBBM.fv  %Storage_Folder% >nul
@@ -512,49 +610,14 @@ copy /y/b %BUILD_PATH%\FV\FvOBBX.fv  %Storage_Folder% >nul
 copy /y/b %BUILD_PATH%\FV\FvOBBY.fv  %Storage_Folder% >nul
 
 if /i "%FSP_WRAPPER%" == "TRUE" (
-::  0xFEF7A000 = gIntelFsp2WrapperTokenSpaceGuid.PcdFlashFvFspBase = $(CAR_BASE_ADDRESS) + $(BLD_RAM_DATA_SIZE) + $(FSP_RAM_DATA_SIZE) + $(FSP_EMP_DATA_SIZE) + $(BLD_IBBM_SIZE)
-    pushd  %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin
-    python %CORE_PATH%\IntelFsp2Pkg\Tools\SplitFspBin.py rebase -f Fsp.fd -c m -b 0xFEF7A000 -o .\ -n ApolloLakeFsp.fd
+  pushd  %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin
+    python %CORE_PATH%\IntelFsp2Pkg\Tools\SplitFspBin.py rebase -f Fsp.fd -c m -b %FspBaseAddress% -o .\ -n ApolloLakeFsp.fd
     python %CORE_PATH%\IntelFsp2Pkg\Tools\SplitFspBin.py split -f ApolloLakeFsp.fd -o .\ -n FSP.Fv
-    popd
-    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_T.Fv %Storage_Folder%\FSP_T.Fv
-    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_M.Fv %Storage_Folder%\FSP_M.Fv
-    copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_S.Fv %Storage_Folder%\FSP_S.Fv
+  popd
+  copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_T.Fv %Storage_Folder%\FSP_T.Fv >nul
+  copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_M.Fv %Storage_Folder%\FSP_M.Fv >nul
+  copy /y/b %SILICON_PATH%\BroxtonFspPkg\ApolloLakeFspBinPkg\FspBin\FSP_S.Fv %Storage_Folder%\FSP_S.Fv >nul
 )
-
-echo Get NvStorage Base and Size...
-if not exist "%STITCH_PATH%\FlashMap.h" (
-  echo ERROR: Couldn't find %STITCH_PATH%\FlashMap.h
-  goto BldFail
-)
-
-::generate NvStorage.Fv
-::      %STITCH_PATH%\FlashMap.h has the information for the magic numbers below. Parse it.
-::        You'll need to account for both hex (0x000000) and int (1234567U) value types
-::        FLASH_REGION_VPD_OFFSET
-::          _PCD_VALUE_PcdFlashNvStorageBase - _PCD_VALUE_PcdFlashBaseAddress
-::        FLASH_REGION_VPD_SIZE + FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_WORKING_SIZE + FLASH_REGION_NVSTORAGE_SUBREGION_NV_FTW_SPARE_SIZE
-::          _PCD_VALUE_PcdFlashNvStorageSize
-::
-::                     PCD to find                      Variable      File to search
-::===========================================================================================
-  call :FindPcdInFile _PCD_VALUE_PcdFlashNvStorageBase NvStorageBase "%STITCH_PATH%\FlashMap.h"
-  call :FindPcdInFile _PCD_VALUE_PcdFlashBaseAddress   BaseAddress   "%STITCH_PATH%\FlashMap.h"
-  call :FindPcdInFile _PCD_VALUE_PcdFlashNvStorageSize NvStorageSize "%STITCH_PATH%\FlashMap.h"
-:: Find image offset as opposed to memory offset
-  PowerShell ($env:NvStorageBase - $env:BaseAddress) > temp.pcd
-  set /p VpdOffset=<temp.pcd
-  del /f /q temp.pcd
-:: Force the variables we care about into DEC string format
-  set VpdSize=%NvStorageSize%
-  call :ForceToDec VpdOffset
-  call :ForceToDec VpdSize
-:: Dump what we found
-  echo - NvStorageBase = %NvStorageBase%
-  echo - BaseAddress   = %BaseAddress%
-  echo - NvStorageSize = %NvStorageSize%
-  echo - VpdOffset     = %VpdOffset%
-  echo - VpdSize       = %VpdSize%
 
 :: Create NvStorage.fv
   echo Create NvStorage.fv...
@@ -576,34 +639,43 @@ echo.
 goto Exit
 
 ::
-:: Find PCD value (%~1) in a file (%~3) and return it in a variable (%~2) as a HEX string
+:: Find variable value (%~1) at position %~2 in a file (%~4) and return it in an environment variable (%~3) as a HEX string
 ::
-:: USAGE: call :FindPcdInFile PCD Variable File
-:FindPcdInFile
-  call :GetPcd "%~1" "%~2" "%~3"
-  call :ForceToHex "%~2"
+:: USAGE: call :FindVariableInFile VariableName Position Variable File
+:FindVariableInFile
+  call :GetVariable "%~1" "%~2" "%~3" "%~4"
+  call :ForceToHex "%~3"
+REM  call set _Temp=%%%~3%%
+REM  echo [- %~3 = %_Temp%]
+REM  set _Temp=
 goto :EOF
 
 ::
-:: Find PCD value (%~1) in a file (%~3) and return it in a variable (%~2)
+:: Find variable value (%~1) at position %~2 in a file (%~4) and return it in an environment variable (%~3)
 ::
-:: USAGE: call :GetPcd PCD Variable File
-:GetPcd
-  set _TargetFile=%~3
+:: USAGE: call :GetVariable VariableName Position Variable File
+:GetVariable
+  set _TargetFile=%~4
+  set _Position=%~2
   if not exist "%_TargetFile%" (
     echo ERROR: Couldn't find %_TargetFile%^!
     set ExitCode=1
   ) else (
-    for /f "tokens=3" %%a in ('findstr /C:"%~1" "%_TargetFile%"') do (
+    for /f "tokens=%_Position%" %%a in ('findstr /C:"%~1" "%_TargetFile%"') do (
       set _TestValue=%%~a
-      set _PcdValue=!_TestValue:~0,-1!
+      if not "!_TestValue:~0,1!" == "$" (
+        if /i "!_TestValue:~-1!" == "U" (
+          set _VariableValue=!_TestValue:~0,-1!
+        ) else (
+          set _VariableValue=!_TestValue!
+        )
+      )
     )
-    set %~2=!_PcdValue!
-	echo %2 %_PcdValue%
+    set %~3=!_VariableValue!
   )
   set _TargetFile=
   set _TestValue=
-  set _PcdValue=
+  set _VariableValue=
 goto :EOF
 
 ::
@@ -613,9 +685,10 @@ goto :EOF
 :ForceToHex
   call set _Temp=%%%~1%%
   if "%_Temp:~0,2%" == "0x" goto :ForceToHexExit
+  del /f /q temp.pcd >nul 2>&1
   PowerShell ('0x' + [convert]::tostring($env:_Temp, 16).ToUpper()) > temp.pcd
   set /p %~1=<temp.pcd
-  del /f /q temp.pcd
+  del /f /q temp.pcd >nul 2>&1
 :ForceToHexExit
   set _Temp=
 goto :EOF
@@ -627,9 +700,10 @@ goto :EOF
 :ForceToDec
   call set _Temp=%%%~1%%
   if not "%_Temp:~0,2%" == "0x" goto :ForceToDecExit
+  del /f /q temp.pcd >nul 2>&1
   PowerShell ([convert]::toInt64((Get-Item env:_Temp).value, 16)) > temp.pcd
   set /p %~1=<temp.pcd
-  del /f /q temp.pcd
+  del /f /q temp.pcd >nul 2>&1
 :ForceToDecExit
   set _Temp=
 goto :EOF

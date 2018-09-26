@@ -34,13 +34,14 @@ echo ---- Call Build Script of Broxton ----
 
 if not exist Platform\%PlatformName%PlatformPkg\BuildIFWI.bat (
   echo Platform %PlatformName%PlatformPkg does not exist
-  echo. & echo Error - Unsupported Platform name: %1 
+  echo. & echo Error - Unsupported Platform name: %1
   echo.
   goto Usage
 )
 
-echo calling : Platform\%PlatformName%PlatformPkg\BuildIFWI.bat  %BuildFlags%  /fspw MINN %BuildTarget% 
-call Platform\%PlatformName%PlatformPkg\BuildIFWI.bat  %BuildFlags%  /fspw MINN %BuildTarget% 
+echo calling : Platform\%PlatformName%PlatformPkg\BuildIFWI.bat  %BuildFlags%  /fspw MINN %BuildTarget%
+call Platform\%PlatformName%PlatformPkg\BuildIFWI.bat  %BuildFlags%  /fspw MINN %BuildTarget%
+set ExitCode=%ErrorLevel%
 
 goto Exit
 
@@ -75,4 +76,7 @@ echo    %thisscript% /vs13 /LH /B /x64 Broxton Debug
 set exitCode=1
 
 :Exit
-exit /b %exitCode%
+(
+  EndLocal
+  exit /b %exitCode%
+)

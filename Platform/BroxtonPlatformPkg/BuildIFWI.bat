@@ -206,7 +206,9 @@ popd
 if ErrorLevel 1 (
     echo echo  -- Error Stitching %BIOS_Name% & echo.
     set exitCode=1
+    goto Exit
 )
+
 echo.
 echo Build_IFWI is finished.
 echo The final IFWI file is located in %WORKSPACE%\%PLATFORM_PATH%\Common\Tools\Stitch\
@@ -223,8 +225,7 @@ echo Usage: %thisscript% [options] ^<PlatformType^> ^<BuildTarget^>
 echo.
 echo.    /?       Display this help text
 echo     /l       Log a copy of the build output to EDK2.log
-echo     /c       CleanAll before building
-echo     /m 	  Set the build thread count to number of processors
+echo     /m       Set the build thread count to number of processors
 echo     /FspW    Build FSP and FSP Wrapper
 echo     /x64     Set Arch to X64 (default)
 echo     /vs08    Set compiler to VisualStudio 2008
