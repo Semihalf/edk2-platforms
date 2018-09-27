@@ -1,7 +1,7 @@
 // /** @file
 //  Security Setup formset.
 //
-//  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+//  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 //
 //  This program and the accompanying materials
 //  are licensed and made available under the terms and conditions of the BSD License
@@ -112,12 +112,14 @@ form formid = SECURITY_CONFIGURATION_FORM_ID,
   //
   subtitle text = STRING_TOKEN(STR_TPM_CONFIGURATION_PROMPT);
 
+  grayoutif TRUE;
   oneof   varid   = Setup.TPM,
     prompt      = STRING_TOKEN(STR_TPM_PROMPT),
     help        = STRING_TOKEN(STR_TPM_HELP),
     option text = STRING_TOKEN(STR_DISABLE), value = 0x00, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
     option text = STRING_TOKEN(STR_TPM_PTT), value = 0x01, flags = RESET_REQUIRED;
   endoneof;
+  endif;
 
   suppressif NOT ideqval Setup.TPM == 1;
     oneof varid  = Setup.TPMSupportedBanks,
