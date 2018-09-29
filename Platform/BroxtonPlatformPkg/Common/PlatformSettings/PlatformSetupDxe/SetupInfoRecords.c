@@ -1723,23 +1723,6 @@ CheckSystemConfigLoad (
   EFI_STATUS              Status;
   SEC_OPERATION_PROTOCOL  *SeCOp;
   SEC_INFOMATION          SeCInfo;
-  UINT8                   SecureBoot;
-  UINTN                   DataSize;
-
-  DataSize = sizeof (SecureBoot);
-  Status = gRT->GetVariable (
-                  EFI_SECURE_BOOT_MODE_NAME,
-                  &gEfiGlobalVariableGuid,
-                  NULL,
-                  &DataSize,
-                  &SecureBoot
-                  );
-
-  if (EFI_ERROR (Status)) {
-    SystemConfigPtr->SecureBoot = 0;
-  } else {
-    SystemConfigPtr->SecureBoot = SecureBoot;
-  }
 
   Status = gBS->LocateProtocol (
                   &gEfiSeCOperationProtocolGuid,
@@ -1806,8 +1789,6 @@ CheckSystemConfigSave (
   EFI_STATUS              Status;
   SEC_OPERATION_PROTOCOL  *SeCOp;
   SEC_INFOMATION          SeCInfo;
-  UINT8                   SecureBootCfg;
-  UINTN                   DataSize;
 
   Status = gBS->LocateProtocol (
                   &gEfiSeCOperationProtocolGuid,
@@ -1826,32 +1807,6 @@ CheckSystemConfigSave (
 
   Status = SeCOp->SetPlatformSeCInfo (&SeCInfo);
 
-  //
-  // Secure Boot configuration changes
-  //
-  DataSize = sizeof (SecureBootCfg);
-  Status = gRT->GetVariable (
-                  EFI_SECURE_BOOT_ENABLE_NAME,
-                  &gEfiSecureBootEnableDisableGuid,
-                  NULL,
-                  &DataSize,
-                  &SecureBootCfg
-                  );
-
-  if (EFI_ERROR (Status)) {
-    SecureBootCfg = 0;
-  }
-
-  if ((SecureBootCfg) != SystemConfigPtr->SecureBoot) {
-    SecureBootCfg = !SecureBootCfg;
-    Status = gRT->SetVariable (
-                    EFI_SECURE_BOOT_ENABLE_NAME,
-                    &gEfiSecureBootEnableDisableGuid,
-                    EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS,
-                    sizeof (UINT8),
-                    &SecureBootCfg
-                    );
-  }
 
   CheckTPMActivePcrBanks (SystemConfigPtr->TPMSupportedBanks);
   //

@@ -474,7 +474,7 @@ typedef struct {
   UINT8         CapOrVoltFlag;
   UINT8         BootOnInvalidBatt;
   UINT8         ScramblerSupport;
-  UINT8         SecureBoot;
+  UINT8         SecureBootReserved;
   UINT8         SecureBootCustomMode;
   UINT8         MaxPkgCState;
   UINT8         PanelScaling;

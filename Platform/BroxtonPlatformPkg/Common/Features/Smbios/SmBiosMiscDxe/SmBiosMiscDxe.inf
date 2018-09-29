@@ -120,6 +120,7 @@
   gIFWIVersionHobGuid
   gEfiPlatformInfoGuid
   gFspNonVolatileStorageHobGuid  ##CONSUMES
+  gEfiGlobalVariableGuid
 
 [Protocols]
   gEfiSmbiosProtocolGuid                        # PROTOCOL ALWAYS_CONSUMED

@@ -548,6 +548,7 @@ UpdatePlatformInformation (
   MRC_PARAMS_SAVE_RESTORE  *MemInfoHob = NULL;
   UINT32                   MrcVersion;
   UINTN                    Index;
+  UINT8                    SecureBoot;
 
   DEBUG ((EFI_D_INFO, "Executing SMBIOS T0x94 Update.\n"));
   //
@@ -666,10 +667,18 @@ UpdatePlatformInformation (
                   );
   ASSERT_EFI_ERROR (Status);
 
+  DataSize = sizeof (SecureBoot);
+  Status = gRT->GetVariable (
+                  EFI_SECURE_BOOT_MODE_NAME,
+                  &gEfiGlobalVariableGuid,
+                  NULL,
+                  &DataSize,
+                  &SecureBoot
+                  );
   //
   // Secure boot
   //
-  Data8 = SystemConfiguration.SecureBoot;
+  Data8 = SecureBoot;
   UnicodeSPrint (Buffer, sizeof(Buffer), L"%x", Data8);
   HiiSetString (mHiiHandle, STRING_TOKEN (STR_MISC_SECURE_BOOT_VALUE), Buffer, NULL);
 

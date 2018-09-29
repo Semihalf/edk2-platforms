@@ -181,10 +181,9 @@ UpdateSetupDataValues (
   }
 
   if (FdoEnabledGuidHob != NULL) {
-    PreDefaultSetupData->SecureBoot = FALSE;
     PreDefaultSetupData->FprrEnable = FALSE;
     PreDefaultSetupData->ScBiosLock = FALSE;
-    DEBUG ((EFI_D_INFO, "SPI FDO mode is enabled. Disabling SecureBoot, FprrEnable, and ScBiosLock.\n"));
+    DEBUG ((EFI_D_INFO, "SPI FDO mode is enabled. Disabling FprrEnable, and ScBiosLock.\n"));
   }
 
   Status = GetSecureNfcInfo (PreDefaultSetupData);

@@ -107,7 +107,6 @@ LoadOsDefaultValues (
   )
 {
   Private->FakeNvData.GOPEnable                  = TRUE;
-  Private->FakeNvData.SecureBoot                 = FALSE;
   Private->FakeNvData.Cg8254                     = FALSE;
   Private->FakeNvData.LpssI2C7Enabled            = 1;
   Private->FakeNvData.LpssSpi1Enabled            = 1;

@@ -44,13 +44,6 @@ form formid = BOOT_CONFIGURATION_FORM_ID,
   endoneof;
   endif; // suppressif
 
-  oneof varid  = Setup.SecureBoot,
-    prompt   = STRING_TOKEN(STR_SECURITY_BOOT_PROMPT),
-    help     = STRING_TOKEN(STR_SECURITY_BOOT_HELP),
-    option text = STRING_TOKEN(STR_DISABLE), value=0, flags=DEFAULT | MANUFACTURING | RESET_REQUIRED;
-    option text = STRING_TOKEN(STR_ENABLE),  value=1, flags=0 | RESET_REQUIRED;
-  endoneof;
-
   oneof varid  = Setup.QuietBoot,
     prompt   = STRING_TOKEN(STR_QUIETBOOT_PROMPT),
     help     = STRING_TOKEN(STR_QUIETBOOT_HELP),
