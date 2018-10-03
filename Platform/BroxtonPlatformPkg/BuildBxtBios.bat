@@ -742,6 +742,5 @@ echo See EDK2.log for more details
 echo %date%  %time%
 (
   EndLocal
-  set BiosVersion=%BiosVersion%
   exit /b %ExitCode%
 )

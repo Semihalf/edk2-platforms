@@ -244,6 +244,5 @@ set exitCode=1
 :Exit
 (
   EndLocal
-  set Arch=%Arch%
   exit /b %exitCode%
 )
