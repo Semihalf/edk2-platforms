@@ -150,17 +150,18 @@
     DEFINE FTPM_ENABLE = TRUE
     DEFINE TPM12_ENABLE = TRUE
 
-    DEFINE FSP_IBBL_SIZE                   = 0x2000
-    DEFINE BLD_IBBL_SIZE                   = 0x6000
-    DEFINE FSP_IBBM_SIZE                   = 0x58000
-    DEFINE BLD_IBBM_SIZE                   = 0x35000
-
+    #
+    # NOTE: These last defines are tied to InitNEM.asm. Be sure and update that file if they change.
+    #
+    DEFINE FSP_IBBM_SIZE                   = 0x00059000  # Size of FSP_M.fv
+    DEFINE BLD_IBBM_SIZE                   = 0x00039000  # Size of IBBM FV
     DEFINE CAR_BASE_ADDRESS                = 0xFEF00000  # @PcdTemporaryRamBase
-    DEFINE BLD_RAM_DATA_SIZE               = 0x16000     # BOOTLOADER temp memory size
-    DEFINE FSP_RAM_DATA_SIZE               = 0x2A000     # FSP temp memory size
-    DEFINE FSP_EMP_DATA_SIZE               = 0x05000     # Free space
-    DEFINE BLD_RAM_CODE_SIZE               = $(BLD_IBBM_SIZE)
-    DEFINE FSP_RAM_CODE_SIZE               = $(FSP_IBBM_SIZE)
-    DEFINE CAR_REGION_SIZE                 = 0x100000
+    DEFINE BLD_RAM_DATA_SIZE               = 0x00016000  # BOOTLOADER temp memory size
+    DEFINE FSP_RAM_DATA_SIZE               = 0x0002A000  # FSP temp memory size
+    DEFINE FSP_EMP_DATA_SIZE               = 0x00005000  # Free space
+    DEFINE CAR_REGION_SIZE                 = 0x00100000
 
     DEFINE SOURCE_DEBUG_ENABLE     = FALSE
+    DEFINE EXT_BIOS_ENABLE         = FALSE   # False = 3MB BIOS; True = 5MB BIOS
+    DEFINE EEPROM_CODE_ENABLE      = FALSE
+

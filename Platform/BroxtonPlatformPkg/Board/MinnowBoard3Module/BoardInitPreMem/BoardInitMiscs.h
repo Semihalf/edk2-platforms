@@ -20,10 +20,8 @@
 #include "PlatformId.h"
 #include <BoardFunctionsPei.h>
 #include <Guid/SetupVariable.h>
-#include <Library/IoLib.h>
 #include <Library/MemoryAllocationLib.h>
-#include <Library/PeiDxeSmmMmPciLib.h>
-#include <SaRegs.h>
+#include <Library/EepromPlatformLib.h>
 #include "MmrcData.h"
 
 

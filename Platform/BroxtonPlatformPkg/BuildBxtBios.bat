@@ -91,6 +91,7 @@ if /i "%~1"=="/l" (
     shift
     goto OptLoop
 )
+
 if /i "%~1"=="/ia32" (
     set Arch=IA32
     shift

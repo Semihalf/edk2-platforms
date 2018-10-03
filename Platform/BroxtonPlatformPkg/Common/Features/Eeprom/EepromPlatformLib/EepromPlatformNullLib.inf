@@ -28,14 +28,9 @@
   gEepromVariableGuid
 
 [LibraryClasses]
-  BaseLib
-  BaseMemoryLib
   DebugLib
   EepromDataLib
   EepromLib
-  GpioLib
-  I2cLib
-  MemoryAllocationLib
   PcdLib
 
 [Packages]
@@ -45,13 +40,9 @@
   BroxtonSiPkg/BroxtonSiPkg.dec
 
 [Pcd]
-  gEfiBxtTokenSpaceGuid.PcdPmcGcrBaseAddress          ## SOMETIMES_CONSUMES
-  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress   ## SOMETIMES_CONSUMES
-  gPlatformModuleTokenSpaceGuid.PcdEepromAddress
-  gPlatformModuleTokenSpaceGuid.PcdEepromBus
   gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList
 
 [Sources]
-  EepromAcpiNull.c
-  EepromPlatformNullLib.c
   EepromPlatformLib.h
+  Null/EepromAcpiNull.c
+  Null/EepromPlatformNullLib.c

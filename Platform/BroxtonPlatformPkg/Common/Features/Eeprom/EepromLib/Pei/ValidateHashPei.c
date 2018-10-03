@@ -35,6 +35,8 @@ GetEepromVariable (
   EFI_PEI_READ_ONLY_VARIABLE2_PPI  *VariableServices;
   UINTN                             VariableSize;
 
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
   //
   // Initialize variables
   //
@@ -116,6 +118,7 @@ GetEepromVariable (
                                &VariableSize,          // Data size
                                Data                    // Data
                                );
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - GetVariable(%s) --> %r\n", __FUNCTION__, __LINE__, VariableName, Status));
   if (EFI_ERROR (Status)) {
     //
     // Failed to get data
@@ -131,6 +134,7 @@ Exit:
   if (EFI_ERROR (Status)) {
     Data = EepromFreePool (Data);
   }
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning --> %r\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }
 
@@ -147,6 +151,7 @@ SignedHashCheck (
   IN       UINT8             LibraryIndex
   )
 {
+  INTN                    CmpMemReturn;
   UINT8                  *Hash;
   UINT32                  HashSize;
   SIGNATURE_DATA         *Signature;
@@ -154,6 +159,8 @@ SignedHashCheck (
   EFI_STATUS              Status;
   UINT8                  *Variable;
   UINT32                  VariableSize;
+
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting [%a]...\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex]));
 
   //
   // Sanity checks
@@ -167,22 +174,23 @@ SignedHashCheck (
   //
   // Get $PromSig structure
   //
-  Size   = 0;
-  Status = GetEepromStructure (LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, (UINT8 **) &Signature, &Size);
+  Signature = NULL;
+  Size      = 0;
+  Status    = GetEepromStructureData (&LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, NULL, sizeof (SIGNATURE_DATA), (UINT8**) &Signature, &Hash, &HashSize);
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - GetEepromStructureData(EEPROM_SIGNATURE_SIGNATURE) [%a] --> %r\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex], Status));
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
     Status = EFI_VOLUME_CORRUPTED;
     goto Exit;
   }
-  Hash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
-  HashSize = Signature->length - sizeof (SIGNATURE_DATA);
 
   //
   // Get stored hash
   //
   Variable     = NULL;
   VariableSize = 0;
-  Status = GetEepromVariable (LibraryIndex, &Variable, &VariableSize);
+  Status       = GetEepromVariable (LibraryIndex, &Variable, &VariableSize);
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - GetEepromVariable(%a) 0x%08x --> %r\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex], VariableSize, Status));
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get variable! [%r]\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
@@ -196,6 +204,7 @@ SignedHashCheck (
     // Nothing stored for this library. Bail.
     //
     Status = EFI_MEDIA_CHANGED;
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Stored size returned 0! [%r]\n", __FUNCTION__, __LINE__, Status));
     goto Exit;
   }
   if (VariableSize != HashSize) {
@@ -207,11 +216,25 @@ SignedHashCheck (
   //
   // Compare stored to real
   //
-  if (CompareMem (Variable, Hash, HashSize) != 0) {
+  CmpMemReturn = CompareMem (Variable, Hash, HashSize);
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - CompareMem(Variable, Hash) --> %d\n", __FUNCTION__, __LINE__, CmpMemReturn));
+  if (CmpMemReturn != 0) {
     //
     // Failed security match
     //
     Status = EFI_SECURITY_VIOLATION;
+    if (mEepromLibDebugFlag) {
+      DEBUG ((DEBUG_INFO, "\n\n================================================================================\n"));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - Hash from variable...\n", __FUNCTION__, __LINE__));
+      DEBUG ((DEBUG_INFO, "--------------------------------------------------------------------------------\n"));
+      EepromDumpParagraph (DEBUG_INFO, Variable, VariableSize);
+      DEBUG ((DEBUG_INFO, "================================================================================\n"));
+      DEBUG ((DEBUG_INFO, "\n\n================================================================================\n"));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - Hash from %a...\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex]));
+      DEBUG ((DEBUG_INFO, "--------------------------------------------------------------------------------\n"));
+      EepromDumpParagraph (DEBUG_INFO, Hash, HashSize);
+      DEBUG ((DEBUG_INFO, "================================================================================\n\n"));
+    }
   } else {
     Status = EFI_SUCCESS;
   }
@@ -222,6 +245,7 @@ Exit:
   //
   Signature = EepromFreePool (Signature);
   Variable  = EepromFreePool (Variable);
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning [%a] --> %r\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex], Status));
   return Status;
 }
 

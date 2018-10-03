@@ -1,7 +1,7 @@
 ;; @file
 ;  Search for the Boot Firmware Volume (BFV) base address.
 ;
-;  Copyright (c) 2008 - 2017, Intel Corporation. All rights reserved.<BR>
+;  Copyright (c) 2008 - 2018, Intel Corporation. All rights reserved.<BR>
 ;
 ;  This program and the accompanying materials
 ;  are licensed and made available under the terms and conditions of the BSD License
@@ -178,18 +178,31 @@ sub %1, fourGigabytes - %2
 ALIGN   16
 HOBStructure:
 istruc HobStruc
+    ;
+    ; NOTE: The $(Variable) values come from defines.dsc
+    ;
+    ; .CarBase   = $(CAR_BASE_ADDRESS)
+    ; .CarSize   = $(CAR_REGION_SIZE)
+    ; .StackBase = .CarBase
+    ; .StackSize = $(BLD_RAM_DATA_SIZE)
+    ; .IBBLBase  = .CarBase + .StackSize + $(FSP_RAM_DATA_SIZE)
+    ; .IBBLSize  = $(FLASH_REGION_FV_IBBL_SIZE)
+    ; .FITBase   = .IBBLBase + .IBBLSize
+    ; .IBBBase   = .FitBase + 0x00004000
+    ; .IBBSize   = $(BLD_IBBM_SIZE) + $(FSP_IBBM_SIZE)
+    ;
     dd "$SIG"       ; .Sign
-    dd 0xFEF00000   ; .CarBase
-    dd 0x00100000   ; .CarSize
+    dd 0xFEF00000   ; .CarBase    = $(CAR_BASE_ADDRESS)
+    dd 0x00100000   ; .CarSize    = $(CAR_REGION_SIZE)
     dd 0xFFF00000   ; .IBBSource  = Not used
-    dd 0xFEF45000   ; .IBBBase    = .CarBase
-    dd 0x0008E000   ; .IBBSize    = size of (FVIBBM.fv+FSP_M.fv) = BLD_IBBM_SIZE + FSP_IBBM_SIZE = 0x8D000
+    dd 0xFEF45000   ; .IBBBase    = .FitBase + 0x00004000
+    dd 0x00092000   ; .IBBSize    = $(BLD_IBBM_SIZE) + $(FSP_IBBM_SIZE)
     dd 0xFFFFF000   ; .IBBLSource = 0x100000000 - .IBBLSize = PcdFlashFvIBBLBase
-    dd 0xFEF40000   ; .IBBLBase   = .IBBBase + .IBBSize
+    dd 0xFEF40000   ; .IBBLBase   = .CarBase + $(BLD_RAM_DATA_SIZE) + $(FSP_RAM_DATA_SIZE)
     dd 0x00001000   ; .IBBLSize   = PcdFlashFvIBBLSize = FLASH_REGION_FV_IBBL_SIZE in .fdf
-    dd 0xFEF41000   ; .FITBase
-    dd 0xFEF00000   ; .Stack&Heap Base
-    dd 0x16000      ; .Stack&Heap Size
+    dd 0xFEF41000   ; .FITBase    = .IBBLBase + .IBBLSize
+    dd 0xFEF00000   ; .StackBase  = .CarBase
+    dd 0x00016000   ; .StackSize  = $(BLD_RAM_DATA_SIZE)
     dd 0            ; .HostToCse
     dd 0            ; .CseToHost
     dd 0            ; .ChunkIndex

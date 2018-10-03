@@ -228,7 +228,7 @@ CopyMemSse4 (
 {
 
   #ifdef __GNUC__
-  CopyMem (Dst, Src, SizeInBytes); 
+  CopyMem (Dst, Src, SizeInBytes);
   #else
   _asm {
     //
@@ -1086,7 +1086,7 @@ PlatformInitPreMemEntryPoint (
       ASSERT_EFI_ERROR (Status);
       return Status;
     }
- 
+
     VariableSize = sizeof (AcpiVariableSetCompatibility);
     Status = VariableServices->GetVariable (
                                  VariableServices,
@@ -1104,7 +1104,7 @@ PlatformInitPreMemEntryPoint (
       sizeof (AcpiVarHobSize)
       );
 
-    DEBUG ((DEBUG_INFO, "AcpiVariableAddr : 0x%08x\n", AcpiVariableSetCompatibility)); 
+    DEBUG ((DEBUG_INFO, "AcpiVariableAddr : 0x%08x\n", AcpiVariableSetCompatibility));
 
     PERF_START_EX (NULL, "RstVctr", "IBBL", 1, 0x1000);
     Tick = CarMap->IbblPerfRecord0;
@@ -1348,11 +1348,13 @@ PlatformInitPreMemEntryPoint (
       DEBUG ((DEBUG_INFO, "IBBM address: %x\n", Memory));
       PeiServicesInstallFvInfoPpi (
         NULL,
-        (VOID *) Memory,
+        Memory,
         PcdGet32 (PcdFlashFvIBBMSize),
         NULL,
         NULL
         );
+      // Added this so that IBBM is available during DXE so the EEPROM library can find the FV copy of the EEPROM binary
+      BuildFvHob ((EFI_PHYSICAL_ADDRESS) Memory, PcdGet32 (PcdFlashFvIBBMSize));
     } else  {
       ASSERT (FALSE);
     }
@@ -1409,7 +1411,7 @@ ReadBxtIPlatformIds (
 /**
 Description:
 
-  This function finds the matched default data and create GUID hob for it. 
+  This function finds the matched default data and create GUID hob for it.
 
 Arguments:
 
@@ -1553,7 +1555,7 @@ PlatformCreateDefaultVariableHob (
       DefaultInfo ++;
     }
     //
-    // Size is 24 bits wide so mask upper 8 bits. 
+    // Size is 24 bits wide so mask upper 8 bits.
     // SectionLength is adjusted it is 4 byte aligned.
     // Go to the next section
     //

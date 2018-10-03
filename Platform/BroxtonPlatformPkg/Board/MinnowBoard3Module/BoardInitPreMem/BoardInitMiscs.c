@@ -66,9 +66,28 @@ Mb3MUpdateFspmUpd (
   SYSTEM_CONFIGURATION               SystemConfiguration;
   UINTN                              VariableSize;
   EFI_PEI_READ_ONLY_VARIABLE2_PPI   *VariablePpi;
-  UINT32                             VidDid;
   UINT32                             HwconfStraps;
   UINT8                              MemoryType;
+  UINT8                             *MemoryData;
+  UINT32                             MemoryDataSize;
+  UINT16                             SpdSlotFlag;
+
+  //
+  // Check for EEPROM memory data
+  //
+  MemoryData     = NULL;
+  MemoryDataSize = 0;
+  SpdSlotFlag    = 0;
+  Status = EepromGetMemoryData (NULL, &SpdSlotFlag, &MemoryData, &MemoryDataSize);
+  DEBUG ((DEBUG_INFO, "**** MB3 Module - EepromGetMemoryData() --> %r\n", Status));
+  if (EFI_ERROR (Status) || (MemoryDataSize < sizeof (DRAM_POLICY_PPI)) || (SpdSlotFlag != 0x000F)) {
+    //
+    // Didn't find valid memory data. Clear the pointers.
+    //
+    MemoryData     = NULL;
+    MemoryDataSize = 0;
+    SpdSlotFlag    = 0;
+  }
 
   Status = (*PeiServices)->LocatePpi (
                              PeiServices,
@@ -77,8 +96,64 @@ Mb3MUpdateFspmUpd (
                              NULL,
                              (VOID **) &DramPolicy
                              );
-
   if (EFI_ERROR (Status)) {
+    DramPolicy = NULL;
+  } else {
+    if (((VOID *) (UINT32) DramPolicy->MrcTrainingDataPtr != 0) &&
+        ((VOID *) (UINT32) DramPolicy->MrcBootDataPtr     != 0)) {
+      DEBUG ((DEBUG_INFO, "%a() - NvsBufferPtr\n", __FUNCTION__));
+      MrcNvData          = (MRC_PARAMS_SAVE_RESTORE *) AllocateZeroPool (sizeof (MRC_PARAMS_SAVE_RESTORE));
+      BootVariableNvData = (BOOT_VARIABLE_NV_DATA *) AllocateZeroPool (sizeof (BOOT_VARIABLE_NV_DATA));
+
+      MrcParamsHob          = (MRC_PARAMS_SAVE_RESTORE *) ((UINT32) DramPolicy->MrcTrainingDataPtr);
+      BootVariableNvDataHob = (BOOT_VARIABLE_NV_DATA *) ((UINT32) DramPolicy->MrcBootDataPtr);
+
+      CopyMem (MrcNvData,          MrcParamsHob,          sizeof (MRC_PARAMS_SAVE_RESTORE));
+      CopyMem (BootVariableNvData, BootVariableNvDataHob, sizeof (BOOT_VARIABLE_NV_DATA));
+      FspUpdRgn->FspmArchUpd.NvsBufferPtr        = (VOID *) (UINT32) MrcNvData;
+      FspUpdRgn->FspmConfig.VariableNvsBufferPtr = (VOID *) (UINT32) BootVariableNvData;
+    }
+  }
+
+  //
+  // Overrides for MinnowBoard3Module from Platfrom4 profile
+  //
+  //   Description    | DualRank | RankEnable | DeviceWidth | DramDenisty | SoC   | Channel
+  //  ================|==========|============|=============|=============|=======|=========
+  //   MT53B256M32D1  | 0x01     | 0x01       | 0x01  x16   | 0x02   8Gb  | E3930 | Ch0
+  //   MT53B512M32D2  | 0x01     | 0x03       | 0x01  x16   | 0x02   8Gb  | E3950 | Ch0&1
+  //   MT53B1024M32D4 | 0x01     | 0x03       | 0x00  x8    | 0x04  16Gb  |       |
+  //
+
+  //
+  // Get HWCONF straps
+  //
+  HwconfStraps = Minnow3ModuleGetHwconfStraps ();
+  DEBUG ((DEBUG_INFO, "**** MB3 Module - HWCONF straps = 0x%08X\n", HwconfStraps));
+
+  //
+  // Translate into Memory Type
+  //
+  MemoryType = (UINT8) ((HwconfStraps & MB3M_HWCONF_MEMORY_MASK) >> MB3M_HWCONF_MEMORY);
+  if (MemoryType == 0) {
+    DEBUG ((DEBUG_INFO, "**** MB3 Module - SPD based memory init requested, but converted into Memory Profile type #4!\n"));
+    MemoryType = 4; // LPDDR4 16Gbit 4 channels
+  }
+  if (MemoryType == 5) {
+    if (MemoryData == NULL) {
+      DEBUG ((DEBUG_INFO, "**** MB3 Module - EEPROM based memory init requested, but converted into Memory Profile type #4!\n"));
+      MemoryType = 4; // LPDDR4 16Gbit 4 channels
+    } else {
+      DEBUG ((DEBUG_INFO, "**** MB3 Module - EEPROM based memory init requested and being used.\n"));
+      DramPolicy = (DRAM_POLICY_PPI *) MemoryData;
+    }
+  }
+  MemoryType--; // Zero base it for use as index into array
+
+  if (DramPolicy == NULL) {
+    //
+    // Status is still valid from LocatePpi(gDramPolicyPpiGuid)
+    //
     DEBUG ((DEBUG_INFO, "%a() - LocatePpi(gDramPolicyPpiGuid) returned %r\n", __FUNCTION__, Status));
   } else {
     FspUpdRgn->FspmConfig.Package                           = DramPolicy->Package;
@@ -107,23 +182,8 @@ Mb3MUpdateFspmUpd (
     FspUpdRgn->FspmConfig.MinRefRate2xEnable                = DramPolicy->MinRefRate2xEnabled;
     FspUpdRgn->FspmConfig.DualRankSupportEnable             = DramPolicy->DualRankSupportEnabled;
 
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch0_RankEnable), &DramPolicy->ChDrp, sizeof(DramPolicy->ChDrp));
+    CopyMem (&(FspUpdRgn->FspmConfig.Ch0_RankEnable),    &DramPolicy->ChDrp,     sizeof (DramPolicy->ChDrp));
     CopyMem (&(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), &DramPolicy->ChSwizzle, sizeof (DramPolicy->ChSwizzle));
-
-    if (((VOID *)(UINT32)DramPolicy->MrcTrainingDataPtr != 0) &&
-        ((VOID *)(UINT32)DramPolicy->MrcBootDataPtr     != 0)) {
-      DEBUG ((DEBUG_INFO, "%a() - NvsBufferPtr\n", __FUNCTION__));
-      MrcNvData          = (MRC_PARAMS_SAVE_RESTORE *) AllocateZeroPool (sizeof (MRC_PARAMS_SAVE_RESTORE));
-      BootVariableNvData = (BOOT_VARIABLE_NV_DATA *) AllocateZeroPool (sizeof (BOOT_VARIABLE_NV_DATA));
-
-      MrcParamsHob          = (MRC_PARAMS_SAVE_RESTORE*)((UINT32)DramPolicy->MrcTrainingDataPtr);
-      BootVariableNvDataHob = (BOOT_VARIABLE_NV_DATA*)((UINT32)DramPolicy->MrcBootDataPtr);
-
-      CopyMem(MrcNvData, MrcParamsHob, sizeof (MRC_PARAMS_SAVE_RESTORE));
-      CopyMem(BootVariableNvData, BootVariableNvDataHob, sizeof (BOOT_VARIABLE_NV_DATA));
-      FspUpdRgn->FspmArchUpd.NvsBufferPtr        = (VOID *)(UINT32)MrcNvData;
-      FspUpdRgn->FspmConfig.VariableNvsBufferPtr = (VOID *)(UINT32)BootVariableNvData;
-    }
   }
 
   DEBUG ((DEBUG_INFO, "%a() - gEfiPlatformInfoGuid\n", __FUNCTION__));
@@ -131,109 +191,100 @@ Mb3MUpdateFspmUpd (
   ASSERT (Hob.Raw != NULL);
   PlatformInfo = GET_GUID_HOB_DATA (Hob.Raw);
 
-  //
-  // Get IGD VID/DID
-  //
-  VidDid = MmioRead32 (MmPciBase (SA_IGD_BUS, SA_IGD_DEV, SA_IGD_FUN_0) + R_SA_IGD_VID);
-  if (VidDid == 0x5A848086) {
+  if (MemoryType != 4) {
     //
-    // E3950 path
+    // Common items
     //
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - E3950 detected!\n"));
-  } else if (VidDid == 0x5A858086) {
+    FspUpdRgn->FspmConfig.Package                 = 0x01;
+    FspUpdRgn->FspmConfig.Profile                 = 0x09; // LPDDR4_1600_14_15_15
+    //FspUpdRgn->FspmConfig.Profile                 = 0x0B; // LPDDR4_2400_24_22_22
+    FspUpdRgn->FspmConfig.MemoryDown              = 0x01;
+    FspUpdRgn->FspmConfig.DualRankSupportEnable   = 0x01;
+
     //
-    // E3930 path
+    // Memory Type specific items
     //
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - E3930 detected!\n"));
+    if (MemoryType < (sizeof (gMB3MChannelInfo) / sizeof (gMB3MChannelInfo[0]))) {
+      DEBUG ((DEBUG_INFO, "**** MB3 Module - %a detected!\n", gMB3MChannelInfo[MemoryType].DescString));
+
+      // DDR0CH0
+      FspUpdRgn->FspmConfig.Ch0_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[0];
+      FspUpdRgn->FspmConfig.Ch0_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[0];
+      FspUpdRgn->FspmConfig.Ch0_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[0];
+      FspUpdRgn->FspmConfig.Ch0_Option            = gMB3MChannelInfo[MemoryType].Option[0];
+
+      // DDR0CH1
+      FspUpdRgn->FspmConfig.Ch1_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[1];
+      FspUpdRgn->FspmConfig.Ch1_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[1];
+      FspUpdRgn->FspmConfig.Ch1_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[1];
+      FspUpdRgn->FspmConfig.Ch1_Option            = gMB3MChannelInfo[MemoryType].Option[1];
+
+      // DDR1CH0
+      FspUpdRgn->FspmConfig.Ch2_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[2];
+      FspUpdRgn->FspmConfig.Ch2_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[2];
+      FspUpdRgn->FspmConfig.Ch2_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[2];
+      FspUpdRgn->FspmConfig.Ch2_Option            = gMB3MChannelInfo[MemoryType].Option[2];
+
+      // DDR1CH1
+      FspUpdRgn->FspmConfig.Ch3_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[3];
+      FspUpdRgn->FspmConfig.Ch3_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[3];
+      FspUpdRgn->FspmConfig.Ch3_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[3];
+      FspUpdRgn->FspmConfig.Ch3_Option            = gMB3MChannelInfo[MemoryType].Option[3];
+    } else {
+      DEBUG ((DEBUG_INFO, "**** MB3 Module - Memory Type 0x%02X is out of range!\n", MemoryType));
+    }
+
+    //
+    // Swizzling
+    //
+    if ((PcdGet8 (PcdFabId) == FAB_ID_A) && (ChSwizzle_MB3Ma != NULL)) {
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), ChSwizzle_MB3Ma[0], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch1_Bit_swizzling), ChSwizzle_MB3Ma[1], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch2_Bit_swizzling), ChSwizzle_MB3Ma[2], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch3_Bit_swizzling), ChSwizzle_MB3Ma[3], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+    }
+    if ((PcdGet8 (PcdFabId) == FAB_ID_C) && (ChSwizzle_MB3Mc != NULL)) {
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), ChSwizzle_MB3Mc[0], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch1_Bit_swizzling), ChSwizzle_MB3Mc[1], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch2_Bit_swizzling), ChSwizzle_MB3Mc[2], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+      CopyMem (&(FspUpdRgn->FspmConfig.Ch3_Bit_swizzling), ChSwizzle_MB3Mc[3], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
+    }
   }
 
   //
-  // Overrides for MinnowBoard3Module from Platfrom4 profile
+  // Update DramPolicy and then dump it so it can be copied into the EEPROM image
   //
-  //   Description    | DualRank | RankEnable | DeviceWidth | DramDenisty | SoC   | Channel
-  //  ================|==========|============|=============|=============|=======|=========
-  //   MT53B256M32D1  | 0x01     | 0x01       | 0x01  x16   | 0x02   8Gb  | E3930 | Ch0
-  //   MT53B512M32D2  | 0x01     | 0x03       | 0x01  x16   | 0x02   8Gb  | E3950 | Ch0&1
-  //   MT53B1024M32D4 | 0x01     | 0x03       | 0x00  x8    | 0x04  16Gb  |       |
-  //
-
-  //
-  // Get HWCONF straps
-  //
-  HwconfStraps = Minnow3ModuleGetHwconfStraps ();
-  DEBUG ((DEBUG_INFO, "**** MB3 Module - HWCONF straps = 0x%08X\n", HwconfStraps));
-
-  //
-  // Translate into Memory Type
-  //
-  MemoryType = (UINT8) ((HwconfStraps & MB3M_HWCONF_MEMORY_MASK) >> MB3M_HWCONF_MEMORY);
-  if (MemoryType == 0) {
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - SPD based memory init requested, but converted into Memory Profile type #4!\n"));
-    MemoryType = 4; // LPDDR4 16Gbit 4 channels
-  }
-  if (MemoryType == 5) {
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - EEPROM based memory init requested, but converted into Memory Profile type #4!\n"));
-    MemoryType = 4; // LPDDR4 16Gbit 4 channels    
-  }
-  MemoryType--; // Zero base it for use as index into array
-
-  //
-  // Common items
-  //
-  FspUpdRgn->FspmConfig.Package                 = 0x01;
-  FspUpdRgn->FspmConfig.Profile                 = 0x09; // LPDDR4_1600_14_15_15
-//  FspUpdRgn->FspmConfig.Profile                 = 0x0B; // LPDDR4_2400_24_22_22
-  FspUpdRgn->FspmConfig.MemoryDown              = 0x01;
-  FspUpdRgn->FspmConfig.DualRankSupportEnable   = 0x01;
-
-  //
-  // Memory Type specific items
-  //
-  if (MemoryType < (sizeof (gMB3MChannelInfo) / sizeof (gMB3MChannelInfo[0]))) {
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - %a detected!\n", gMB3MChannelInfo[MemoryType].DescString));
-
-    // DDR0CH0
-    FspUpdRgn->FspmConfig.Ch0_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[0];
-    FspUpdRgn->FspmConfig.Ch0_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[0];
-    FspUpdRgn->FspmConfig.Ch0_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[0];
-    FspUpdRgn->FspmConfig.Ch0_Option            = gMB3MChannelInfo[MemoryType].Option[0];
-
-    // DDR0CH1
-    FspUpdRgn->FspmConfig.Ch1_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[1];
-    FspUpdRgn->FspmConfig.Ch1_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[1];
-    FspUpdRgn->FspmConfig.Ch1_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[1];
-    FspUpdRgn->FspmConfig.Ch1_Option            = gMB3MChannelInfo[MemoryType].Option[1];
-
-    // DDR1CH0
-    FspUpdRgn->FspmConfig.Ch2_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[2];
-    FspUpdRgn->FspmConfig.Ch2_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[2];
-    FspUpdRgn->FspmConfig.Ch2_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[2];
-    FspUpdRgn->FspmConfig.Ch2_Option            = gMB3MChannelInfo[MemoryType].Option[2];
-
-    // DDR1CH1
-    FspUpdRgn->FspmConfig.Ch3_RankEnable        = gMB3MChannelInfo[MemoryType].RankEnable[3];
-    FspUpdRgn->FspmConfig.Ch3_DeviceWidth       = gMB3MChannelInfo[MemoryType].DeviceWidth[3];
-    FspUpdRgn->FspmConfig.Ch3_DramDensity       = gMB3MChannelInfo[MemoryType].DramDensity[3];
-    FspUpdRgn->FspmConfig.Ch3_Option            = gMB3MChannelInfo[MemoryType].Option[3];
-  } else {
-    DEBUG ((DEBUG_INFO, "**** MB3 Module - Memory Type 0x%02X is out of range!\n", MemoryType));
-  }
-
-  //
-  // Swizzling
-  //
-  if ((PcdGet8 (PcdFabId) == FAB_ID_A) && (ChSwizzle_MB3Ma != NULL)) {
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), ChSwizzle_MB3Ma[0], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch1_Bit_swizzling), ChSwizzle_MB3Ma[1], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch2_Bit_swizzling), ChSwizzle_MB3Ma[2], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch3_Bit_swizzling), ChSwizzle_MB3Ma[3], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-  }
-  if ((PcdGet8 (PcdFabId) == FAB_ID_C) && (ChSwizzle_MB3Mc != NULL)) {
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), ChSwizzle_MB3Mc[0], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch1_Bit_swizzling), ChSwizzle_MB3Mc[1], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch2_Bit_swizzling), ChSwizzle_MB3Mc[2], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-    CopyMem (&(FspUpdRgn->FspmConfig.Ch3_Bit_swizzling), ChSwizzle_MB3Mc[3], DRAM_POLICY_NUMBER_BITS * sizeof (UINT8));
-  }
+  DramPolicy->Package                          = FspUpdRgn->FspmConfig.Package;
+  DramPolicy->Profile                          = FspUpdRgn->FspmConfig.Profile;
+  DramPolicy->MemoryDown                       = FspUpdRgn->FspmConfig.MemoryDown;
+  DramPolicy->DDR3LPageSize                    = FspUpdRgn->FspmConfig.DDR3LPageSize;
+  DramPolicy->DDR3LASR                         = FspUpdRgn->FspmConfig.DDR3LASR;
+  DramPolicy->SystemMemorySizeLimit            = FspUpdRgn->FspmConfig.MemorySizeLimit;
+  DramPolicy->SpdAddress[0]                    = FspUpdRgn->FspmConfig.DIMM0SPDAddress;
+  DramPolicy->SpdAddress[1]                    = FspUpdRgn->FspmConfig.DIMM1SPDAddress;
+  DramPolicy->DDR3LPageSize                    = FspUpdRgn->FspmConfig.DDR3LPageSize;
+  DramPolicy->DDR3LASR                         = FspUpdRgn->FspmConfig.DDR3LASR;
+  DramPolicy->HighMemMaxVal                    = FspUpdRgn->FspmConfig.HighMemoryMaxValue;
+  DramPolicy->LowMemMaxVal                     = FspUpdRgn->FspmConfig.LowMemoryMaxValue;
+  DramPolicy->DisableFastBoot                  = FspUpdRgn->FspmConfig.DisableFastBoot;
+  DramPolicy->RmtMode                          = FspUpdRgn->FspmConfig.RmtMode;
+  DramPolicy->RmtCheckRun                      = FspUpdRgn->FspmConfig.RmtCheckRun;
+  DramPolicy->RmtMarginCheckScaleHighThreshold = FspUpdRgn->FspmConfig.RmtMarginCheckScaleHighThreshold;
+  DramPolicy->MsgLevelMask                     = FspUpdRgn->FspmConfig.MsgLevelMask;
+  DramPolicy->ChannelHashMask                  = FspUpdRgn->FspmConfig.ChannelHashMask;
+  DramPolicy->SliceHashMask                    = FspUpdRgn->FspmConfig.SliceHashMask;
+  DramPolicy->ChannelsSlicesEnabled            = FspUpdRgn->FspmConfig.ChannelsSlicesEnable;
+  DramPolicy->ScramblerSupport                 = FspUpdRgn->FspmConfig.ScramblerSupport;
+  DramPolicy->InterleavedMode                  = FspUpdRgn->FspmConfig.InterleavedMode;
+  DramPolicy->MinRefRate2xEnabled              = FspUpdRgn->FspmConfig.MinRefRate2xEnable;
+  DramPolicy->DualRankSupportEnabled           = FspUpdRgn->FspmConfig.DualRankSupportEnable;
+  CopyMem (&DramPolicy->ChDrp,     &(FspUpdRgn->FspmConfig.Ch0_RankEnable),    sizeof (DramPolicy->ChDrp));
+  CopyMem (&DramPolicy->ChSwizzle, &(FspUpdRgn->FspmConfig.Ch0_Bit_swizzling), sizeof (DramPolicy->ChSwizzle));
+  // Print header marker
+  DEBUG ((DEBUG_INFO, "\n\nDRAM_POLICY_PPI dump for EEPROM programming [0x%08x]:\n", sizeof (DRAM_POLICY_PPI)));
+  EepromDumpParagraph (DEBUG_INFO, DramPolicy, sizeof (DRAM_POLICY_PPI));
+  // Print footer marker
+  DEBUG ((DEBUG_INFO, "\n\n"));
 
   //
   // Disable NPK based on DciEn
@@ -330,8 +381,6 @@ Mb3MDramCreatePolicyDefaults (
     DramPolicy->DualRankSupportEnabled  = SystemConfiguration.DualRankSupportEnabled;
   }
 
-  DramConfig = &(DramConfigData->PlatformDram4);
-
   DEBUG ((EFI_D_INFO, "Using smip platform override: %d\n", DramConfigData->Platform_override));
   switch (DramConfigData->Platform_override) {
     case 0:
@@ -354,6 +403,7 @@ Mb3MDramCreatePolicyDefaults (
       // Do nothing if the override value does not exist. 0xFF is the
       // default Platform_override value when no override is selected
       //
+      DramConfig = &(DramConfigData->PlatformDram4);
       break;
     }
 

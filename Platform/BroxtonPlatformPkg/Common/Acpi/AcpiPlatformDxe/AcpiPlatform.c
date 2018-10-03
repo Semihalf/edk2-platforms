@@ -43,6 +43,7 @@
 #include <Library/DxeVtdLib.h>
 #include <Library/SideBandLib.h>
 #include <Library/SteppingLib.h>
+#include <Library/EepromPlatformLib.h>
 #include <Private/CpuInitDataHob.h>
 #include "PlatformBaseAddresses.h"
 
@@ -1082,6 +1083,11 @@ OnReadyToBoot (
   // Update the DMAR Table
   //
   // UpdateDmarOnReadyToBoot (SetupVarBuffer.VTdEnable);
+
+  //
+  // Add EEPROM SSDT tables if they exist
+  //
+  Status = EepromProgramAcpi ();
 
   //
   // Publish ACPI 1.0 or 2.0 Tables

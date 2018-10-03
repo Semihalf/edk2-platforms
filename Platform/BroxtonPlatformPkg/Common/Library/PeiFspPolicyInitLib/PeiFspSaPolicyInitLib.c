@@ -22,6 +22,7 @@
 #include <Library/SmbusLib.h>
 #include <Library/MmPciLib.h>
 #include <Library/ConfigBlockLib.h>
+#include <Library/EepromPlatformLib.h>
 #include <IndustryStandard/Pci.h>
 #include <Ppi/DramPolicyPpi.h>
 #include <ScAccess.h>
@@ -243,13 +244,15 @@ PeiFspSaPolicyInit (
   //
   // Update VbtGuid.
   //
-  CopyMem (&PeiVbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
-  CopyMem (&PeiLogoGuid, PcdGetPtr (PcdOemLogoFileGuid), sizeof (EFI_GUID));
+  Status = EepromGetVbt (NULL, (UINT8**) &Buffer, &Size);
+  if (EFI_ERROR (Status)) {
+    CopyMem (&PeiVbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
 
-  //
-  // Update UPD:LogoPtr
-  //
-  PeiGetSectionFromFv (PeiVbtGuid, &Buffer, &Size);
+    //
+    // Update VbtPtr
+    //
+    PeiGetSectionFromFv (PeiVbtGuid, &Buffer, &Size);
+  }
   if (Buffer == NULL) {
     DEBUG ((DEBUG_ERROR, "Could not locate VBT"));
   }
@@ -262,7 +265,14 @@ PeiFspSaPolicyInit (
   DEBUG ((DEBUG_INFO, "VbtPtr from PeiGetSectionFromFv is 0x%x\n", FspsUpd->FspsConfig.GraphicsConfigPtr));
   DEBUG ((DEBUG_INFO, "VbtSize from PeiGetSectionFromFv is 0x%x\n", Size));
 
-  PeiGetSectionFromFv (PeiLogoGuid, &Buffer, &Size);
+  //
+  // Get Logo
+  //
+  Status = EepromGetLogo (NULL, (UINT8**) &Buffer, &Size);
+  if (EFI_ERROR (Status)) {
+    CopyMem (&PeiLogoGuid, PcdGetPtr (PcdOemLogoFileGuid), sizeof (EFI_GUID));
+    PeiGetSectionFromFv (PeiLogoGuid, &Buffer, &Size);
+  }
   if (Buffer == NULL) {
     DEBUG ((DEBUG_ERROR, "Could not locate Logo"));
   }

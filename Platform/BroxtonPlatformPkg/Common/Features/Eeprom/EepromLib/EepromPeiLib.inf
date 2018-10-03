@@ -33,6 +33,7 @@
   BaseMemoryLib
   DebugLib
   EepromDataLib
+  FspWrapperPlatformResetLib
   MemoryAllocationLib
   PcdLib
   PeiServicesLib
@@ -52,6 +53,8 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromLibraryValid
   gPlatformModuleTokenSpaceGuid.PcdEepromMemoryPointer
   gPlatformModuleTokenSpaceGuid.PcdEepromMemorySize
+  gPlatformModuleTokenSpaceGuid.PcdEepromDxeVerificationRequired
+  gPlatformModuleTokenSpaceGuid.PcdEepromSecurityViolationPolicy
 
 [Ppis]
   gEfiPeiReadOnlyVariable2PpiGuid               ## SOMETIMES_CONSUMES

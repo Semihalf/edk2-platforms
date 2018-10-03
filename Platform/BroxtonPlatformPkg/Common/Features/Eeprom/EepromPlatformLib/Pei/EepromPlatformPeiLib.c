@@ -30,3 +30,20 @@ EepromProgramAcpi (VOID)
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
   return EFI_NOT_READY;
 }
+
+/**
+  Reset the system using the platform desired reset method.
+
+  @param[in]  ResetType    The reset type to perform
+
+  @retval     None
+**/
+VOID
+EFIAPI
+EepromResetSystem (
+  IN EFI_RESET_TYPE   ResetType
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return;
+}

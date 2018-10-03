@@ -255,6 +255,9 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromInMemoryFlag|0|BOOLEAN|0xEEEE0006
   ## Flag to tell if EEPROM Map is in HOB
   gPlatformModuleTokenSpaceGuid.PcdEepromMapHobValid|0|BOOLEAN|0xEEEE0007
+  ## Flag to tell if EEPROM image require DXE verification or not
+  gPlatformModuleTokenSpaceGuid.PcdEepromDxeVerificationRequired|0|BOOLEAN|0xEEEE0008
+
 [PcdsFeatureFlag]   # 0x10000000
   ## This PCD specifies whether StatusCode is reported via ISA Serial port.
   gEfiSerialPortTokenSpaceGuid.PcdStatusCodeUseIsaSerial|TRUE|BOOLEAN|0x00000020
@@ -349,7 +352,8 @@
   ## EEPROM PCDs
   ##
   ## I2C bus the master EEPROM is hanging on
-  gPlatformModuleTokenSpaceGuid.PcdEepromBus|0x06|UINT8|0xEEEE2000
+  ## 0-7 = I2C   8 = SmBus as I2C7
+  gPlatformModuleTokenSpaceGuid.PcdEepromBus|0x08|UINT8|0xEEEE2000
   ## 7-bit address of the master EEPROM
   gPlatformModuleTokenSpaceGuid.PcdEepromAddress|0x50|UINT8|0xEEEE2001
   ## Priority order of EEPROM data libraries
@@ -362,6 +366,9 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile|{0xAC, 0x3D, 0xBD, 0xBF, 0xEB, 0x01, 0xEB, 0x4F, 0xA9, 0xDE, 0xBC, 0xC9, 0xD1, 0xBA, 0x55, 0x31}|VOID*|0xEEEE2004
   ## GPIO PAD whitelist                           |    END OF ARRAY    |
   gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList|{0xFF, 0xFF, 0xFF, 0xFF}|VOID*|0xEEEE2005
+  ## EEPROM security violation policy action
+  ## 0x00 - CPU dead loop
+  gPlatformModuleTokenSpaceGuid.PcdEepromSecurityViolationPolicy|0x00|UINT8|0xEEEE2006
 
 [PcdsPatchableInModule]
   ## MemoryCheck value for checking memory before boot OS.

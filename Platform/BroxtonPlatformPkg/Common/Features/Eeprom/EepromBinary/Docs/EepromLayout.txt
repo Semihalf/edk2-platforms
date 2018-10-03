@@ -13,8 +13,8 @@
 #
 ##
 
-Version: 1.10
-Dated:   07-31-2018
+Version: 1.11
+Dated:   09-11-2018
 
 - The first 4KB of the EEPROM data MUST be accessible from I2C bus
   gPlatformModuleTokenSpaceGuid.PcdEepromBus, address
@@ -80,25 +80,14 @@ Dated:   07-31-2018
 - If characters in a Signature[8] or a Label[16] don't fill the entire allocated length,
   append string with $ as a sentinel value. IE - Signature[8] : "$uCode" shall be "$uCode$"
 
-- If there is a valid binary in both the FV and EEPROM, BIOS will use the following rules to determine
-  which one to load into memory and use:
-  - It is assumed that the FV and EEPROM binaries have both passed sanity checks.
-    - CRC32 passes
-    - Hash and signed hash passes if present
-  - If the following fields are not equal, then the FV is assumed to have priority:
-    - $BrdInfo.ManuName
-    - $BrdInfo.BrdName
-    - $BrdInfo.BoardId
-    - $BrdInfo.FabId
-    - $BrdInfo.EcId
-    - $BrdInfo.BoardType
-  - If the $BrdInfo test passes, then priority is given to the image with the greater $Eeprom$.Version.
-  - If the $BrdInfo test passes and $Eeprom$.Version are equal, then use the FV due to speed concerns.
+- If there is a valid binary in both the FV and EEPROM, BIOS will use the image with the greater
+  $Eeeprom$.Version.
 
 - Due to the size of OpenSSL, it is unavailable in PEI for verifying the hash and/or signature in
   $PromSig. As such, the $PromSig data, if present, is stored in a NvStorage variable for use in PEI.
   It will be checked and if needed, updated each boot in DXE. If it changes, then BIOS will reboot to
-  ensure that the PEI integrity check passes.
+  ensure that the PEI integrity check passes. Please note that on some systems, this variable is
+  unavailable until after memory has been initialized.
 
 
 Generic header structure

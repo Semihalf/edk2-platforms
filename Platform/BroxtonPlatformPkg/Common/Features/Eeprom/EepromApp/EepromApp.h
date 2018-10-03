@@ -31,11 +31,12 @@
 #include <Library/PrintLib.h>
 #include <Library/ShellCEntryLib.h>
 #include <Library/ShellLib.h>
+#include <Library/SteppingLib.h>
 #include <Library/TimerLib.h>
 #include <Library/UefiLib.h>
 
 // Defines
-#define   APP_VERSION          L"1.00.00"
+#define   APP_VERSION          L"1.00.01"
 #define   APP_COPYRIGHT        L"2017 - 2018"
 #define   DIVIDING_LINE        L"+----------------------------------------------------+------------------+\n"
 
@@ -137,6 +138,9 @@ UINTN
 GetHexOrDecFromString (
   CHAR16 *Arg
   );
+
+BOOLEAN
+IsApolloLake (VOID);
 
 VOID
 ParseParameters (

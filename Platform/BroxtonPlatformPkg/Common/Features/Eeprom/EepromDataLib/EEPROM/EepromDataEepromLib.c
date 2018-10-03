@@ -90,9 +90,11 @@ CreateBlockList (
       //
       // Dump this block of info
       //
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Address = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Address));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Offset));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Size    = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Size));
+      if (mEepromDataLibDebugFlag) {
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - Address = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Address));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Offset));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - Size    = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Size));
+      }
       //
       // New address range, create new PageList.
       //
@@ -125,9 +127,11 @@ CreateBlockList (
   //
   // Dump this block of info
   //
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Address = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Address));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Offset));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Size    = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Size));
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Address = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Address));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Offset));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Size    = 0x%08x\n", __FUNCTION__, __LINE__, BlockList->Size));
+  }
   //
   // Insert last record
   //
@@ -189,33 +193,39 @@ DumpEepromMap (VOID)
   LIST_ENTRY         *MapNode;
   LIST_ENTRY         *PartNode;
 
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromPartsHeadLink = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   - HeadLink->ForwardLink = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink->ForwardLink));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   - HeadLink->BackLink    = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink->BackLink));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromParts         = 0x%08x\n", __FUNCTION__, __LINE__, gEepromParts));
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromPartsHeadLink = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink));
+    DEBUG ((DEBUG_INFO, "%a (#%4d)   - HeadLink->ForwardLink = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink->ForwardLink));
+    DEBUG ((DEBUG_INFO, "%a (#%4d)   - HeadLink->BackLink    = 0x%08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink->BackLink));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromParts         = 0x%08x\n", __FUNCTION__, __LINE__, gEepromParts));
+  }
 
   if ((gEepromParts != NULL) && (gEepromPartsHeadLink != NULL)) {
     PartNode = GetFirstNode (gEepromPartsHeadLink);
     do {
       CurrentEepromParts = EEPROM_PART_INFO_FROM_THIS (PartNode);
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   - PartNode            = %08x   HeadLink = %08x\n", __FUNCTION__, __LINE__, PartNode, gEepromPartsHeadLink));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM bus number   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BusNumber));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM address      = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Address));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM speed        = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSpeed));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM part size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSize));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM block length = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BlockLength));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM page size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PageSize));
-      DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM master map   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Master));
+      if (mEepromDataLibDebugFlag) {
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - PartNode            = %08x   HeadLink = %08x\n", __FUNCTION__, __LINE__, PartNode, gEepromPartsHeadLink));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM bus number   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BusNumber));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM address      = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Address));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM speed        = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSpeed));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM part size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSize));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM block length = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BlockLength));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM page size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PageSize));
+        DEBUG ((DEBUG_INFO, "%a (#%4d)   - EEPROM master map   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Master));
+      }
       //
       // Dump map records
       //
       MapNode = GetFirstNode (&CurrentEepromParts->MapHeadLink);
       do {
         CurrentEepromMap = EEPROM_MAP_INFO_FROM_THIS (MapNode);
-        if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)     - MapNode = %08x   HeadLink = %08x\n", __FUNCTION__, __LINE__, MapNode, &CurrentEepromParts->MapHeadLink));
-        DEBUG ((DEBUG_INFO, "%a (#%4d)     - Address = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromMap->Address));
-        DEBUG ((DEBUG_INFO, "%a (#%4d)     - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromMap->Offset));
+        if (mEepromDataLibDebugFlag) {
+          DEBUG ((DEBUG_INFO, "%a (#%4d)     - MapNode = %08x   HeadLink = %08x\n", __FUNCTION__, __LINE__, MapNode, &CurrentEepromParts->MapHeadLink));
+          DEBUG ((DEBUG_INFO, "%a (#%4d)     - Address = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromMap->Address));
+          DEBUG ((DEBUG_INFO, "%a (#%4d)     - Offset  = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromMap->Offset));
+        }
         //
         // Get next record
         //
@@ -227,7 +237,7 @@ DumpEepromMap (VOID)
       PartNode = GetNextNode (gEepromPartsHeadLink, PartNode);
     } while (!IsNull (gEepromPartsHeadLink, PartNode));
   } else {
-    DEBUG ((DEBUG_INFO, "%a (#%4d) - WARNING: gEepromParts or gEepromPartsHeadLink is bad!\n", __FUNCTION__, __LINE__));
+    DEBUG ((DEBUG_ERROR, "%a (#%4d) - WARNING: gEepromParts or gEepromPartsHeadLink is bad!\n", __FUNCTION__, __LINE__));
   }
 }
 
@@ -441,12 +451,14 @@ FillEepromMap (
       CurrentEepromParts->BlockLength = EepromHeader->blklength;
       CurrentEepromParts->PageSize    = EepromHeader->pagesize;
       CurrentEepromParts->Master      = EepromHeader->master;
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM bus number   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BusNumber));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM address      = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Address));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM speed        = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSpeed));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM part size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSize));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM block length = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BlockLength));
-      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM master map   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Master));
+      if (mEepromDataLibDebugFlag) {
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM bus number   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BusNumber));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM address      = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Address));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM speed        = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSpeed));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM part size    = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->PartSize));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM block length = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->BlockLength));
+        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM master map   = 0x%08x\n", __FUNCTION__, __LINE__, CurrentEepromParts->Master));
+      }
       Status = EFI_SUCCESS;
       break;
     }
@@ -499,9 +511,11 @@ FillEepromMap (
     CurrentEepromMap->Signature = EEPROM_MAP_INFO_SIGNATURE;
     CurrentEepromMap->Address   = MapRecord->address;
     CurrentEepromMap->Offset    = MapRecord->offset;
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   -       Map[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   -   Address[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap->Address));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d)   -    Offset[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap->Offset));
+    if (mEepromDataLibDebugFlag) {
+      DEBUG ((DEBUG_INFO, "%a (#%4d)   -       Map[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap));
+      DEBUG ((DEBUG_INFO, "%a (#%4d)   -   Address[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap->Address));
+      DEBUG ((DEBUG_INFO, "%a (#%4d)   -    Offset[%04x] = %08x\n", __FUNCTION__, __LINE__, index, CurrentEepromMap->Offset));
+    }
     //
     // Insert record
     //
@@ -640,10 +654,12 @@ I2cReadPages (
     PageSize  = EepromPartInfo->PageSize;
     PartSpeed = EepromPartInfo->PartSpeed;
   }
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Bus          = %02x         Address    = %02x\n", __FUNCTION__, __LINE__, Bus, Address));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset       = %08x   Size       = %08x\n", __FUNCTION__, __LINE__, Offset, Size));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %02x         PartSpeed  = %02x\n", __FUNCTION__, __LINE__, PageSize, PartSpeed));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Buffer       = %08x\n", __FUNCTION__, __LINE__, Buffer));
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Bus          = %02x         Address    = %02x\n", __FUNCTION__, __LINE__, Bus, Address));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset       = %08x   Size       = %08x\n", __FUNCTION__, __LINE__, Offset, Size));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %02x         PartSpeed  = %02x\n", __FUNCTION__, __LINE__, PageSize, PartSpeed));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Buffer       = %08x\n", __FUNCTION__, __LINE__, Buffer));
+  }
   //
   // Init I2C controller
   //
@@ -676,10 +692,12 @@ I2cReadPages (
       //
       ReadCount = PageSize - (CurrentOffset % PageSize);
     }
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Size         = %08x\n", __FUNCTION__, __LINE__, Size));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - CurrentCount = %08x\n", __FUNCTION__, __LINE__, CurrentCount));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %08x\n", __FUNCTION__, __LINE__, PageSize));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - ReadCount    = %08x\n", __FUNCTION__, __LINE__, ReadCount));
+    if (mEepromDataLibDebugFlag) {
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - Size         = %08x\n", __FUNCTION__, __LINE__, Size));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - CurrentCount = %08x\n", __FUNCTION__, __LINE__, CurrentCount));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %08x\n", __FUNCTION__, __LINE__, PageSize));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - ReadCount    = %08x\n", __FUNCTION__, __LINE__, ReadCount));
+    }
     //
     // Set offset
     //
@@ -808,10 +826,12 @@ I2cWritePages (
     PageSize  = EepromPartInfo->PageSize;
     PartSpeed = EepromPartInfo->PartSpeed;
   }
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Bus          = %02x         Address    = %02x\n", __FUNCTION__, __LINE__, Bus, Address));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset       = %08x   Size       = %08x\n", __FUNCTION__, __LINE__, Offset, Size));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %02x         PartSpeed  = %02x\n", __FUNCTION__, __LINE__, PageSize, PartSpeed));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Buffer       = %08x\n", __FUNCTION__, __LINE__, Buffer));
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Bus          = %02x         Address    = %02x\n", __FUNCTION__, __LINE__, Bus, Address));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Offset       = %08x   Size       = %08x\n", __FUNCTION__, __LINE__, Offset, Size));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %02x         PartSpeed  = %02x\n", __FUNCTION__, __LINE__, PageSize, PartSpeed));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Buffer       = %08x\n", __FUNCTION__, __LINE__, Buffer));
+  }
   //
   // Init I2C controller
   //
@@ -848,10 +868,12 @@ I2cWritePages (
       //
       WriteCount = PageSize - (CurrentOffset % PageSize);
     }
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Size         = %08x\n", __FUNCTION__, __LINE__, Size));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - CurrentCount = %08x\n", __FUNCTION__, __LINE__, CurrentCount));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %08x\n", __FUNCTION__, __LINE__, PageSize));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - WriteCount   = %08x\n", __FUNCTION__, __LINE__, WriteCount));
+    if (mEepromDataLibDebugFlag) {
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - Size         = %08x\n", __FUNCTION__, __LINE__, Size));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - CurrentCount = %08x\n", __FUNCTION__, __LINE__, CurrentCount));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - PageSize     = %08x\n", __FUNCTION__, __LINE__, PageSize));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) - WriteCount   = %08x\n", __FUNCTION__, __LINE__, WriteCount));
+    }
     //
     // Set offset
     //
@@ -985,11 +1007,13 @@ ReadEepromBlockList (
     // Read in a block
     //
     CurrentBlockList = BLOCK_LIST_FROM_THIS (Node);
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) -               buffer @ %08x\n", __FUNCTION__, __LINE__, Buffer));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) -                  bus = %08x\n", __FUNCTION__, __LINE__, EepromInfo->Bus));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) -              address = %08x\n", __FUNCTION__, __LINE__, CurrentBlockList->Address));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) -               offset = %08x\n", __FUNCTION__, __LINE__, CurrentBlockList->Offset));
-    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) -                  ptr @ %08x\n", __FUNCTION__, __LINE__, Ptr));
+    if (mEepromDataLibDebugFlag) {
+      DEBUG ((DEBUG_INFO, "%a (#%4d) -               buffer @ %08x\n", __FUNCTION__, __LINE__, Buffer));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) -                  bus = %08x\n", __FUNCTION__, __LINE__, EepromInfo->Bus));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) -              address = %08x\n", __FUNCTION__, __LINE__, CurrentBlockList->Address));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) -               offset = %08x\n", __FUNCTION__, __LINE__, CurrentBlockList->Offset));
+      DEBUG ((DEBUG_INFO, "%a (#%4d) -                  ptr @ %08x\n", __FUNCTION__, __LINE__, Ptr));
+    }
     Status = I2cReadPages (EepromInfo->Bus, CurrentBlockList->Address, CurrentBlockList->Offset, CurrentBlockList->Size, Ptr);
     if (EFI_ERROR (Status)) {
       goto Exit;
@@ -1361,9 +1385,11 @@ SearchEepromPartList (
   EEPROM_PART_INFO   *EepromPartInfo;
   LIST_ENTRY         *Node;
 
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromParts         = %08x\n", __FUNCTION__, __LINE__, gEepromParts));
-  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromPartsHeadLink = %08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink));
+  if (mEepromDataLibDebugFlag) {
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting\n", __FUNCTION__, __LINE__));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromParts         = %08x\n", __FUNCTION__, __LINE__, gEepromParts));
+    DEBUG ((DEBUG_INFO, "%a (#%4d) - gEepromPartsHeadLink = %08x\n", __FUNCTION__, __LINE__, gEepromPartsHeadLink));
+  }
 
   //
   // Sanity checks
@@ -1451,7 +1477,7 @@ WriteEepromBlockList (
   //
   // Write data from buffer
   //
-  DEBUG ((DEBUG_INFO, "%a (#%4d) - Writing to EEPROM...\n", __FUNCTION__, __LINE__));
+  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Writing to EEPROM...\n", __FUNCTION__, __LINE__));
   Node = GetFirstNode (&BlockListHead->Link);
   do {
     //

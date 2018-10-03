@@ -34,7 +34,6 @@
   EepromDataLib
   EepromLib
   GpioLib
-  I2cLib
   MemoryAllocationLib
   PcdLib
 
@@ -52,6 +51,6 @@
   gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList
 
 [Sources]
-  EepromAcpiPei.c
   EepromPlatformLib.c
   EepromPlatformLib.h
+  Pei/EepromPlatformPeiLib.c

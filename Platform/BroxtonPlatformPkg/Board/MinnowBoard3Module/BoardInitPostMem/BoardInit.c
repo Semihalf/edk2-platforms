@@ -18,6 +18,7 @@
 #include <Library/PcdLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
+#include <Library/EepromPlatformLib.h>
 #include <Guid/PlatformInfo_Aplk.h>
 #include <Ppi/BoardInitSignalling.h>
 #include "BoardInit.h"
@@ -56,6 +57,8 @@ MinnowBoard3ModulePostMemInitCallback (
   VOID                             *Instance;
   UINT8                            BoardId;
   UINT8                            FabId;
+  UINT8                           *HdaVerbTable;
+  UINT32                           HdaVerbTableSize;
   UINT8                            ResetType;
   UINTN                            BufferSize;
   UINTN                            VariableSize;
@@ -130,6 +133,17 @@ MinnowBoard3ModulePostMemInitCallback (
   // Set PcdPciePort3Enable
   //
   PcdSetBool(PcdPciePort3Enable, SystemConfiguration.PcieRootPortEn[3]);
+
+  //
+  // HDA audio verb table
+  //
+  HdaVerbTable     = NULL;
+  HdaVerbTableSize = 0;
+  Status = EepromGetHdaCodec (NULL, &HdaVerbTable, &HdaVerbTableSize);
+  if (! EFI_ERROR (Status) && (HdaVerbTableSize > 0)) {
+    PcdSet64 (PcdHdaVerbTablePtr, (UINT64) (UINTN) HdaVerbTable);
+    PcdSet8 (HdaVerbTableEntryNum, 1);
+  }
 
   //
   // Add init steps here

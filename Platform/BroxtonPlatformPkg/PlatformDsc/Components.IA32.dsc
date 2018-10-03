@@ -110,7 +110,6 @@
     !if $(TARGET) == DEBUG
     <PcdsFixedAtBuild>
       gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2E
-      gPlatformModuleTokenSpaceGuid.PcdFlashFvIBBMBase|0xFEF30000
     <PcdsPatchableInModule>
       gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80000046
 

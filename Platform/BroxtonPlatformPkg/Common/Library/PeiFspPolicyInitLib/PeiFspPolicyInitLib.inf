@@ -71,6 +71,7 @@
   PeiPolicyInitLib
   ScPlatformLib
   PcdLib
+  EepromPlatformLib
 
 [Pcd]
 

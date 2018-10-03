@@ -2,7 +2,7 @@
   This is the driver that locates the MemoryConfigurationData HOB, if it
   exists, and saves the data to NVRAM.
 
-  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -30,6 +30,7 @@
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/UefiLib.h>
 #include <Library/MemoryAllocationLib.h>
+#include <Library/EepromLib.h>
 
 #define MRC_DATA_REQUIRED_FROM_OUTSIDE
 #include "MmrcData.h"
@@ -295,6 +296,12 @@ SaveMemoryConfigEntryPoint (
   if (EFI_ERROR(Status)){
     return Status;
   }
+
+  //
+  // Do some EEPROM checking here and install valid image into memory. We perform the check here so that
+  // if a reset is required, it is after the MRC training data has been saved so that the next POST isn't as slow.
+  //
+  GetValidEepromLibrary (TRUE);
 
   //
   // This driver does not produce any protocol services, so always unload it.

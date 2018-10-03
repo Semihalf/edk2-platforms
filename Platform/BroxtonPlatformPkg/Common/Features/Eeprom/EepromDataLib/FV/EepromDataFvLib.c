@@ -74,6 +74,7 @@ ReadEepromFv (
              &Address,
              &FvSize
              );
+  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - GetImage(%g) --> %r\n", __FUNCTION__, __LINE__, FvSectionGuid, Status));
 
   if (!EFI_ERROR (Status)) {
     //
@@ -81,14 +82,14 @@ ReadEepromFv (
     //
     if (Address != NULL) {
       Ptr = Address;
-      DEBUG ((DEBUG_INFO, "%a (#%4d) - Found EEPROM image @ 0x%08x.\n", __FUNCTION__, __LINE__, Address));
+      if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Found EEPROM image @ 0x%08x.\n", __FUNCTION__, __LINE__, Address));
       if (*Size == 0) {
         //
         // Nothing to copy, return FV EEPROM size.
         //
         *Size = (UINT32) FvSize;
         Status = EFI_BUFFER_TOO_SMALL;
-        DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM size = 0x%08x\n", __FUNCTION__, __LINE__, *Size));
+        if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - EEPROM size = 0x%08x\n", __FUNCTION__, __LINE__, *Size));
       } else {
         //
         // Figure out the correct buffer size.
@@ -115,7 +116,7 @@ ReadEepromFv (
             }
           }
         }
-        DEBUG ((DEBUG_INFO, "%a (#%4d) - Copying 0x%08x bytes of data starting at offset 0x%08x...\n", __FUNCTION__, __LINE__, *Size, Offset));
+        if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Copying 0x%08x bytes of data starting at offset 0x%08x...\n", __FUNCTION__, __LINE__, *Size, Offset));
         if (*Size > 0) {
           //
           // Asking to copy something

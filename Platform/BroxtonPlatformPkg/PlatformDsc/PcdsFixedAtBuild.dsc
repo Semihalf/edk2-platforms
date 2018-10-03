@@ -88,7 +88,7 @@
 
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialBaudRate|115200
 
-  !if $(MINNOW3_MODULE_BOARD) == TRUE
+  !if $(EEPROM_CODE_ENABLE) == TRUE
     #
     # I2C bus the master EEPROM is hanging on
     gPlatformModuleTokenSpaceGuid.PcdEepromBus|0x08

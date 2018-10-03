@@ -123,6 +123,7 @@
 
 [LibraryClasses.Common.UEFI_APPLICATION]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
+  HeciMsgLib|$(PLATFORM_SI_PACKAGE)/Txe/Library/HeciMsgLib/DxeSmmHeciMsgLib.inf
 
 ################################################################################
 #

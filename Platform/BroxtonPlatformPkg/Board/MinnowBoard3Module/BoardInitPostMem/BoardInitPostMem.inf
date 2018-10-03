@@ -40,6 +40,7 @@
   EepromPlatformLib
   HeciMsgLib
   HobLib
+  I2cLib
   IoLib
   SteppingLib
   GpioLib
@@ -67,6 +68,8 @@
   gPlatformModuleTokenSpaceGuid.PcdTianoCoreLogoFileGuid
   gPlatformModuleTokenSpaceGuid.PcdeMMCHostMaxSpeed
   gPlatformModuleTokenSpaceGuid.PcdPciePort3Enable
+  gPlatformModuleTokenSpaceGuid.PcdHdaVerbTablePtr
+  gPlatformModuleTokenSpaceGuid.HdaVerbTableEntryNum
 
 [Guids]
   gEfiPlatformInfoGuid

@@ -62,8 +62,15 @@ ShellAppMain (
   ParseParameters (Argc, Argv, &ProgramInfo);
 
   // Print App version
-  Print (L"EepromApp - Version #%s\n", APP_VERSION);
+  Print (L"EepromApp for BXT/APL - Version #%s\n", APP_VERSION);
   Print (L"Copyright (c) %s Intel Corporation. All rights reserved.\n\n", APP_COPYRIGHT);
+
+  // Make sure we support this SoC
+  if (! IsApolloLake ()) {
+    Print (L"ERROR: This is not a Broxton or Apollo Lake SoC!\n");
+    Status = SHELL_INVALID_PARAMETER;
+    goto Exit;
+  }
 
   // Help requested?
   if (ProgramInfo.HelpFlag) {
@@ -85,7 +92,7 @@ ShellAppMain (
     //
     // Skip this if we are doing a scan.
     //
-    Print (L"- GetValidEepromLibrary() = %a\n", mEepromLibraryString[GetValidEepromLibrary (TRUE)]);
+    Print (L"- GetValidEepromLibrary() = %a\n", mEepromLibraryString[GetValidEepromLibrary (FALSE)]);
   } else {
     // Scanning
     Status = ScanOption (&ProgramInfo);
@@ -1242,6 +1249,15 @@ GetHexOrDecFromString (
   } else{
     return StrDecimalToUintn (Arg);
   }
+}
+
+BOOLEAN
+IsApolloLake (VOID)
+{
+  if (GetBxtSeries () == BxtSeriesMax) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 VOID

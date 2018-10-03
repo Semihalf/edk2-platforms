@@ -1,4 +1,6 @@
 /** @file
+  Common EEPROM library instance.
+
   Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
@@ -11,27 +13,10 @@
 
 **/
 
-#ifndef _EEPROM_PLATFORM_LIB_
-#define _EEPROM_PLATFORM_LIB_
-////
-//// Header files
-////
-#include <Uefi.h>
+#include "EepromPlatformLib.h"
 
-#include <EepromStruct.h>
-#include <Library/EepromDataLib.h>
-#include <Library/EepromLib.h>
+BOOLEAN      mEepromPlatformLibDebugFlag = FALSE;
 
-
-////
-//// defines
-////
-#define END_OF_GPIO_ARRAY   0xFFFFFFFF
-
-
-////
-//// Functions
-////
 /**
   Returns the $BrdInfo structure
 
@@ -41,19 +26,24 @@
 
   @retval      EFI_SUCCESS     $BrdInfo structure found
   @retval      EFI_NOT_FOUND   $BrdInfo structure not found
+  @retval      EFI_NOT_READY   $BrdInfo structure not ready yet
 **/
 EFI_STATUS
-EFIAPI
 EepromGetBoardInfo (
   IN OUT   UINT32              *StructureIndex,
   OUT      BOARD_INFO_TABLE   **BoardInfo
-  );
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Returns the $HdCodec data
 
   @param[out]  StructureIndex  Index of where to start looking for the next structure
   @param[out]  Buffer          Buffer containing the $HdCodec data
+                               - Up to the caller to free the buffer
   @param[out]  BufferSize      Size of the HdaData buffer
 
   @retval      EFI_SUCCESS     $HdCodec data found
@@ -66,7 +56,11 @@ EepromGetHdaCodec (
   IN OUT   UINT32   *StructureIndex,
   OUT      UINT8   **Buffer,
   OUT      UINT32   *BufferSize
-  );
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Returns the $Logo$ data
@@ -86,7 +80,11 @@ EepromGetLogo (
   IN OUT   UINT32   *StructureIndex,
   OUT      UINT8   **Buffer,
   OUT      UINT32   *BufferSize
-  );
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Returns the $MemCnfg data
@@ -108,7 +106,11 @@ EepromGetMemoryData (
   OUT      UINT16   *SpdSlotFlag,
   OUT      UINT8   **Buffer,
   OUT      UINT32   *BufferSize
-  );
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Returns the $Video$ data
@@ -128,7 +130,11 @@ EepromGetVbt (
   IN OUT   UINT32   *StructureIndex,
   OUT      UINT8   **Buffer,
   OUT      UINT32   *BufferSize
-  );
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Checks whether the PadOffset is in the platform GPIO whitelist.
@@ -139,35 +145,82 @@ EepromGetVbt (
   @retval     FALSE        PAD offset is not in the whitelist
 **/
 BOOLEAN
-EFIAPI
 EepromPadCheck (
   IN  UINT32    PadOffset
-  );
+  )
+{
+  UINT32     AlignedPadOffset;
+  UINTN      GpioCount;
+  UINT32    *GpioWhiteListPtr;
+  UINTN      GpioWhiteListLength;
+  BOOLEAN    ReturnValue;
+
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
+  //
+  // Initialize variables
+  //
+  GpioCount           = 0;
+  GpioWhiteListPtr    = (UINT32 *) PcdGetPtr (PcdGpioWhiteList);
+  GpioWhiteListLength = (UINTN) PcdGetSize (PcdGpioWhiteList) / sizeof (UINT32);
+  ReturnValue         = FALSE;
+
+  //
+  // Force to PAD offset so the whitelist only needs to account for the DW0 value and not both DW0 and DW1
+  //
+  AlignedPadOffset = PadOffset - (PadOffset % 0x08);
+
+  //
+  // Sanity checks
+  //
+  if (GpioWhiteListPtr == NULL) {
+    DEBUG ((DEBUG_ERROR, "%a() - ERROR: GpioWhiteListPtr == NULL\n", __FUNCTION__));
+    goto Exit;
+  }
+  if (GpioWhiteListLength == 0) {
+    DEBUG ((DEBUG_ERROR, "%a() - ERROR: GpioWhiteListLength == 0\n", __FUNCTION__));
+    goto Exit;
+  }
+  if (AlignedPadOffset == 0) {
+    DEBUG ((DEBUG_ERROR, "%a() - ERROR: AlignedPadOffset == 0\n", __FUNCTION__));
+    goto Exit;
+  }
+
+  //
+  // Verify PAD offset is in white list
+  //
+  while ((GpioWhiteListPtr[GpioCount] != END_OF_GPIO_ARRAY) && (GpioCount < GpioWhiteListLength)) {
+    if (GpioWhiteListPtr[GpioCount] == AlignedPadOffset) {
+      ReturnValue = TRUE;
+      break;
+    }
+    GpioCount++;
+  }
+
+  if (ReturnValue == FALSE) {
+    DEBUG ((DEBUG_INFO, "%a() - WARNING: 0x%08x [0x%08x] was not found in the whitelist.\n", __FUNCTION__, AlignedPadOffset, PadOffset));
+  }
+
+Exit:
+  return ReturnValue;
+}
 
 /**
-  Programs the ACPI SSDT data in $AcpiTbl
+  Program GPIOs per binary and whitelist. The $GpioDat structure could be used to program things other than
+  GPIOs, but that is all it is used for at this point.
 
   @param[in]  VOID
 
-  @retval     EFI_SUCCESS     $AcpiTbl data found
-  @retval     EFI_NOT_FOUND   $AcpiTbl data not found
-  @retval     EFI_NOT_READY   $AcpiTbl data not ready to be programmed
+  @retval     EFI_SUCCESS     GPIOs programmed successfully
+  @retval     EFI_NOT_FOUND   GPIO data not found
+  @retval     EFI_NOT_READY   GPIO data not ready yet
 **/
 EFI_STATUS
-EFIAPI
-EepromProgramAcpi (VOID);
-
-/**
-  Program GPIOs per binary and whitelist.
-
-  @param[in]  VOID
-
-  @retval     EFI_SUCCESS     GPIOs programmed successfully.
-  @retval     EFI_NOT_FOUND   GPIO data not found.
-**/
-EFI_STATUS
-EFIAPI
-EepromProgramGpioPads (VOID);
+EepromProgramGpioPads (VOID)
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return EFI_NOT_READY;
+}
 
 /**
   Reset the system using the platform desired reset method.
@@ -180,7 +233,9 @@ VOID
 EFIAPI
 EepromResetSystem (
   IN EFI_RESET_TYPE   ResetType
-  );
-
-#endif // _EEPROM_PLATFORM_LIB_
+  )
+{
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  return;
+}
 

@@ -50,6 +50,7 @@
   PrintLib
   ShellCEntryLib
   ShellLib
+  SteppingLib
   TimerLib
   UefiApplicationEntryPoint
   UefiLib

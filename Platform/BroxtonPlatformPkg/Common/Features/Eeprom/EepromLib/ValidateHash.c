@@ -47,10 +47,12 @@ SetEepromVariable (
   EFI_STATUS   Status;
   CHAR16       VariableName[32];
 
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
   //
   // Initialize variables
   //
-  Attributes = EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS;
+  Attributes = EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS;
   Status     = EFI_SUCCESS;
   UnicodeSPrint (VariableName, 32, L"PromSig-%d", LibraryIndex);
 
@@ -62,6 +64,11 @@ SetEepromVariable (
     Status = EFI_INVALID_PARAMETER;
     goto Exit;
   }
+  if ((LibraryIndex == EEPROM_MEMORY) || (LibraryIndex == EEPROM_NULL)) {
+    if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - WARNING: There is no need to save the %a hash to a variable!\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex]));
+    Status = EFI_SUCCESS;
+    goto Exit;
+  }
   if ((Buffer == NULL) && (BufferSize > 0)) {
     Status = EFI_INVALID_PARAMETER;
     goto Exit;
@@ -70,6 +77,7 @@ SetEepromVariable (
   //
   // Set variable
   //
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - SetVariable(%s)  Size = 0x%08x\n", __FUNCTION__, __LINE__, VariableName, BufferSize));
   Status = gRT->SetVariable (
                   VariableName,           // Variable name in UniCode
                   &gEepromVariableGuid,   // Variable GUID
@@ -77,8 +85,10 @@ SetEepromVariable (
                   BufferSize,             // Data size
                   Buffer                  // Data
                   );
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - SetVariable(%s) --> %r\n", __FUNCTION__, __LINE__, VariableName, Status));
 
 Exit:
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning --> %r\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }
 
@@ -109,6 +119,8 @@ SignedHashCheck (
   UINT32                  SignedHashSize;
   UINT32                  Size;
   EFI_STATUS              Status;
+
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting [%a]...\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex]));
 
   //
   // Initialize variables
@@ -151,8 +163,9 @@ SignedHashCheck (
   //
   // Get $Eeprom$ structure
   //
-  Size   = 0;
-  Status = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromHeader, &Size);
+  EepromHeader = NULL;
+  Size         = 0;
+  Status       = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, NULL, (UINT8 **) &EepromHeader, &Size);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
     Status = EFI_VOLUME_CORRUPTED;
@@ -168,20 +181,21 @@ SignedHashCheck (
   //
   // Get $PromSig structure
   //
-  Size   = 0;
-  Status = GetEepromStructure (LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, (UINT8 **) &Signature, &Size);
+  Signature = NULL;
+  Size      = 0;
+  Status    = GetEepromStructureData (&LibraryIndex, EEPROM_SIGNATURE_SIGNATURE, NULL, sizeof (SIGNATURE_DATA), (UINT8**) &Signature, &Hash, &HashSize);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
     Status = EFI_VOLUME_CORRUPTED;
     goto Exit;
   }
-  Hash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA);
   HashType = Signature->hashtype;
   HashSize = mHashSizeLookup[HashType & HASH_TYPE_MASK];
   if (HashType & EEPROM_SIGNATURE_TYPE_SIGNED) {
     SignedHash     = ((UINT8 *) Signature) + sizeof (SIGNATURE_DATA) + HashSize;
     SignedHashSize = Signature->length - sizeof (SIGNATURE_DATA) - HashSize;
   }
+
   if (HashType == 0) {
     //
     // Nothing to do. Bail.
@@ -411,6 +425,7 @@ SignedHashCheck (
     goto Exit;
   }
 
+  //KES: If we decide to mis-match the hash and the signed hash, this will need to be updated
   RsaStatus = RsaPkcs1Verify (Rsa, Hash, HashSize, SignedHash, SignedHashSize);
   if (!RsaStatus) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - RsaPkcs1Verify() failed!\n", __FUNCTION__, __LINE__));
@@ -419,13 +434,6 @@ SignedHashCheck (
   }
 
 Exit:
-  if (Rsa != NULL) {
-    RsaFree (Rsa);
-  }
-  EepromHeader = EepromFreePool (EepromHeader);
-  ImageBuffer  = EepromFreePool (ImageBuffer);
-  PublicKey    = EepromFreePool (PublicKey);
-  Signature    = EepromFreePool (Signature);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   } else if (HashType != 0) {
@@ -434,9 +442,17 @@ Exit:
     //
     Status = SetEepromVariable (LibraryIndex, Hash, (HashSize + SignedHashSize));
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to delete variable PromSig-%d! [%r]\n", __FUNCTION__, __LINE__, LibraryIndex, Status));
+      DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to set variable PromSig-%d! [%r]\n", __FUNCTION__, __LINE__, LibraryIndex, Status));
     }
   }
+  if (Rsa != NULL) {
+    RsaFree (Rsa);
+  }
+  EepromHeader = EepromFreePool (EepromHeader);
+  ImageBuffer  = EepromFreePool (ImageBuffer);
+  PublicKey    = EepromFreePool (PublicKey);
+  Signature    = EepromFreePool (Signature);
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning [%a] --> %r\n", __FUNCTION__, __LINE__, mEepromLibraryString[LibraryIndex], Status));
   return Status;
 }
 

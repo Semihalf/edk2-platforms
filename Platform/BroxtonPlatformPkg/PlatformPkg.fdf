@@ -14,6 +14,20 @@
 ##
 
 [Defines]
+  #==========================|============|============|=======================================
+  # FV label                 | Base       | Offset     | Size
+  #--------------------------|------------|------------|---------------------------------------
+  # FV_IBBL                  | 0xFFFFF000 | 0x00316000 | 0x00001000
+  # Empty                    | 0xFFFFA000 | 0x00311000 | 0x00005000
+  # FV_IBBM                  | 0xFFFC1000 | 0x002D8000 | 0x00039000
+  # FTW_SPARE                | 0xFFF81000 | 0x00298000 | 0x00040000
+  # FTW_WORKING              | 0xFFF7F000 | 0x00296000 | 0x00002000
+  # FV_VPD                   | 0xFFF41000 | 0x00258000 | 0x0003E000
+  # Empty                    | 0xFFF34000 | 0x0024B000 | 0x0000D000
+  # FV_OBBX                  | 0xFFDBA000 | 0x000D1000 | 0x0017A000
+  # FV_OBB                   | 0xFFD44000 | 0x0005B000 | 0x00076000
+  # FV_IBBR                  | 0xFFCE9000 | 0x00000000 | 0x0005B000
+  #==========================|============|============|=======================================
 
   !if $(EXT_BIOS_ENABLE) == FALSE
     #==========================================================================================
@@ -37,7 +51,7 @@
   DEFINE FLASH_AREA_SIZE                                        = 0x00800000
 
   DEFINE FLASH_REGION_FV_IBBR_OFFSET                            = 0x00000000
-  DEFINE FLASH_REGION_FV_IBBR_SIZE                              = 0x00050000
+  DEFINE FLASH_REGION_FV_IBBR_SIZE                              = 0x0005B000
   DEFINE FLASH_REGION_OBB_OFFSET                                = $(FLASH_REGION_FV_IBBR_OFFSET) + $(FLASH_REGION_FV_IBBR_SIZE)
   DEFINE FLASH_REGION_OBB_SIZE                                  = 0x00076000
   DEFINE FLASH_REGION_OBBX_OFFSET                               = $(FLASH_REGION_OBB_OFFSET) + $(FLASH_REGION_OBB_SIZE)
@@ -236,37 +250,37 @@
   # VBT For Leaf Hill (File Guid is gPeiLeafHillVbtGuid)
   FILE FREEFORM = 6AE80680-5E3F-4E63-A5F5-78E5214F13FE {
     SECTION RAW = $(PLATFORM_NAME)/Board/LeafHill/Vbt/VbtBxtMipi.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtLeafHill"
   }
 
   # VBT For Minnowboard 3 (File Guid is gPeiMinnowBoard3VbtGuid)
   FILE FREEFORM = E08CA6D5-8D02-43ae-ABB1-952CC787C933 {
     SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3/Vbt/VbtBxtMipi.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtMinnow3"
   }
 
   # VBT For Minnowboard 3 Module (File Guid is gPeiMinnow3ModuleVbtGuid)
   FILE FREEFORM = 1F9CBB42-107E-46A4-A2CB-92F586F9FB31 {
     SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Vbt/VbtBxtMipi.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtMinnow3Module"
   }
 
   # VBT For Benson Glacier (File Guid is gPeiBensonGlacierVbtGuid)
   FILE FREEFORM = BFDE308E-2D5A-4CA7-AA76-19938AAAE4DA {
     SECTION RAW = $(PLATFORM_NAME)/Board/BensonGlacier/Vbt/VbtBxtMipi.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtBensonGlacier"
   }
 
   # VBT For Aurora Glacier (File Guid is gPeiAuroraGlacierVbtGuid)
   FILE FREEFORM = AA80B0B1-BA1E-4D4F-83E0-CCF47AAA3CD8 {
     SECTION RAW = $(PLATFORM_NAME)/Board/AuroraGlacier/Vbt/VbtBxtMipi.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtAuroaGlacier"
   }
 
   # VBT For Up2 (File Guid is gPeiUp2VbtGuid)
   FILE FREEFORM = 16667736-B2FE-49b3-A0EB-D6B9D7F9657B {
     SECTION RAW = $(PLATFORM_NAME)/Board/UP2/Vbt/Vbt.bin
-    SECTION UI = "IntelGopVbt1"
+    SECTION UI = "IntelGopVbtUp2"
   }
 !endif
 
@@ -305,7 +319,7 @@
 
 [FV.FVIBBM]
   BlockSize          = $(FLASH_BLOCK_SIZE)
-  FvBaseAddress      = 0xFEF45000
+  FvBaseAddress      = 0xFEF45000  # This should match InitNEM.asm .IBBBase
 
   FvAlignment        = 16         #FV alignment and FV attributes setting.
   ERASE_POLARITY     = 1
@@ -350,9 +364,12 @@ APRIORI PEI {
   INF $(PLATFORM_PACKAGE_COMMON)/SampleCode/IntelFsp2WrapperPkg/FspmWrapperPeim/FspmWrapperPeim.inf
   INF  RuleOverride = RESET_VECTOR USE = IA32 BroxtonSiPkg/Cpu/ResetVector/Vtf1/Bin/ResetVector.inf
 
-  FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile) {
-    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/MB3-Eeprom.bin
-  }
+  !if $(EEPROM_CODE_ENABLE) == TRUE
+    FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile) {
+      SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/MB3-Eeprom.bin
+    }
+  !endif
+
 [FV.FVIBBL]
   BlockSize          = $(FLASH_BLOCK_SIZE)
   FvAlignment        = 16         #FV alignment and FV attributes setting.
@@ -420,9 +437,11 @@ APRIORI DXE {
 !if $(SOURCE_DEBUG_ENABLE) == TRUE
   INF  SourceLevelDebugPkg/DebugAgentDxe/DebugAgentDxe.inf
 !endif
-  FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromPublicKeyFile) {
-    SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/RSA-keys/MB3-public.bin
-  }
+  !if $(EEPROM_CODE_ENABLE) == TRUE
+    FILE FREEFORM = PCD (gPlatformModuleTokenSpaceGuid.PcdEepromPublicKeyFile) {
+      SECTION RAW = $(PLATFORM_NAME)/Board/MinnowBoard3Module/Eeprom/RSA-keys/MB3-public.bin
+    }
+  !endif
 
   INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   INF MdeModulePkg/Universal/ReportStatusCodeRouter/RuntimeDxe/ReportStatusCodeRouterRuntimeDxe.inf

@@ -34,6 +34,7 @@
   BaseMemoryLib
   DebugLib
   EepromDataLib
+  FspWrapperPlatformResetLib
   MemoryAllocationLib
   PcdLib
   PrintLib
@@ -55,6 +56,8 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromMemoryPointer
   gPlatformModuleTokenSpaceGuid.PcdEepromMemorySize
   gPlatformModuleTokenSpaceGuid.PcdEepromPublicKeyFile
+  gPlatformModuleTokenSpaceGuid.PcdEepromDxeVerificationRequired
+  gPlatformModuleTokenSpaceGuid.PcdEepromSecurityViolationPolicy
 
 [Sources]
   EepromLib.c

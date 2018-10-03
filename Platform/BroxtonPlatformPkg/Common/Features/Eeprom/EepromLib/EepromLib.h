@@ -37,6 +37,21 @@
 #define   MAX_HASH_TYPE                5
 #define   MAX_DIGEST_SIZE              SHA512_DIGEST_SIZE
 #define   EFI_CERT_TYPE_RSA2048_SIZE   256
+#define   EEPROM_DEADLOOP              0x00
+
+///
+/// FSP Reset Status code
+/// These are defined in FSP EAS v2.0 section 11.2.2 - OEM Status Code
+/// @{ came from FspApi.h
+#define FSP_STATUS_RESET_REQUIRED_COLD         0x40000001
+#define FSP_STATUS_RESET_REQUIRED_WARM         0x40000002
+#define FSP_STATUS_RESET_REQUIRED_3            0x40000003
+#define FSP_STATUS_RESET_REQUIRED_4            0x40000004
+#define FSP_STATUS_RESET_REQUIRED_5            0x40000005
+#define FSP_STATUS_RESET_REQUIRED_6            0x40000006
+#define FSP_STATUS_RESET_REQUIRED_7            0x40000007
+#define FSP_STATUS_RESET_REQUIRED_8            0x40000008
+/// @}
 
 ////
 //// TypeDefs
@@ -49,6 +64,19 @@
 ////
 //// Functions
 ////
+/**
+  Perform platform related reset in FSP wrapper.
+
+  This function will reset the system with requested ResetType.
+
+  @param[in] FspStatusResetType  The type of reset the platform has to perform.
+**/
+VOID
+EFIAPI
+CallFspWrapperResetSystem (
+  IN UINT32    FspStatusResetType
+  );
+
 EFI_STATUS
 EFIAPI
 EepromCalculateCrc32 (
@@ -56,10 +84,6 @@ EepromCalculateCrc32 (
   IN     UINTN     DataSize,
   IN OUT UINT32   *CrcOut
   );
-
-EFI_STATUS
-EFIAPI
-EepromLibNemToMemory (VOID);
 
 EFI_STATUS
 EFIAPI

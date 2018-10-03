@@ -15,6 +15,16 @@
 
 #include "EepromNullLib.h"
 
+VOID
+EepromDumpParagraph (
+  IN   UINTN   DebugMask,
+  IN   VOID   *Ptr,
+  IN   UINTN   Count
+  )
+{
+  return;
+}
+
 EFI_STATUS
 EFIAPI
 EraseEeprom (
@@ -29,6 +39,7 @@ EFIAPI
 GetEepromStructure (
   IN       UINT8      LibraryIndex,
   IN OUT   CHAR8      Signature[EEPROM_SIGNATURE_SIZE],
+  IN OUT   UINT32    *StructureIndex,
   IN OUT   UINT8    **Buffer,
   IN OUT   UINT32    *Size
   )
@@ -64,11 +75,6 @@ GetValidEepromLibrary (
   )
 {
   return EEPROM_NULL;
-}
-
-VOID
-InitializeEepromPcds (VOID)
-{
 }
 
 EFI_STATUS

@@ -18,7 +18,7 @@ import subprocess
 import sys
 
 # Version defines
-__version__   = '0.1.0.2'
+__version__   = '0.1.0.3'
 VerString     = 'EEPROM binary generation tool, Version #{0}'.format(__version__)
 PythonVersion = 'Python version = {0:X}'.format(sys.hexversion)
 
@@ -28,26 +28,27 @@ def Main():
 
   try:
     # Get paths
-    ThisUtilityPath   = os.path.dirname(os.path.abspath(sys.argv[0]))
-    ParentUtilityPath = os.path.dirname(ThisUtilityPath)
-    UtilityPath       = ParentUtilityPath + '\\Utilities'
-    ProjectName       = 'MB3'
+    ThisUtilityPath      = os.path.dirname(os.path.abspath(sys.argv[0]))
+    TempPath             = ThisUtilityPath
+    while os.path.basename(TempPath) != 'BroxtonPlatformPkg':
+      TempPath           = os.path.dirname(TempPath)
+    UtilityPath          = TempPath    + '\\Common\\Features\\Eeprom\\EepromBinary\\Utilities'
+    OpenSslPath          = UtilityPath + '\\OpenSsl\\openssl.exe'
+    EepromBinaryUtility  = UtilityPath + '\\eeprom.py'
+    EepromHashUtility    = UtilityPath + '\\HashBinary.py'
 
     # MinnowBoard 3 specific defines
-    EepromBinaryUtility  = UtilityPath     + '\\eeprom.py'
-    EepromHashUtility    = UtilityPath     + '\\HashBinary.py'
+    ProjectName          = 'MB3'
     EepromDefinitionFile = ThisUtilityPath + '\\' + ProjectName + '-Defs.cfg'
     EepromProjectFile    = ThisUtilityPath + '\\' + ProjectName + '-Prj.cfg'
     EepromBinaryFile     = ThisUtilityPath + '\\' + ProjectName + '-Eeprom.bin'
     EepromHeaderFile     = ThisUtilityPath + '\\EepromStruct.h'
     EepromPrivatePemFile = ThisUtilityPath + '\\RSA-keys\\' + ProjectName + '-private.pem'
-    OpenSslPath          = UtilityPath     + '\\OpenSsl\\openssl.exe'
 
     # Debug prints
     if False:
       print('sys.argv[0]          = {0}'.format(sys.argv[0]))
       print('ThisUtilityPath      = {0}'.format(ThisUtilityPath))
-      print('ParentUtilityPath    = {0}'.format(ParentUtilityPath))
       print('UtilityPath          = {0}'.format(UtilityPath))
       print('EepromBinaryFile     = {0}'.format(EepromBinaryFile))
       print('EepromBinaryUtility  = {0}'.format(EepromBinaryUtility))

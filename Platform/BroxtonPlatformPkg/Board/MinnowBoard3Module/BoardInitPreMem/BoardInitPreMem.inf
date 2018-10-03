@@ -28,11 +28,10 @@
   BoardInitMiscs.c
 
 [LibraryClasses]
-  PeiServicesLib
+  EepromPlatformLib
   PcdLib
   PchSerialIoUartLib
-  MmPciLib
-  IoLib
+  PeiServicesLib
 
 [Packages]
   MdePkg/MdePkg.dec

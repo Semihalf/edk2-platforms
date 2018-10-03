@@ -15,10 +15,9 @@
 
 #include "EepromLib.h"
 
-BOOLEAN     *gImageValidFlag;
 UINT32       mCrcTableEeprom[256];
 BOOLEAN      mCrcInitFlag        = FALSE;
-BOOLEAN      mEepromLibDebugFlag = TRUE;
+BOOLEAN      mEepromLibDebugFlag = FALSE;
 
 /**
   This internal function reverses bits for 32bit data.
@@ -159,10 +158,140 @@ EepromCalculateCrc32 (
   return EFI_SUCCESS;
 }
 
+VOID
+EepromPrintChar (
+  IN UINTN     DebugMask,
+  IN UINTN     Count,
+  IN CHAR16   *Char
+)
+{
+  UINTN Index;
+
+  for (Index = 0; Index < Count; Index++) {
+    DEBUG ((DebugMask, "%s", Char));
+  }
+}
+
+#define DIVIDING_LINE "+----------------------------------------------------+------------------+\n"
+
+VOID
+EepromDumpParagraph (
+  IN   UINTN   DebugMask,
+  IN   VOID   *Ptr,
+  IN   UINTN   Count
+  )
+{
+  CHAR8     AsciiBuffer[17];
+  UINT8    *Data;
+  UINTN     Index;
+  UINTN     Paragraphs;
+  UINTN     PlaceHolder;
+  UINTN     PlaceHolders;
+
+  //
+  // Use a different pointer so that the one passed in doesn't change
+  //
+  Data = (UINT8 *) Ptr;
+  //
+  // Calcualte the number of paragraphs
+  //
+  Paragraphs = Count / 16;
+  if ((Paragraphs * 16) < Count) {
+    Paragraphs++;
+  }
+  //
+  // Calculate the number of columns
+  //
+  PlaceHolder  = Paragraphs;
+  PlaceHolders = 0;
+  while (PlaceHolder > 0) {
+    PlaceHolders++;
+    PlaceHolder >>= 4;
+  }
+
+  //
+  // Dump the buffer
+  //
+  if (Count > 0 ) {
+    //
+    // Print header
+    //
+    EepromPrintChar (DebugMask, PlaceHolders + 5, L" ");
+    DEBUG ((DebugMask, DIVIDING_LINE));
+    EepromPrintChar (DebugMask, PlaceHolders + 5, L" ");
+    DEBUG ((DebugMask, "| x0 x1 x2 x3  x4 x5 x6 x7  x8 x9 xA xB  xC xD xE xF |      String      |\n"));
+    DEBUG ((DebugMask, " +"));
+    EepromPrintChar (DebugMask, PlaceHolders + 3, L"-");
+    DEBUG ((DebugMask, DIVIDING_LINE));
+    //
+    // Print data
+    //
+    for (Index = 0; Index < (Paragraphs * 16); Index++) {
+      //
+      // Print divider
+      //
+      if (Index % 0x10 == 0x00) {
+        if ((Index > 0) && ((Index / 0x10) % 0x04 == 0x00) && (Paragraphs > 6)) {
+          DEBUG ((DebugMask, " +"));
+          EepromPrintChar (DebugMask, PlaceHolders + 3, L"-");
+          DEBUG ((DebugMask, DIVIDING_LINE));
+        }
+        DEBUG ((DebugMask, " | %0*xx | ", PlaceHolders, (Index / 0x10)));
+      }
+      //
+      // Print the data or a filler
+      //
+      if (Index < Count) {
+        DEBUG ((DebugMask, "%02x ", Data[Index]));
+        if ((Data[Index] < 32) || (Data[Index] > 126)) {
+          //
+          // Not printable
+          //
+          AsciiBuffer[(Index % 0x10)] = '.';
+        } else {
+          //
+          // Printable
+          //
+          AsciiBuffer[(Index % 0x10)] = Data[Index];
+        }
+      } else {
+        DEBUG ((DebugMask, "   "));
+        AsciiBuffer[(Index % 0x10)] = ' ';
+      }
+      //
+      // Print break or line end if needed
+      //
+      if (Index % 0x10 == 0x0F) {
+        AsciiBuffer[16] = 0x00;
+        DEBUG ((DebugMask, "| %a |\n", AsciiBuffer));
+      } else if (Index % 0x04 == 0x03) {
+        DEBUG ((DebugMask, " "));
+      }
+    }
+    //
+    // Print footer
+    //
+    DEBUG ((DebugMask, " +"));
+    EepromPrintChar (DebugMask, PlaceHolders + 3, L"-");
+    DEBUG ((DebugMask, DIVIDING_LINE));
+  }
+}
+
+//
+// Desc:        Registers the raw data libraries
+// Variables:   None
+// Return:      EFI_SUCCESS, anything else will cause an ASSERT
+//
 EFI_STATUS
 EFIAPI
-EepromLibNemToMemory (VOID)
+EepromInitConstructor (VOID)
 {
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  //
+  // Initiliaze CRC32 tables
+  //
+  if (!mCrcInitFlag) InitializeCrc32Table ();
+
   return EFI_SUCCESS;
 }
 
@@ -174,6 +303,8 @@ EraseEeprom (
 {
   UINT8                  *Buffer;
   EEPROM_FUNCTION_INFO    EepromInfo;
+  BOOLEAN                *ImageValidFlags;
+  UINTN                   PcdPtrSize;
   UINT32                  Size;
   EFI_STATUS              Status;
 
@@ -188,6 +319,8 @@ EraseEeprom (
   EepromInfo.LibraryIndex = EEPROM_EEPROM;
   Size                    = sizeof (GENERIC_HEADER);
   Buffer                  = EepromAllocatePool (Size);
+  ImageValidFlags         = (BOOLEAN *) PcdGetPtr (PcdEepromLibraryValid);
+  PcdPtrSize              = PcdGetSize (PcdEepromLibraryValid);
 
   //
   // Sanity checks
@@ -217,7 +350,7 @@ EraseEeprom (
   //
   // Clear the valid status for this image.
   //
-  gImageValidFlag[LibraryIndex] = FALSE;
+  ImageValidFlags[LibraryIndex] = FALSE;
 
 Exit:
   //
@@ -227,14 +360,30 @@ Exit:
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   }
+  PcdSetPtr (PcdEepromLibraryValid, &PcdPtrSize, ImageValidFlags);
   return Status;
 }
 
+/**
+  Returns the EEPROM structure data
+
+  @param[in]   LibraryIndex            Which library to use to get the structure
+  @param[in]   Signature               Signature of the structure we are looking for
+  @param[out]  StructureIndex          Index of where to start looking for the next structure
+  @param[out]  Buffer                  Buffer containing the structure data
+                                       NOTE: Caller is responsible for freeing this memory.
+  @param[out]  Size                    Size of the StructureData buffer
+
+  @retval      EFI_SUCCESS             Structure data found
+  @retval      EFI_NOT_FOUND           Structure data not found
+  @retval      EFI_INVALID_PARAMETER   Invalid parameter passed in
+**/
 EFI_STATUS
 EFIAPI
 GetEepromStructure (
   IN       UINT8      LibraryIndex,
   IN OUT   CHAR8      Signature[EEPROM_SIGNATURE_SIZE],
+  IN OUT   UINT32    *StructureIndex,
   IN OUT   UINT8    **Buffer,
   IN OUT   UINT32    *Size
   )
@@ -278,7 +427,11 @@ GetEepromStructure (
   //
   // Start at the beginning structure and loop thru the image looking for the requested structure
   //
-  Index = 0;
+  if (StructureIndex == NULL) {
+    Index = 0;
+  } else {
+    Index = *StructureIndex;
+  }
   while (!EFI_ERROR (Status)) {
     //
     // Make sure buffer is empty
@@ -294,6 +447,7 @@ GetEepromStructure (
         //
         // This is our structure. Bail.
         //
+        if (StructureIndex != NULL) *StructureIndex = Index;
         goto Exit;
       }
     }
@@ -315,6 +469,102 @@ Exit:
   return Status;
 }
 
+/**
+  Returns the EEPROM structure data
+
+  @param[in]   LibraryIndex            Which library to use to get the structure
+  @param[in]   Signature               Signature of the structure we are looking for
+  @param[out]  StructureIndex          Index of where to start looking for the next structure
+  @param[in]   HeaderSize              Size of the structure header
+  @param[out]  StructureHeader         Header of the structure we're looking for
+                                       NOTE: Caller is responsible for freeing this memory.
+  @param[out]  StructureData           Buffer containing the structure data
+  @param[out]  DataSize                Size of the StructureData buffer
+
+  @retval      EFI_SUCCESS             Structure data found
+  @retval      EFI_NOT_FOUND           Structure data not found
+  @retval      EFI_INVALID_PARAMETER   Invalid parameter passed in
+**/
+EFI_STATUS
+EFIAPI
+GetEepromStructureData (
+  IN       UINT8     *LibraryIndex,
+  IN       CHAR8      Signature[EEPROM_SIGNATURE_SIZE],
+  IN OUT   UINT32    *StructureIndex,
+  IN       UINT32     HeaderSize,
+  OUT      UINT8    **StructureHeader,
+  OUT      UINT8    **StructureData,
+  OUT      UINT32    *DataSize
+  )
+{
+  CHAR8               AsciiData[32];
+  UINT8               EepromLibrary;
+  GENERIC_HEADER     *Header;
+  UINT32              Index;
+  UINT32              Size;
+  EFI_STATUS          Status;
+
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
+  //
+  // Return the structure data
+  // 1. Get valid EEPROM library index
+  // 2. Find structure
+  // 3. Return structure data
+  //
+  if (StructureIndex == NULL) {
+    Index = 0;
+  } else {
+    Index = *StructureIndex;
+  }
+  if (LibraryIndex == NULL) {
+    EepromLibrary = GetValidEepromLibrary (FALSE);
+  } else {
+    EepromLibrary = *LibraryIndex;
+  }
+  if (EepromLibrary == EEPROM_NULL) {
+    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
+    Status = EFI_NOT_FOUND;
+  } else {
+    Header = NULL;
+    Size   = 0;
+    Status = GetEepromStructure (EepromLibrary, Signature, &Index, (UINT8 **) &Header, &Size);
+    if (EFI_ERROR (Status) || (Size == 0)) {
+      DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the %a structure in the EERPOM binary!\n", __FUNCTION__, __LINE__, Signature));
+      Status = EFI_NOT_FOUND;
+    } else {
+      Size = Header->length - HeaderSize;
+      if (StructureHeader != NULL) *StructureHeader = (UINT8 *) Header;
+      if (StructureData != NULL) {
+        if (Size == 0) {
+          *StructureData = NULL;
+        } else {
+          *StructureData = (UINT8 *) Header + HeaderSize;
+        }
+      }
+      if (DataSize != NULL) *DataSize = Size;
+      if (StructureIndex != NULL) *StructureIndex = Index;
+      if (mEepromLibDebugFlag) {
+        ZeroMem (AsciiData, 32);
+        CopyMem (AsciiData, Header->signature, 8);
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Signature    = %a\n",        __FUNCTION__, __LINE__, AsciiData));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Version      = %04x:%04x\n", __FUNCTION__, __LINE__, Header->vermajor, Header->verminor));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Length       = 0x%08x\n",    __FUNCTION__, __LINE__, Header->length));
+      }
+      Status = EFI_SUCCESS;
+    }
+  }
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
+  return Status;
+}
+
+/**
+  Returns the EEPROM image size
+
+  @param[in]   LibraryIndex         Which library to use to get the structure
+
+  @retval      UINT32               Size of that image
+**/
 UINT32
 EFIAPI
 GetImageSize (
@@ -365,6 +615,7 @@ GetImageSize (
       //
       // Didn't find size.
       //
+      Size   = 0;
       Status = EFI_NOT_FOUND;
       goto Exit;
     }
@@ -537,28 +788,36 @@ GetValidEepromLibrary (
   IN       BOOLEAN   CopyToMemory
   )
 {
+  BOOLEAN                 DxeEepromSecurityFlag;
   UINT8                  *EepromAutoList;
   EEPROM_FUNCTION_INFO    EepromInfo;
+  UINT8                   FirstPassImage;
   UINT8                   FirstValidImage;
   UINT8                  *ImageBuffer;
   UINT32                  ImageSize;
+  BOOLEAN                *ImageValidFlags;
   UINT8                   index;
   UINT8                   Library;
+  UINTN                   PcdPtrSize;
   UINT32                  Size;
   EFI_STATUS              Status;
 
-  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting[%d]...\n", __FUNCTION__, __LINE__, PcdGetBool (PcdEepromDxeVerificationRequired)));
 
   //
   // Initialize variables
   //
   ZeroMem (&EepromInfo, sizeof (EEPROM_FUNCTION_INFO));
+  DxeEepromSecurityFlag   = PcdGetBool (PcdEepromDxeVerificationRequired);
   EepromAutoList          = (UINT8 *) PcdGetPtr (PcdEepromAutoPriority);
   EepromInfo.Bus          = PcdGet8 (PcdEepromBus);
   EepromInfo.Address      = PcdGet8 (PcdEepromAddress);
   EepromInfo.LibraryIndex = EEPROM_EEPROM;
+  FirstPassImage          = EEPROM_NULL;
   FirstValidImage         = EEPROM_NULL;
   ImageBuffer             = NULL;
+  ImageValidFlags         = (BOOLEAN *) PcdGetPtr (PcdEepromLibraryValid);
+  PcdPtrSize              = PcdGetSize (PcdEepromLibraryValid);
 
   //
   // Sanity checks
@@ -569,6 +828,10 @@ GetValidEepromLibrary (
     goto Exit;
   }
 
+  //
+  // Display current stack pointer
+  //
+  if (mEepromLibDebugFlag) DisplayStackPointer (__FUNCTION__, __LINE__);
   //
   // Loop thru PcdEepromAutoPriority looking for a previously validated image.
   //
@@ -583,7 +846,14 @@ GetValidEepromLibrary (
       Library = EEPROM_NULL;
       goto Exit;
     }
-    if (gImageValidFlag[Library]) {
+    if (!InPeiPhase () && DxeEepromSecurityFlag) {
+      //
+      // DXE security verifiation required. Clear all the valid flags.
+      //
+      if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Clearing validation flags.\n", __FUNCTION__, __LINE__));
+      ImageValidFlags[Library] = FALSE;
+    }
+    if (ImageValidFlags[Library]) {
       //
       // This library is valid, bail.
       //
@@ -595,7 +865,12 @@ GetValidEepromLibrary (
     //
     index++;
   }
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - FirstValidImage = %a\n", __FUNCTION__, __LINE__, mEepromLibraryString[FirstValidImage]));
 
+  //
+  // Display current stack pointer
+  //
+  if (mEepromLibDebugFlag) DisplayStackPointer (__FUNCTION__, __LINE__);
   //
   // If nothing is valid, try validating them all
   //
@@ -609,13 +884,14 @@ GetValidEepromLibrary (
       if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Trying to validate library %a...\n", __FUNCTION__, __LINE__, mEepromLibraryString[Library]));
       Status = ValidateEeprom (Library);
       if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Validating %a -> %r\n", __FUNCTION__, __LINE__, mEepromLibraryString[Library], Status));
-      if (!EFI_ERROR (Status) || (Status == EFI_MEDIA_CHANGED)) {
+      if (!EFI_ERROR (Status) && (FirstValidImage == EEPROM_NULL)) {
         //
         // This one is valid. Bail.
         //
-        if (FirstValidImage == EEPROM_NULL) {
-          FirstValidImage = Library;
-        }
+        FirstValidImage = Library;
+      }
+      if ((Status == EFI_MEDIA_CHANGED) && (FirstPassImage == EEPROM_NULL)) {
+        FirstPassImage = Library;
       }
       //
       // Point to next library
@@ -624,88 +900,107 @@ GetValidEepromLibrary (
     }
   }
 
+  if (FirstValidImage == EEPROM_NULL) {
+    if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - No validated images found.\n", __FUNCTION__, __LINE__));
+    if (InPeiPhase ()) {
+      //
+      // We're in PEI and no valid images found. Set flag for DXE security action.
+      //
+      if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Set flag for DXE security action.\n", __FUNCTION__, __LINE__));
+      PcdSetBool (PcdEepromDxeVerificationRequired, TRUE);
+    } else {
+      if (DxeEepromSecurityFlag) {
+        //
+        // We didn't find a valid image, we're in DXE, and security action is required. Inform user and perform policy action.
+        //
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: No valid images found!\n", __FUNCTION__, __LINE__));
+        switch (PcdGet8 (PcdEepromSecurityViolationPolicy)) {
+          case EEPROM_DEADLOOP:
+          default:
+            CpuDeadLoop ();
+            break;
+        }
+      }
+    }
+    if (FirstPassImage == EEPROM_NULL) {
+      //
+      // We got nothing, so bail
+      //
+      Library = EEPROM_NULL;
+      goto Exit;
+    } else {
+      Library = FirstPassImage;
+      goto Exit;
+    }
+  }
+
+  //
+  // Something got validated.
+  //
+  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Validated EEPROM library. Clear flag.\n", __FUNCTION__, __LINE__));
+  PcdSetBool (PcdEepromDxeVerificationRequired, FALSE);
+  if (!InPeiPhase () && DxeEepromSecurityFlag) {
+    //
+    // We verified at least one image. Reset the system.
+    //
+    if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - We're in DXE and verification security flag was set, so do a system reset.\n", __FUNCTION__, __LINE__));
+    EepromResetSystem (EfiResetWarm);
+    //
+    // We shouldn't get here, but have the deadloop to catch it if it does
+    //
+    CpuDeadLoop ();
+  }
+
+  //
+  // Display current stack pointer
+  //
+  if (mEepromLibDebugFlag) DisplayStackPointer (__FUNCTION__, __LINE__);
   //
   // Determine which image to copy to memory
   //
-  if (gImageValidFlag[EEPROM_MEMORY]) {
+  if (ImageValidFlags[EEPROM_MEMORY]) {
     //
     // Yep. Bail.
     //
     Library = EEPROM_MEMORY;
     goto Exit;
   }
-  if (gImageValidFlag[EEPROM_EEPROM]) {
+  if (ImageValidFlags[EEPROM_EEPROM]) {
     Library = EEPROM_EEPROM;
   }
-  if (gImageValidFlag[EEPROM_FV]) {
+  if (ImageValidFlags[EEPROM_FV]) {
     Library = EEPROM_FV;
   }
-  if (gImageValidFlag[EEPROM_EEPROM] && gImageValidFlag[EEPROM_FV]) {
-    BOARD_INFO_TABLE   *EepromBoardInfo;
-    BOARD_INFO_TABLE   *FvBoardInfo;
+  if (ImageValidFlags[EEPROM_EEPROM] && ImageValidFlags[EEPROM_FV]) {
     EEPROM_HEADER      *EepromEepromHeader;
     EEPROM_HEADER      *FvEepromHeader;
     //
     // Initialize variables
     //
-    EepromBoardInfo    = NULL;
     EepromEepromHeader = NULL;
-    FvBoardInfo        = NULL;
     FvEepromHeader     = NULL;
     Library            = EEPROM_NULL;
     //
-    // Get BoardInfo records
+    // Get EepromHeader records
     //
     Size = 0;
-    Status = GetEepromStructure (EEPROM_EEPROM, EEPROM_BOARD_INFO_SIGNATURE, (UINT8 **) &EepromBoardInfo, &Size);
-    if (EFI_ERROR (Status) || (Size == 0) || (EepromBoardInfo == NULL)) {
-      DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get EEPROM Board Info structure! (%r)\n", __FUNCTION__, __LINE__, Status));
+    Status = GetEepromStructure (EEPROM_EEPROM, EEPROM_HEADER_SIGNATURE, NULL, (UINT8 **) &EepromEepromHeader, &Size);
+    if (EFI_ERROR (Status) || (Size == 0) || (EepromEepromHeader == NULL)) {
+      DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get EEPROM header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
       Library = EEPROM_FV;
     } else {
       Size = 0;
-      Status = GetEepromStructure (EEPROM_FV, EEPROM_BOARD_INFO_SIGNATURE, (UINT8 **) &FvBoardInfo, &Size);
-      if (EFI_ERROR (Status) || (Size == 0) || (FvBoardInfo == NULL)) {
-        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get FV Board Info structure! (%r)\n", __FUNCTION__, __LINE__, Status));
+      Status = GetEepromStructure (EEPROM_FV, EEPROM_HEADER_SIGNATURE, NULL, (UINT8 **) &FvEepromHeader, &Size);
+      if (EFI_ERROR (Status) || (Size == 0) || (FvEepromHeader == NULL)) {
+        DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get FV header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
         Library = EEPROM_EEPROM;
       } else {
         //
-        // Compare BoardInfo records
+        // Compare image versions
         //
-        if ((CompareMem (EepromBoardInfo->manuname, FvBoardInfo->manuname, 16) == 0) &&
-            (CompareMem (EepromBoardInfo->brdname,  FvBoardInfo->brdname, 16)  == 0) &&
-            (EepromBoardInfo->boardid   == FvBoardInfo->boardid)                     &&
-            (EepromBoardInfo->fabid     == FvBoardInfo->fabid)                       &&
-            (EepromBoardInfo->ecid      == FvBoardInfo->ecid)                        &&
-            (EepromBoardInfo->boardtype == FvBoardInfo->boardtype)) {
-          //
-          // Get EepromHeader records
-          //
-          Size = 0;
-          Status = GetEepromStructure (EEPROM_EEPROM, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromEepromHeader, &Size);
-          if (EFI_ERROR (Status) || (Size == 0) || (EepromEepromHeader == NULL)) {
-            DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get EEPROM header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
-            Library = EEPROM_FV;
-          } else {
-            Size = 0;
-            Status = GetEepromStructure (EEPROM_FV, EEPROM_HEADER_SIGNATURE, (UINT8 **) &FvEepromHeader, &Size);
-            if (EFI_ERROR (Status) || (Size == 0) || (FvEepromHeader == NULL)) {
-              DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to get FV header structure! (%r)\n", __FUNCTION__, __LINE__, Status));
-              Library = EEPROM_EEPROM;
-            } else {
-              //
-              // Compare image versions
-              //
-              if (EepromEepromHeader->version > FvEepromHeader->version) {
-                Library = EEPROM_EEPROM;
-              } else {
-                Library = EEPROM_FV;
-              }
-            }
-          }
+        if (EepromEepromHeader->version > FvEepromHeader->version) {
+          Library = EEPROM_EEPROM;
         } else {
-          //
-          // FV gets priority since BoardInfo data doesn't match
-          //
           Library = EEPROM_FV;
         }
       }
@@ -713,11 +1008,13 @@ GetValidEepromLibrary (
     //
     // Free resources
     //
-    EepromBoardInfo    = EepromFreePool (EepromBoardInfo);
     EepromEepromHeader = EepromFreePool (EepromEepromHeader);
-    FvBoardInfo        = EepromFreePool (FvBoardInfo);
     FvEepromHeader     = EepromFreePool (FvEepromHeader);
   }
+  //
+  // Display current stack pointer
+  //
+  if (mEepromLibDebugFlag) DisplayStackPointer (__FUNCTION__, __LINE__);
 
   //
   // Check to see if we need to copy into memory and not in PEI
@@ -781,15 +1078,20 @@ Exit:
   // Free resources
   //
   ImageBuffer = EepromFreePool (ImageBuffer);
-  if (FirstValidImage == EEPROM_NULL) {
+  if ((FirstValidImage == EEPROM_NULL) && (Library == EEPROM_NULL)) {
     //
     // Nothing is valid. Return default NULL.
     //
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Failed to find a valid image in list PcdEepromAutoPriority!\n", __FUNCTION__, __LINE__));
-    Library = EEPROM_NULL;
   }
 
+  //
+  // Display current stack pointer
+  //
+  if (mEepromLibDebugFlag) DisplayStackPointer (__FUNCTION__, __LINE__);
+
   if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Returning library %a\n", __FUNCTION__, __LINE__, mEepromLibraryString[Library]));
+  PcdSetPtr (PcdEepromLibraryValid, &PcdPtrSize, ImageValidFlags);
   return Library;
 }
 
@@ -808,8 +1110,10 @@ ValidateEeprom (
   UINT32                  HashSize;
   UINT8                  *ImageBuffer;
   UINT32                  ImageSize;
+  BOOLEAN                *ImageValidFlags;
   UINT32                  Offset;
   UINT32                  OriginalCrc32;
+  UINTN                   PcdPtrSize;
   UINT32                  Size;
   EFI_STATUS              Status;
   GENERIC_HEADER         *Structure;
@@ -829,6 +1133,8 @@ ValidateEeprom (
   ImageBuffer             = NULL;
   Status                  = EFI_SUCCESS;
   Structure               = NULL;
+  ImageValidFlags         = (BOOLEAN *) PcdGetPtr (PcdEepromLibraryValid);
+  PcdPtrSize              = PcdGetSize (PcdEepromLibraryValid);
 
   //
   // Sanity checks
@@ -919,7 +1225,7 @@ ValidateEeprom (
   // Get $Eeprom$ structure
   //
   Size   = 0;
-  Status = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, (UINT8 **) &EepromHeader, &Size);
+  Status = GetEepromStructure (LibraryIndex, EEPROM_HEADER_SIGNATURE, NULL, (UINT8 **) &EepromHeader, &Size);
   if (EFI_ERROR (Status)) {
     DEBUG ((DEBUG_ERROR, "%a (#%4d) - ERROR: Image is corrupted!\n", __FUNCTION__, __LINE__));
     Status = EFI_VOLUME_CORRUPTED;
@@ -934,6 +1240,7 @@ ValidateEeprom (
   Crc32  = StartCrc32 ();
   Crc32  = AddToCrc32 (EepromHeader, Size, Crc32);
   Offset = Size;
+  EepromHeader = EepromFreePool (EepromHeader);
   //
   // Add the rest of the binary
   //
@@ -958,6 +1265,7 @@ ValidateEeprom (
       Crc32 = AddToCrc32 (ImageBuffer, Size, Crc32);
     }
   }
+  ImageBuffer = EepromFreePool (ImageBuffer);
   Crc32 = FinishCrc32 (Crc32);
   if (OriginalCrc32 != Crc32) {
     //
@@ -967,7 +1275,6 @@ ValidateEeprom (
     Status = EFI_SECURITY_VIOLATION;
     goto Exit;
   }
-  EepromHeader = EepromFreePool (EepromHeader);
 
   //
   // Verify hash
@@ -989,42 +1296,17 @@ Exit:
   //
   EepromHeader = EepromFreePool (EepromHeader);
   ImageBuffer  = EepromFreePool (ImageBuffer);
-  if (EFI_ERROR (Status) && (Status != EFI_MEDIA_CHANGED)) {
-    gImageValidFlag[LibraryIndex] = FALSE;
-    DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
+  if (EFI_ERROR (Status)) {
+    ImageValidFlags[LibraryIndex] = FALSE;
+    if (Status != EFI_MEDIA_CHANGED) DEBUG ((DEBUG_ERROR, "%a (#%4d) - Ending with %r\n", __FUNCTION__, __LINE__, Status));
   } else {
     //
     // Might need to go to a bit flag here to indicate CRC32, hash, and signed hash pass. First round in PEI will only be
     // able to get CRC32 pass since hash is supported by OpenSSL library and it is HUGE.
     //
-    gImageValidFlag[LibraryIndex] = TRUE;
+    ImageValidFlags[LibraryIndex] = TRUE;
   }
+  PcdSetPtr (PcdEepromLibraryValid, &PcdPtrSize, ImageValidFlags);
   return Status;
-}
-
-//
-// Desc:        Registers the raw data libraries
-// Variables:   None
-// Return:      EFI_SUCCESS, anything else will cause an ASSERT
-//
-EFI_STATUS
-EFIAPI
-EepromInitConstructor (VOID)
-{
-  if (mEepromLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
-  //
-  // Initiliaze CRC32 tables
-  //
-  if (!mCrcInitFlag) InitializeCrc32Table ();
-
-  //
-  // Initiliaze Library valid flags pointer from PCD. This uses the fact that the PCD library currently just passes out
-  // a pointer to it's internal DB. There is no need to update the PCD, since the pointer already points to the internal
-  // PCD copy. If the PCD library changes to include a CRC check of it's data, then we'll have to start using the PcdSetPtr()
-  // function to set the internal PCD value.
-  //
-  gImageValidFlag = PcdGetPtr (PcdEepromLibraryValid);
-
-  return EFI_SUCCESS;
 }
 

@@ -1,5 +1,5 @@
 /** @file
-  FV EEPROM raw data library instance.
+  DXE GetImage code for FV EEPROM raw data library instance.
 
   Copyright (c) 2015 - 2018, Intel Corporation. All rights reserved.<BR>
 
@@ -32,12 +32,12 @@ GetImage (
   EFI_FIRMWARE_VOLUME2_PROTOCOL  *Fv;
   EFI_HANDLE                     *HandleBuffer;
   UINTN                           HandleCount;
-  EFI_FIRMWARE_VOLUME2_PROTOCOL  *ImageFv;
   UINTN                           Index;
   EFI_STATUS                      Status;
 
+  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
   Status  = EFI_NOT_FOUND;
-  ImageFv = NULL;
 
   Status = gBS->LocateHandleBuffer (
                   ByProtocol,
@@ -46,6 +46,7 @@ GetImage (
                   &HandleCount,
                   &HandleBuffer
                   );
+  if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - LocateHandleBuffer(gEfiFirmwareVolume2ProtocolGuid)[%d] --> %r\n", __FUNCTION__, __LINE__, HandleCount, Status));
   if (EFI_ERROR (Status)) {
     //
     // Couldn't find the FV2 protocol. Bail.
@@ -62,11 +63,9 @@ GetImage (
                     &gEfiFirmwareVolume2ProtocolGuid,
                     (VOID **) &Fv
                     );
+    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - HandleProtocol(gEfiFirmwareVolume2ProtocolGuid) --> %r\n", __FUNCTION__, __LINE__, Status));
     if (EFI_ERROR (Status)) {
       goto Exit;
-    }
-    if ((ImageFv != NULL) && (Fv == ImageFv)) {
-      continue;
     }
 
     //
@@ -83,6 +82,7 @@ GetImage (
                     Size,
                     &AuthenticationStatus
                     );
+    if (mEepromDataLibDebugFlag) DEBUG ((DEBUG_INFO, "%a (#%4d) - Fv->ReadSection() --> %r\n", __FUNCTION__, __LINE__, Status));
     if (!EFI_ERROR (Status)) {
       //
       // Found the file. Bail.
@@ -98,7 +98,7 @@ GetImage (
     //
     // Nope. Clear buffer and size, then bail.
     //
-    *Buffer = NULL;
+    *Buffer = EepromFreePool (*Buffer);
     *Size   = 0;
     Status  = EFI_NOT_FOUND;
   } else {
@@ -106,9 +106,6 @@ GetImage (
   }
 
 Exit:
-  if (HandleBuffer != NULL) {
-    FreePool (HandleBuffer);
-    HandleBuffer = NULL;
-  }
+  EepromFreePool (HandleBuffer);
   return Status;
 }

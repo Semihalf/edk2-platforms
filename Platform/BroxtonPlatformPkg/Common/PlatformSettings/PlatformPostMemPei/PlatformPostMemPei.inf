@@ -56,6 +56,7 @@
   TimerLib
   ScPlatformLib
   SeCUmaLib
+  EepromPlatformLib
 
 [Ppis]
   gEfiPeiStallPpiGuid

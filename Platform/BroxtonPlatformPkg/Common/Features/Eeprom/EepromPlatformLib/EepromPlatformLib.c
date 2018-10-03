@@ -15,11 +15,12 @@
 
 #include "EepromPlatformLib.h"
 
-BOOLEAN      mEepromPlatformLibDebugFlag = TRUE;
+BOOLEAN      mEepromPlatformLibDebugFlag = FALSE;
 
 /**
   Returns the $BrdInfo structure
 
+  @param[out]  StructureIndex  Index of where to start looking for the next structure
   @param[out]  BoardInfo       Buffer containing the BOARD_INFO_TABLE structure
                                - Up to the caller to free the buffer
 
@@ -28,56 +29,94 @@ BOOLEAN      mEepromPlatformLibDebugFlag = TRUE;
   @retval      EFI_NOT_READY   $BrdInfo structure not ready yet
 **/
 EFI_STATUS
+EFIAPI
 EepromGetBoardInfo (
-  OUT   BOARD_INFO_TABLE   **BoardInfo
+  IN OUT   UINT32              *StructureIndex,
+  OUT      BOARD_INFO_TABLE   **BoardInfo
   )
 {
   CHAR8               AsciiData[32];
-  UINT8               EepromLibrary;
-  UINT32              Size;
   EFI_STATUS          Status;
 
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
-  //
-  // Return the $BrdInfo structure
-  // 1. Get valid EEPROM library index
-  // 2. Find $BrdInfo structure
-  //
-  EepromLibrary = GetValidEepromLibrary (TRUE);
-  if (EepromLibrary == EEPROM_NULL) {
-    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
-    Status = EFI_NOT_FOUND;
+  if (BoardInfo == NULL) {
+    Status = EFI_INVALID_PARAMETER;
   } else {
-    Size   = 0;
-    Status = GetEepromStructure (EepromLibrary, EEPROM_BOARD_INFO_SIGNATURE, (UINT8 **) BoardInfo, &Size);
-    if (EFI_ERROR (Status) || (Size == 0)) {
+    //
+    // Return the $BrdInfo structure
+    //
+    Status = GetEepromStructureData (NULL, EEPROM_BOARD_INFO_SIGNATURE, StructureIndex, sizeof (BOARD_INFO_TABLE), (UINT8**) BoardInfo, NULL, NULL);
+    if (EFI_ERROR (Status)) {
       DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $BrdInfo structure in the EERPOM binary!\n", __FUNCTION__, __LINE__));
       Status = EFI_NOT_FOUND;
     } else {
       if (mEepromPlatformLibDebugFlag) {
         ZeroMem (AsciiData, 32);
-        CopyMem (AsciiData, (*BoardInfo)->signature, 8);
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Signature    = %a\n",        __FUNCTION__, __LINE__, AsciiData));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Version      = %04x:%04x\n", __FUNCTION__, __LINE__, (*BoardInfo)->vermajor, (*BoardInfo)->verminor));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Length       = 0x%08x\n",    __FUNCTION__, __LINE__, (*BoardInfo)->length));
-        ZeroMem (AsciiData, 32);
         CopyMem (AsciiData, (*BoardInfo)->manuname, 16);
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Manufacturer = %a\n",        __FUNCTION__, __LINE__, AsciiData));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Manufacturer = %a\n",     __FUNCTION__, __LINE__, AsciiData));
         ZeroMem (AsciiData, 32);
         CopyMem (AsciiData, (*BoardInfo)->brdname, 16);
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board name   = %a\n",        __FUNCTION__, __LINE__, AsciiData));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board name   = %a\n",     __FUNCTION__, __LINE__, AsciiData));
         ZeroMem (AsciiData, 32);
         CopyMem (AsciiData, (*BoardInfo)->brdserial, 16);
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Serial #     = %a\n",        __FUNCTION__, __LINE__, AsciiData));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board ID     = 0x%08x\n",    __FUNCTION__, __LINE__, (*BoardInfo)->boardid));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Fab ID       = 0x%08x\n",    __FUNCTION__, __LINE__, (*BoardInfo)->fabid));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - EC ID        = 0x%08x\n",    __FUNCTION__, __LINE__, (*BoardInfo)->ecid));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board type   = %a\n",        __FUNCTION__, __LINE__, (*BoardInfo)->boardtype ? "Main board (RedBox)" : "Plug-in board"));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Serial #     = %a\n",     __FUNCTION__, __LINE__, AsciiData));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board ID     = 0x%08x\n", __FUNCTION__, __LINE__, (*BoardInfo)->boardid));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Fab ID       = 0x%08x\n", __FUNCTION__, __LINE__, (*BoardInfo)->fabid));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - EC ID        = 0x%08x\n", __FUNCTION__, __LINE__, (*BoardInfo)->ecid));
+        DEBUG ((DEBUG_INFO, "%a(#%4d) - Board type   = %a\n",     __FUNCTION__, __LINE__, (*BoardInfo)->boardtype ? "Main board (RedBox)" : "Plug-in board"));
       }
-      Status = EFI_SUCCESS;
     }
   }
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
+  return Status;
+}
+
+/**
+  Returns the $HdCodec data
+
+  @param[out]  StructureIndex  Index of where to start looking for the next structure
+  @param[out]  Buffer          Buffer containing the $HdCodec data
+                               - Up to the caller to free the buffer
+  @param[out]  BufferSize      Size of the HdaData buffer
+
+  @retval      EFI_SUCCESS     $HdCodec data found
+  @retval      EFI_NOT_FOUND   $HdCodec data not found
+  @retval      EFI_NOT_READY   $HdCodec data not ready yet
+**/
+EFI_STATUS
+EFIAPI
+EepromGetHdaCodec (
+  IN OUT   UINT32   *StructureIndex,
+  OUT      UINT8   **Buffer,
+  OUT      UINT32   *BufferSize
+  )
+{
+  HDA_CODEC          *HdaStructure;
+  UINT8              *HdaData;
+  UINT32              HdaSize;
+  EFI_STATUS          Status;
+
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
+  if ((Buffer == NULL) || (BufferSize == NULL)) {
+    Status = EFI_INVALID_PARAMETER;
+  } else {
+    Status = GetEepromStructureData (NULL, EEPROM_HDA_CODEC_SIGNATURE, StructureIndex, sizeof (HDA_CODEC), (UINT8**) &HdaStructure, &HdaData, &HdaSize);
+    if (!EFI_ERROR (Status)) {
+      if (HdaSize != 0) {
+        *Buffer = AllocatePool (HdaSize);
+        if (*Buffer == NULL) {
+          HdaSize = 0;
+        } else {
+          CopyMem (*Buffer, HdaData, HdaSize);
+          EepromFreePool (HdaStructure);
+        }
+      }
+      *BufferSize = HdaSize;
+    }
+  }
+
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }
@@ -85,62 +124,101 @@ EepromGetBoardInfo (
 /**
   Returns the $Logo$ data
 
-  @param[out]  LogoData        Buffer containing the $Logo$ data
-  @param[out]  LogoSize        Size of the LogoData buffer
+  @param[out]  StructureIndex  Index of where to start looking for the next structure
+  @param[out]  Buffer          Buffer containing the $Logo$ data
+                               - Up to the caller to free the buffer
+  @param[out]  BufferSize      Size of the LogoData buffer
 
   @retval      EFI_SUCCESS     $Logo$ data found
   @retval      EFI_NOT_FOUND   $Logo$ data not found
   @retval      EFI_NOT_READY   $Logo$ data not ready yet
 **/
 EFI_STATUS
+EFIAPI
 EepromGetLogo (
-  OUT   UINT8   **LogoData,
-  OUT   UINT32   *LogoSize
+  IN OUT   UINT32   *StructureIndex,
+  OUT      UINT8   **Buffer,
+  OUT      UINT32   *BufferSize
   )
 {
-  CHAR8               AsciiData[32];
-  UINT8               EepromLibrary;
+  UINT8              *LogoData;
+  UINT32              LogoSize;
   LOGO_DATA          *LogoStructure;
-  UINT32              Size;
   EFI_STATUS          Status;
 
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
-  //
-  // Return the $Logo$ data
-  // 1. Get valid EEPROM library index
-  // 2. Find $Logo$ structure
-  // 3. Return $Logo$ data
-  //
-  EepromLibrary = GetValidEepromLibrary (TRUE);
-  if (EepromLibrary == EEPROM_NULL) {
-    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
-    Status = EFI_NOT_FOUND;
+  if ((Buffer == NULL) || (BufferSize == NULL)) {
+    Status = EFI_INVALID_PARAMETER;
   } else {
-    Size   = 0;
-    Status = GetEepromStructure (EepromLibrary, EEPROM_LOGO_DATA_SIGNATURE, (UINT8 **) &LogoStructure, &Size);
-    if (EFI_ERROR (Status) || (Size == 0)) {
-      DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $Logo$ structure in the EERPOM binary!\n", __FUNCTION__, __LINE__));
-      Status = EFI_NOT_FOUND;
-    } else {
-      *LogoSize = LogoStructure->length - sizeof (LOGO_DATA);
-      if (*LogoSize == 0) {
-        *LogoData = EepromFreePool (LogoStructure);
-        DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $Logo$ structure data in the EERPOM binary!\n", __FUNCTION__, __LINE__));
-        Status = EFI_NOT_FOUND;
-      } else {
-        *LogoData = (UINT8 *) LogoStructure + sizeof (LOGO_DATA);
-        if (mEepromPlatformLibDebugFlag) {
-          ZeroMem (AsciiData, 32);
-          CopyMem (AsciiData, LogoStructure->signature, 8);
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Signature    = %a\n",        __FUNCTION__, __LINE__, AsciiData));
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Version      = %04x:%04x\n", __FUNCTION__, __LINE__, LogoStructure->vermajor, LogoStructure->verminor));
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Length       = 0x%08x\n",    __FUNCTION__, __LINE__, LogoStructure->length));
+    Status = GetEepromStructureData (NULL, EEPROM_LOGO_DATA_SIGNATURE, StructureIndex, sizeof (LOGO_DATA), (UINT8**) &LogoStructure, &LogoData, &LogoSize);
+    if (!EFI_ERROR (Status)) {
+      if (LogoSize != 0) {
+        *Buffer = AllocatePool (LogoSize);
+        if (*Buffer == NULL) {
+          LogoSize = 0;
+        } else {
+          CopyMem (*Buffer, LogoData, LogoSize);
+          EepromFreePool (LogoStructure);
         }
-        Status = EFI_SUCCESS;
       }
+      *BufferSize = LogoSize;
     }
   }
+
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
+  return Status;
+}
+
+/**
+  Returns the $MemCnfg data
+
+  @param[out]  StructureIndex  Index of where to start looking for the next structure
+  @param[out]  SpdSlotFlag     Flags of which SPD this data is valid for
+  @param[out]  Buffer          Buffer containing the $MemCnfg data
+                               - Up to the caller to free the buffer
+  @param[out]  BufferSize      Size of the MemoryData buffer
+
+  @retval      EFI_SUCCESS     $MemCnfg data found
+  @retval      EFI_NOT_FOUND   $MemCnfg data not found
+  @retval      EFI_NOT_READY   $MemCnfg data not ready yet
+**/
+EFI_STATUS
+EFIAPI
+EepromGetMemoryData (
+  IN OUT   UINT32   *StructureIndex,
+  OUT      UINT16   *SpdSlotFlag,
+  OUT      UINT8   **Buffer,
+  OUT      UINT32   *BufferSize
+  )
+{
+  UINT8              *MemoryData;
+  UINT32              MemorySize;
+  MEMORY_DATA        *MemoryStructure;
+  EFI_STATUS          Status;
+
+  if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
+
+  if ((SpdSlotFlag == NULL) || (Buffer == NULL) || (BufferSize == NULL)) {
+    Status = EFI_INVALID_PARAMETER;
+  } else {
+    Status = GetEepromStructureData (NULL, EEPROM_MEMORY_DATA_SIGNATURE, StructureIndex, sizeof (MEMORY_DATA), (UINT8**) &MemoryStructure, &MemoryData, &MemorySize);
+    if (!EFI_ERROR (Status)) {
+      *SpdSlotFlag = MemoryStructure->spdslot;
+      if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - SpdSlots     = %04x\n", __FUNCTION__, __LINE__, MemoryStructure->spdslot));
+      if (MemorySize != 0) {
+        *Buffer = AllocatePool (MemorySize);
+        if (*Buffer == NULL) {
+          MemorySize = 0;
+        } else {
+          CopyMem (*Buffer, MemoryData, MemorySize);
+          EepromFreePool (MemoryStructure);
+        }
+      }
+      *BufferSize = MemorySize;
+    }
+  }
+
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }
@@ -148,63 +226,48 @@ EepromGetLogo (
 /**
   Returns the $Video$ data
 
-  @param[out]  VideoData       Buffer containing the $Video$ data
-  @param[out]  VideoSize       Size of the VideoData buffer
+  @param[out]  StructureIndex  Index of where to start looking for the next structure
+  @param[out]  Buffer          Buffer containing the $Video$ data
+                               - Up to the caller to free the buffer
+  @param[out]  BufferSize      Size of the VideoData buffer
 
   @retval      EFI_SUCCESS     $Video$ data found
   @retval      EFI_NOT_FOUND   $Video$ data not found
   @retval      EFI_NOT_READY   $Video$ data not ready yet
 **/
-
 EFI_STATUS
+EFIAPI
 EepromGetVbt (
-  OUT   UINT8   **VideoData,
-  OUT   UINT32   *VideoSize
+  IN OUT   UINT32   *StructureIndex,
+  OUT      UINT8   **Buffer,
+  OUT      UINT32   *BufferSize
   )
 {
-  CHAR8               AsciiData[32];
-  UINT8               EepromLibrary;
-  VIDEO_DATA         *VideoStructure;
-  UINT32              Size;
   EFI_STATUS          Status;
+  UINT8              *VideoData;
+  UINT32              VideoSize;
+  VIDEO_DATA         *VideoStructure;
 
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
-  //
-  // Return the $Video$ data
-  // 1. Get valid EEPROM library index
-  // 2. Find $Video$ structure
-  // 3. Return $Video$ data
-  //
-  EepromLibrary = GetValidEepromLibrary (TRUE);
-  if (EepromLibrary == EEPROM_NULL) {
-    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
-    Status = EFI_NOT_FOUND;
+  if ((Buffer == NULL) || (BufferSize == NULL)) {
+    Status = EFI_INVALID_PARAMETER;
   } else {
-    Size   = 0;
-    Status = GetEepromStructure (EepromLibrary, EEPROM_VIDEO_DATA_SIGNATURE, (UINT8 **) &VideoStructure, &Size);
-    if (EFI_ERROR (Status) || (Size == 0)) {
-      DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $Video$ structure in the EERPOM binary!\n", __FUNCTION__, __LINE__));
-      Status = EFI_NOT_FOUND;
-    } else {
-      *VideoSize = VideoStructure->length - sizeof (VIDEO_DATA);
-      if (*VideoSize == 0) {
-        *VideoData = EepromFreePool (VideoStructure);
-        DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $Video$ structure data in the EERPOM binary!\n", __FUNCTION__, __LINE__));
-        Status = EFI_NOT_FOUND;
-      } else {
-        *VideoData = (UINT8 *) VideoStructure + sizeof (VIDEO_DATA);
-        if (mEepromPlatformLibDebugFlag) {
-          ZeroMem (AsciiData, 32);
-          CopyMem (AsciiData, VideoStructure->signature, 8);
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Signature    = %a\n",        __FUNCTION__, __LINE__, AsciiData));
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Version      = %04x:%04x\n", __FUNCTION__, __LINE__, VideoStructure->vermajor, VideoStructure->verminor));
-          DEBUG ((DEBUG_INFO, "%a(#%4d) - Length       = 0x%08x\n",    __FUNCTION__, __LINE__, VideoStructure->length));
+    Status = GetEepromStructureData (NULL, EEPROM_VIDEO_DATA_SIGNATURE, StructureIndex, sizeof (VIDEO_DATA), (UINT8**) &VideoStructure, &VideoData, &VideoSize);
+    if (!EFI_ERROR (Status)) {
+      if (VideoSize != 0) {
+        *Buffer = AllocatePool (VideoSize);
+        if (*Buffer == NULL) {
+          VideoSize = 0;
+        } else {
+          CopyMem (*Buffer, VideoData, VideoSize);
+          EepromFreePool (VideoStructure);
         }
-        Status = EFI_SUCCESS;
       }
+      *BufferSize = VideoSize;
     }
   }
+
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }
@@ -218,6 +281,7 @@ EepromGetVbt (
   @retval     FALSE        PAD offset is not in the whitelist
 **/
 BOOLEAN
+EFIAPI
 EepromPadCheck (
   IN  UINT32    PadOffset
   )
@@ -289,13 +353,15 @@ Exit:
   @retval     EFI_NOT_READY   GPIO data not ready yet
 **/
 EFI_STATUS
+EFIAPI
 EepromProgramGpioPads (VOID)
 {
   CHAR8               AsciiData[32];
   GPIO_DATA_RECORD   *EepromGpioData;
   GPIO_DATA_HEADER   *EepromGpioHeader;
-  UINT8               EepromLibrary;
+  BOOLEAN             GpioDataFound;
   UINT32              GpioPadData;
+  UINT32              Index;
   UINT32              OldGpioPadData;
   UINT32              Size;
   EFI_STATUS          Status;
@@ -304,29 +370,18 @@ EepromProgramGpioPads (VOID)
 
   //
   // Program any EEPROM defined GPIOs
-  // 1. Get valid EEPROM library index
-  // 2. Find GPIO data in EEPROM binary
-  // 3. Loop thru GPIO data and program PADs if PAD is in whitelist
+  // 1. Find GPIO data in EEPROM binary
+  // 2. Loop thru GPIO data and program PADs if PAD is in whitelist
   //
-  EepromLibrary = GetValidEepromLibrary (TRUE);
-  if (EepromLibrary == EEPROM_NULL) {
-    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
-    Status = EFI_NOT_FOUND;
-  } else {
-    Size   = 0;
-    Status = GetEepromStructure (EepromLibrary, EEPROM_GPIO_SIGNATURE, (UINT8 **) &EepromGpioHeader, &Size);
+  GpioDataFound = FALSE;
+  Index         = 0;
+  Status        = EFI_SUCCESS;
+  while (!EFI_ERROR (Status)) {
+    Status = GetEepromStructureData (NULL, EEPROM_GPIO_SIGNATURE, &Index, sizeof (GPIO_DATA_HEADER), (UINT8**) &EepromGpioHeader, (UINT8**) &EepromGpioData, &Size);
     if (EFI_ERROR (Status) || (Size == 0)) {
-      DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find any GPIO data in the EERPOM binary!\n", __FUNCTION__, __LINE__));
+      if (!GpioDataFound) DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find any GPIO data in the EERPOM binary!\n", __FUNCTION__, __LINE__));
       Status = EFI_NOT_FOUND;
     } else {
-      EepromGpioData = (GPIO_DATA_RECORD *) ((UINT8 *) EepromGpioHeader + sizeof (GPIO_DATA_HEADER));
-      if (mEepromPlatformLibDebugFlag) {
-        ZeroMem (AsciiData, 32);
-        CopyMem (AsciiData, EepromGpioHeader->signature, 8);
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Signature    = %a\n",        __FUNCTION__, __LINE__, AsciiData));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Version      = %04x:%04x\n", __FUNCTION__, __LINE__, EepromGpioHeader->vermajor, EepromGpioHeader->verminor));
-        DEBUG ((DEBUG_INFO, "%a(#%4d) - Length       = 0x%08x\n",    __FUNCTION__, __LINE__, EepromGpioHeader->length));
-      }
       //
       // Loop thru GPIO records. We currently only allow 32-bit PAD offset data records that are in the white-list.
       //
@@ -346,13 +401,24 @@ EepromProgramGpioPads (VOID)
         }
         if (OldGpioPadData != GpioPadRead (EepromGpioData->offset)) {
           DEBUG ((DEBUG_INFO, "%a(#%4d) - WARNING: PAD programming changing due to EEPROM binary!\n", __FUNCTION__, __LINE__));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -   Label      = %a\n",     __FUNCTION__, __LINE__, AsciiData));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     Offset   = 0x%08x\n", __FUNCTION__, __LINE__, EepromGpioData->offset));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     DataType = 0x%08x\n", __FUNCTION__, __LINE__, EepromGpioData->datatype));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     DataSize = 0x%08x\n", __FUNCTION__, __LINE__, EepromGpioData->datasize));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     AndData  = 0x%08x\n", __FUNCTION__, __LINE__, EepromGpioData->anddata));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     OrData   = 0x%08x\n", __FUNCTION__, __LINE__, EepromGpioData->ordata));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     OldData  = 0x%08x\n", __FUNCTION__, __LINE__, OldGpioPadData));
+          DEBUG ((DEBUG_INFO, "%a(#%4d) -     NewData  = 0x%08x\n", __FUNCTION__, __LINE__, GpioPadRead (EepromGpioData->offset)));
+          DEBUG ((DEBUG_INFO, "\n"));
         }
         EepromGpioData++;
       }
+      GpioDataFound = TRUE;
     }
     EepromFreePool (EepromGpioHeader);
-    Status = EFI_SUCCESS;
   }
+  if (GpioDataFound) Status = EFI_SUCCESS;
+
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Returning %r...\n", __FUNCTION__, __LINE__, Status));
   return Status;
 }

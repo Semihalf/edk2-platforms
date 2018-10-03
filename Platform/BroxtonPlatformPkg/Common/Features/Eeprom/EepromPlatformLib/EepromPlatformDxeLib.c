@@ -44,7 +44,8 @@ EFI_OUT_OF_RESOURCES  -  There are not enough resources to find the protocol.
 
 --*/
 EFI_STATUS
-LocateSupportProtocol(
+EFIAPI
+EepromLocateSupportProtocol (
 IN   EFI_GUID       *Protocol,
 OUT  VOID           **Instance,
 IN   UINT32         Type
@@ -63,14 +64,14 @@ IN   UINT32         Type
     //
     // Locate protocol.
     //
-    Status = gBS->LocateHandleBuffer(
+    Status = gBS->LocateHandleBuffer (
         ByProtocol,
         Protocol,
         NULL,
         &NumberOfHandles,
         &HandleBuffer
         );
-    if (EFI_ERROR(Status)) {
+    if (EFI_ERROR (Status)) {
         //
         // Defined errors at this time are not found and out of resources.
         //
@@ -85,12 +86,12 @@ IN   UINT32         Type
         // Get the protocol on this handle
         // This should not fail because of LocateHandleBuffer
         //
-        Status = gBS->HandleProtocol(
+        Status = gBS->HandleProtocol (
             HandleBuffer[Index],
             Protocol,
             Instance
             );
-        ASSERT(!EFI_ERROR(Status));
+        ASSERT(!EFI_ERROR (Status));
 
         if (!Type) {
             //
@@ -104,7 +105,7 @@ IN   UINT32         Type
         //
         // See if it has the ACPI storage file
         //
-        Status = ((EFI_FIRMWARE_VOLUME2_PROTOCOL*)(*Instance))->ReadFile(
+        Status = ((EFI_FIRMWARE_VOLUME2_PROTOCOL*) (*Instance))->ReadFile(
             *Instance,
             &gEfiAcpiTableStorageGuid,
             NULL,
@@ -116,7 +117,7 @@ IN   UINT32         Type
         //
         // If we found it, then we are done
         //
-        if (!EFI_ERROR(Status)) {
+        if (!EFI_ERROR (Status)) {
             break;
         }
     }
@@ -127,7 +128,7 @@ IN   UINT32         Type
     //
     // Free any allocated buffers
     //
-    gBS->FreePool(HandleBuffer);
+    gBS->FreePool (HandleBuffer);
 
     return Status;
 }
@@ -142,23 +143,26 @@ IN   UINT32         Type
   @retval     EFI_NOT_READY   $AcpiTbl data not ready to be programmed
 **/
 EFI_STATUS
+EFIAPI
 EepromProgramAcpi (VOID)
 {
-  UINT8                        EepromLibrary;
   UINT8                       *AcpiData;
+  BOOLEAN                      AcpiStructureFound;
   UINT32                       AcpiSize;
   ACPI_TABLE                  *AcpiStructure;
   EFI_ACPI_SUPPORT_PROTOCOL   *AcpiSupport;
-  UINT32                       Size;
+  UINT32                       Index;
   EFI_STATUS                   Status;
   UINTN                        TableHandle;
 
   if (mEepromPlatformLibDebugFlag) DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...\n", __FUNCTION__, __LINE__));
 
+  AcpiStructureFound = FALSE;
+
   //
   // Find the AcpiSupport protocol
   //
-  Status = LocateSupportProtocol (&gEfiAcpiSupportProtocolGuid, (VOID **) &AcpiSupport, 0);
+  Status = EepromLocateSupportProtocol (&gEfiAcpiSupportProtocolGuid, (VOID **) &AcpiSupport, 0);
   if (EFI_ERROR (Status)) {
     Status = EFI_NOT_READY;
     goto Exit;
@@ -166,28 +170,18 @@ EepromProgramAcpi (VOID)
 
   //
   // Program the $AcpiTbl data
-  // 1. Get valid EEPROM library index
-  // 2. Find $AcpiTbl structure
-  // 3. Program the $AcpiTbl data
   //
-  EepromLibrary = GetValidEepromLibrary (TRUE);
-  if (EepromLibrary == EEPROM_NULL) {
-    DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find a valid EEPROM binary!\n", __FUNCTION__, __LINE__));
-    Status = EFI_NOT_FOUND;
-  } else {
-    Size   = 0;
-    Status = GetEepromStructure (EepromLibrary, EEPROM_ACPI_TABLE_SIGNATURE, (UINT8 **) &AcpiStructure, &Size);
-    if (EFI_ERROR (Status) || (Size == 0)) {
-      DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $AcpiTbl structure in the EERPOM binary!\n", __FUNCTION__, __LINE__));
+  Index = 0;
+  while (!EFI_ERROR (Status)) {
+    Status = GetEepromStructureData (NULL, EEPROM_ACPI_TABLE_SIGNATURE, &Index, sizeof (ACPI_TABLE), (UINT8**) &AcpiStructure, &AcpiData, &AcpiSize);
+    if (EFI_ERROR (Status)) {
+      if (!AcpiStructureFound) DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $AcpiTbl structure in the EERPOM binary!\n", __FUNCTION__, __LINE__));
       Status = EFI_NOT_FOUND;
     } else {
-      AcpiSize = AcpiStructure->length - sizeof (ACPI_TABLE);
       if (AcpiSize == 0) {
-        EepromFreePool (AcpiStructure);
         DEBUG ((DEBUG_ERROR, "%a(#%4d) - ERROR: Didn't find the $AcpiTbl structure data in the EERPOM binary!\n", __FUNCTION__, __LINE__));
         Status = EFI_NOT_FOUND;
       } else {
-        AcpiData = (UINT8 *) AcpiStructure + sizeof (ACPI_TABLE);
         //
         // publish the AcpiTable
         //
@@ -199,13 +193,31 @@ EepromProgramAcpi (VOID)
                                 EFI_ACPI_TABLE_VERSION_2_0,
                                 &TableHandle
                                 );
-        //
-        // re-init variables
-        //
-        AcpiStructure = EepromFreePool (AcpiStructure);
+        AcpiStructureFound = TRUE;
       }
+      AcpiStructure = EepromFreePool (AcpiStructure);
     }
   }
+
+  if (AcpiStructureFound) Status = EFI_SUCCESS;
+
 Exit:
   return Status;
 }
+
+/**
+  Reset the system using the platform desired reset method.
+
+  @param[in]  ResetType    The reset type to perform
+
+  @retval     None
+**/
+VOID
+EFIAPI
+EepromResetSystem (
+  IN EFI_RESET_TYPE   ResetType
+  )
+{
+  gRT->ResetSystem (ResetType, EFI_SUCCESS, 0, NULL);
+}
+

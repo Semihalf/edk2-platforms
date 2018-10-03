@@ -26,6 +26,7 @@
 
 [Guids]
   gEepromVariableGuid
+  gEfiAcpiTableStorageGuid
 
 [LibraryClasses]
   BaseLib
@@ -34,7 +35,6 @@
   EepromDataLib
   EepromLib
   GpioLib
-  I2cLib
   MemoryAllocationLib
   PcdLib
   UefiBootServicesTableLib
@@ -53,7 +53,10 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromBus
   gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList
 
+[Protocols]
+  gEfiAcpiSupportProtocolGuid
+
 [Sources]
-  EepromAcpi.c
+  EepromPlatformDxeLib.c
   EepromPlatformLib.c
   EepromPlatformLib.h

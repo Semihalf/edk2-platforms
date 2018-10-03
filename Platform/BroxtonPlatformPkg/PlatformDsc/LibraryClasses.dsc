@@ -101,7 +101,7 @@
 
    PciSegmentLib|MdePkg/Library/BasePciSegmentLibPci/BasePciSegmentLibPci.inf
    FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
-   
+
    #
    # Generic Modules
    #
@@ -279,9 +279,15 @@
   #
   # EEPROM binary libs
   #
-  BaseCryptLib      | CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
-  EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataLib.inf
-  EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromLib.inf
-  EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformLib.inf
-  I2cLib            | $(PLATFORM_SI_PACKAGE)/SouthCluster/Library/I2cLib/I2cLib.inf
+  BaseCryptLib        | CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
+  I2cLib              | $(PLATFORM_SI_PACKAGE)/SouthCluster/Library/I2cLib/I2cLib.inf
+  !if $(EEPROM_CODE_ENABLE) == TRUE
+    EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataLib.inf
+    EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromLib.inf
+    EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformLib.inf
+  !else
+    EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataNullLib.inf
+    EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromNullLib.inf
+    EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformNullLib.inf
+  !endif
 

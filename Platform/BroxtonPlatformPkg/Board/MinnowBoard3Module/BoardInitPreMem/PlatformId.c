@@ -17,6 +17,7 @@
 #include <Library/BaseMemoryLib.h>
 #include <Library/I2cLib.h>
 #include <Library/GpioLib.h>
+#include <Library/EepromPlatformLib.h>
 #include "PlatformId.h"
 
 PAD_ID_INFO gMB3MRawBoardIdPadInfo[] = {
@@ -260,6 +261,9 @@ Minnow3ModuleGetEmbeddedBoardIdFabId (
   OUT UINT8                     *FabId
   )
 {
+  BOARD_INFO_TABLE   *BoardInfo;
+  EFI_STATUS          Status;
+
   DEBUG ((DEBUG_INFO, "%a(#%3d) - Starting...\n", __FUNCTION__, __LINE__));
 
   *BoardId = Minnow3ModuleGetCommonBoardId ();
@@ -270,6 +274,9 @@ Minnow3ModuleGetEmbeddedBoardIdFabId (
     *BoardId = BOARD_ID_APL_UNKNOWN;
     *FabId   = UNKNOWN_FAB;
   }
+
+  Status = EepromGetBoardInfo (NULL, &BoardInfo);
+  DEBUG ((DEBUG_INFO, "%a(#%3d) - EepromGetBoardInfo() -> %r\n", __FUNCTION__, __LINE__, Status));
 
   return EFI_SUCCESS;
 }

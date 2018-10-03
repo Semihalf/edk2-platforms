@@ -184,6 +184,8 @@ EepromApp.efi
     gPlatformModuleTokenSpaceGuid.PcdEepromInMemoryFlag|0|BOOLEAN|0xEEEE0006
     ## Flag to tell if EEPROM Map is in HOB
     gPlatformModuleTokenSpaceGuid.PcdEepromMapHobValid|0|BOOLEAN|0xEEEE0007
+    ## Flag to tell if EEPROM image require DXE verification or not
+    gPlatformModuleTokenSpaceGuid.PcdEepromDxeVerificationRequired|0|BOOLEAN|0xEEEE0008
 
   [PcdsFixedAtBuild]
     ## I2C bus the master EEPROM is hanging on
@@ -200,6 +202,9 @@ EepromApp.efi
     gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile|{0xAC, 0x3D, 0xBD, 0xBF, 0xEB, 0x01, 0xEB, 0x4F, 0xA9, 0xDE, 0xBC, 0xC9, 0xD1, 0xBA, 0x55, 0x31}|VOID*|0xEEEE2004
     ## GPIO PAD whitelist                           |    END OF ARRAY    |
     gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList|{0xFF, 0xFF, 0xFF, 0xFF}|VOID*|0xEEEE2005
+    ## EEPROM security violation policy action
+    ## 0x00 - CPU dead loop
+    gPlatformModuleTokenSpaceGuid.PcdEepromSecurityViolationPolicy|0x00|UINT8|0xEEEE2006
 
 
 ===========================================================================================

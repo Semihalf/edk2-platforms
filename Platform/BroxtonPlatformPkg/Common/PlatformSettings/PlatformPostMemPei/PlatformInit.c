@@ -20,6 +20,7 @@
 #include <Ppi/Smbus2.h>
 #include <Library/PcdLib.h>
 #include <Library/HeciMsgLib.h>
+#include <Library/EepromPlatformlib.h>
 #include <Ppi/SeCUma.h>
 
 #ifdef __GNUC__
@@ -276,12 +277,16 @@ BXTPolicyInit (
   EFI_GUID                        PeiLogoGuid        = { 0x7BB28B99, 0x61BB, 0x11D5, {0x9A, 0x5D, 0x00, 0x90, 0x27, 0x3F, 0xC1, 0x4D} };
   EFI_GUID                        VbtGuid;
   VBT_INFO                        VbtInfo;
+  EFI_STATUS                      Status;
 
 
   DEBUG ((DEBUG_INFO, " BXTPolicyInit: SystemAgent PEI Platform Policy Initialization begin \n"));
 
 
-  PeiGetSectionFromFv (PeiLogoGuid, &Buffer, &Size);
+  Status = EepromGetLogo (NULL, (UINT8**) &Buffer, &Size);
+  if (EFI_ERROR (Status)) {
+    PeiGetSectionFromFv (PeiLogoGuid, &Buffer, &Size);
+  }
   if (Buffer == NULL) {
     DEBUG ((DEBUG_ERROR, "Could not locate PeiLogo"));
   }
@@ -289,9 +294,11 @@ BXTPolicyInit (
   //
   // May need a different VBT depending on PanelSel
   //
-  CopyMem (&VbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
-  PeiGetSectionFromFv (VbtGuid, &Buffer, &Size);
-
+  Status = EepromGetVbt (NULL, (UINT8**) &Buffer, &Size);
+  if (EFI_ERROR (Status)) {
+    CopyMem (&VbtGuid, PcdGetPtr (PcdBoardVbtFileGuid), sizeof (EFI_GUID));
+    PeiGetSectionFromFv (VbtGuid, &Buffer, &Size);
+  }
   if (Buffer == NULL) {
     DEBUG ((DEBUG_ERROR, "Could not locate VBT"));
   }

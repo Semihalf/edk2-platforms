@@ -27,6 +27,11 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromPublicKeyFile|{0xA3, 0x38, 0x8A, 0x5D, 0xBD, 0xFB, 0x77, 0x40, 0x81, 0x05, 0x11, 0x17, 0x0C, 0x2A, 0xF5, 0x4D}|VOID*|0xEEEE2003
   ## FV EEPROM Image file GUID - BFBD3DAC-01EB-4FEB-A9DE-BCC9D1BA5531
   gPlatformModuleTokenSpaceGuid.PcdEepromFvImageFile|{0xAC, 0x3D, 0xBD, 0xBF, 0xEB, 0x01, 0xEB, 0x4F, 0xA9, 0xDE, 0xBC, 0xC9, 0xD1, 0xBA, 0x55, 0x31}|VOID*|0xEEEE2004
+  ## GPIO PAD whitelist                           |    END OF ARRAY    |
+  gPlatformModuleTokenSpaceGuid.PcdGpioWhiteList|{0xFF, 0xFF, 0xFF, 0xFF}|VOID*|0xEEEE2005
+  ## EEPROM security violation policy action
+  ## 0x00 - CPU dead loop
+  gPlatformModuleTokenSpaceGuid.PcdEepromSecurityViolationPolicy|0x00|UINT8|0xEEEE2006
 
 [PcdsDynamic, PcdsDynamicEx]
   ## Used to store the EEPROM memory buffer pointer
@@ -45,6 +50,8 @@
   gPlatformModuleTokenSpaceGuid.PcdEepromInMemoryFlag|0|BOOLEAN|0xEEEE0006
   ## Flag to tell if EEPROM Map is in HOB
   gPlatformModuleTokenSpaceGuid.PcdEepromMapHobValid|0|BOOLEAN|0xEEEE0007
+  ## Flag to tell if EEPROM image require DXE verification or not
+  gPlatformModuleTokenSpaceGuid.PcdEepromDxeVerificationRequired|0|BOOLEAN|0xEEEE0008
 
 
 ==========================================================================================

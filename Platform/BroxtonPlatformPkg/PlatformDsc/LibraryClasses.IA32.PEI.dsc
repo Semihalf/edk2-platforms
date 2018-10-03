@@ -67,8 +67,14 @@
   #
   # EEPROM binary libs
   #
-  BaseCryptLib      | CryptoPkg/Library/BaseCryptLib/PeiCryptLib.inf
-  EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataPeiLib.inf
-  EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromPeiLib.inf
-  EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformPeiLib.inf
+  BaseCryptLib        | CryptoPkg/Library/BaseCryptLib/PeiCryptLib.inf
+  !if $(EEPROM_CODE_ENABLE) == TRUE
+    EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataPeiLib.inf
+    EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromPeiLib.inf
+    EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformPeiLib.inf
+  !else
+    EepromDataLib     | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromDataLib/EepromDataPeiNullLib.inf
+    EepromLib         | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromLib/EepromNullLib.inf
+    EepromPlatformLib | $(PLATFORM_PACKAGE_COMMON)/Features/Eeprom/EepromPlatformLib/EepromPlatformNullLib.inf
+  !endif
 

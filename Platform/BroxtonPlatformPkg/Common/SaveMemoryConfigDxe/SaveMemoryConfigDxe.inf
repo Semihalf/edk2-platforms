@@ -1,7 +1,7 @@
 ## @file
 #  Component description for driver that locates the MemoryConfigurationData HOB, which saves the data to NVRAM.
 #
-#  Copyright (c) 1999 - 2017, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 1999 - 2018, Intel Corporation. All rights reserved.<BR>
 #
 #  This program and the accompanying materials
 #  are licensed and made available under the terms and conditions of the BSD License
@@ -40,6 +40,7 @@
   UefiLib
   BaseLib
   HeciMsgLib
+  EepromLib
 
 [Protocols]
   gMemInfoProtocolGuid
