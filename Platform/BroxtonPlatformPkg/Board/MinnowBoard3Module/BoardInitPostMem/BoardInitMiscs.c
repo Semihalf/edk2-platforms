@@ -128,11 +128,6 @@ Minnow3ModuleMultiPlatformInfoInit (
   Status = Minnow3ModuleInitializeBoardOemId (PeiServices, PlatformInfoHob);
   Status = Minnow3ModuleInitializeBoardSsidSvid (PeiServices, PlatformInfoHob);
 
-  //
-  // TypeC MUX AUX mode
-  //
-  MB3SetupTypecMuxAux ();
-
   return EFI_SUCCESS;
 }
 

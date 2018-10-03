@@ -16,18 +16,20 @@
 #include "TypeC.h"
 
 static MUX_PROGRAMMING_TABLE mMB3MuxTable[] = {
-  // Address   Register                Data             String
-  //====================================================================================
-   {A_GENERAL, R_FIRMWARE_VERSION,     MUX_TABLE_NULL, "Firmware Version Number"},
-   {A_STATUS,  R_CC_STATUS_1,          MUX_TABLE_NULL, "CC_Status_1"},
-   {A_STATUS,  R_CC_STATUS_2,          MUX_TABLE_NULL, "CC_Status_2"},
-   {A_STATUS,  R_CC_STATUS_3,          MUX_TABLE_NULL, "CC_Status_3"},
-   {A_STATUS,  R_MUX_HPD_ASSERT,       MUX_TABLE_NULL, "MUX_In_HPD_Assertion"},
-   {A_STATUS,  R_MUX_STATUS,           MUX_TABLE_NULL, "MUX Status"},
-   {A_STATUS,  R_MUX_DP_TRAINING,      MUX_TABLE_NULL, "MUX_DP_Training_Disable"},
-   {A_STATUS,  R_MUX_DP_AUX_INTERCEPT, MUX_TABLE_NULL, "MUX_DP_AUX_Interception_Disable"},
-   {A_STATUS,  R_MUX_DP_EQ_CONFIG,     MUX_TABLE_NULL, "MUX_DP_EQ_Configuration"},
-   {A_STATUS,  R_MUX_DP_OUTPUT_CONFIG, MUX_TABLE_NULL, "MUX_DP_Output_Configuration"}
+  // Address   Register                Data            OrgData  String
+  //==============================================================================================
+   {A_STATUS,  R_FIRMWARE_VERSION,     MUX_TABLE_NULL, 0x00,    "Firmware Version Number"},         // 0x00
+   {A_STATUS,  R_CC_STATUS,            MUX_TABLE_NULL, 0x00,    "CC_Status"},                       // 0x01
+   {A_MUX,     R_CC_STATUS_1,          MUX_TABLE_NULL, 0x00,    "CC_Status 1"},                     // 0x02
+   {A_MUX,     R_CC_STATUS_2,          MUX_TABLE_NULL, 0x00,    "CC_Status 2"},                     // 0x03
+   {A_MUX,     R_CC_STATUS_3,          MUX_TABLE_NULL, 0x00,    "CC_Status 3"},                     // 0x04
+   {A_MUX,     R_MUX_STATUS,           MUX_TABLE_NULL, 0x00,    "MUX_Status"},                      // 0x05
+   {A_MUX,     R_MUX_USB_STATUS,       MUX_TABLE_NULL, 0x00,    "MUX USB Status"},                  // 0x06
+   {A_MUX,     R_MUX_HPD_ASSERT,       MUX_TABLE_NULL, 0x00,    "MUX_In_HPD_Assertion"},            // 0x07
+   {A_MUX,     R_MUX_DP_TRAINING,      MUX_TABLE_NULL, 0x00,    "MUX_DP_Training_Disable"},         // 0x08
+   {A_MUX,     R_MUX_DP_AUX_INTERCEPT, MUX_TABLE_NULL, 0x00,    "MUX_DP_AUX_Interception_Disable"}, // 0x09
+   {A_MUX,     R_MUX_DP_EQ_CONFIG,     MUX_TABLE_NULL, 0x00,    "MUX_DP_EQ_Configuration"},         // 0x0A
+   {A_MUX,     R_MUX_DP_OUTPUT_CONFIG, MUX_TABLE_NULL, 0x00,    "MUX_DP_Output_Configuration"}      // 0x0B
 };
 
 VOID
@@ -162,6 +164,7 @@ MB3ReadMux (
 
   RetryCount = MUX_RETRY_COUNT;
   do {
+    MicroSecondDelay (MUX_I2C_DELAY);
     *Data = 0x00;
     Status = ByteReadI2C (PARADE_MUX_I2C_BUS, SlaveAddress, Offset, 1, Data);
   } while ((RetryCount-- > 0) && (EFI_ERROR (Status)));
@@ -182,6 +185,7 @@ MB3WriteMux (
 
   RetryCount = MUX_RETRY_COUNT;
   do {
+    MicroSecondDelay (MUX_I2C_DELAY);
     Status = ByteWriteI2C (PARADE_MUX_I2C_BUS, SlaveAddress, Offset, 1, Data);
   } while ((RetryCount-- > 0) && (EFI_ERROR (Status)));
 
@@ -204,15 +208,19 @@ MB3DumpMux (
   // Loop thru device and dump it all
   //
   DEBUG ((DEBUG_INFO, "\n%a(#%4d) - Dump the PS8750 I2C data\n", __FUNCTION__, __LINE__));
-  for (SlaveAddress = 0x08; SlaveAddress <= 0x0E; SlaveAddress++) {
+  for (SlaveAddress = A_STATUS; SlaveAddress <= A_MAX_ADDRESS; SlaveAddress++) {
     for (Offset = 0x00; Offset <= 0xFF; Offset++) {
       Status = MB3ReadMux (SlaveAddress, (UINT8) Offset, &Data[Offset]);
       if (EFI_ERROR (Status)) Data[Offset] = 0xFF;
     }
     DEBUG ((DEBUG_INFO, "\nSlaveAddress = 0x%02x\n", (SlaveAddress << 1)));
-   MB3DumpParagraph (DEBUG_INFO, Data, 256);
+    MB3DumpParagraph (DEBUG_INFO, Data, 256);
   }
   DEBUG ((DEBUG_INFO, "\n"));
+
+  //
+  // Display current HPD status
+  //
   padConfg0.padCnf0 = GpioPadRead (MUX_HPD_GPIO + BXT_GPIO_PAD_CONF0_OFFSET);
   padConfg1.padCnf1 = GpioPadRead (MUX_HPD_GPIO + BXT_GPIO_PAD_CONF1_OFFSET);
   DEBUG ((DEBUG_INFO, "%a(#%4d) - MUX_HPD_GPIO Rx = %d  RxInv = %d\n\n", __FUNCTION__, __LINE__, padConfg0.r.GPIORxState, padConfg0.r.RXINV));
@@ -225,23 +233,27 @@ MB3SetupTypecMuxAux (
   )
 {
   UINT8            Data8;
+  BOOLEAN          I2cQuietFlag;
   UINTN            index;
-  MUX_DATA_TABLE   MuxData;
   BXT_CONF_PAD0    padConfg0;
   BXT_CONF_PAD1    padConfg1;
-  UINT8            *Ptr;
   EFI_STATUS       Status;
 
   DEBUG ((DEBUG_INFO, "%a(#%4d) - Starting...[0x%02x]\n", __FUNCTION__, __LINE__, PARADE_MUX_ADDRESS));
 
   //
+  // Save off current I2C quiet flag, then enable quiet
+  //
+  I2cQuietFlag = gI2cQuietFlag;
+  gI2cQuietFlag = TRUE;
+
+  //
   // Read/write MUX info
   //
-  Ptr = (UINT8 *) &MuxData;
   for (index = 0; index < (sizeof (mMB3MuxTable) / sizeof (mMB3MuxTable[0])); index++) {
     Status = MB3ReadMux (mMB3MuxTable[index].Address, mMB3MuxTable[index].Register, &Data8);
     DEBUG ((DEBUG_INFO, "%a(#%4d) - %.*a [0x%02x:0x%02x] = 0x%02x (%r)\n", __FUNCTION__, __LINE__, MUX_TABLE_STRING_LENGTH, mMB3MuxTable[index].String, (mMB3MuxTable[index].Address << 1), mMB3MuxTable[index].Register, Data8, Status));
-    Ptr[index] = Data8;
+    mMB3MuxTable[index].OrgData = Data8;
     if ((mMB3MuxTable[index].Data != MUX_TABLE_NULL) && (!EFI_ERROR (Status))) {
       Data8 = (UINT8) (mMB3MuxTable[index].Data & 0x00FF);
       Status = MB3WriteMux (mMB3MuxTable[index].Address, mMB3MuxTable[index].Register, &Data8);
@@ -250,7 +262,7 @@ MB3SetupTypecMuxAux (
       } else {
         Status = MB3ReadMux (mMB3MuxTable[index].Address, mMB3MuxTable[index].Register, &Data8);
         DEBUG ((DEBUG_INFO, "%a(#%4d) - %.*a [0x%02x:0x%02x] = 0x%02x (%r)\n", __FUNCTION__, __LINE__, MUX_TABLE_STRING_LENGTH, mMB3MuxTable[index].String, (mMB3MuxTable[index].Address << 1), mMB3MuxTable[index].Register, Data8, Status));
-        Ptr[index] = Data8;
+        mMB3MuxTable[index].OrgData = Data8;
       }
     }
   }
@@ -263,27 +275,9 @@ MB3SetupTypecMuxAux (
   DEBUG ((DEBUG_INFO, "%a(#%4d) - MUX_HPD_GPIO Rx = %d  RxInv = %d\n", __FUNCTION__, __LINE__, padConfg0.r.GPIORxState, padConfg0.r.RXINV));
 
   //
-  // See if we need to assert the HPD on the MUX
+  // Restore I2C quiet flag
   //
-  if ((MuxData.MuxStatus & BIT7) == BIT7) {
-    //
-    // We are in DP mode
-    //
-    if ((MuxData.HpdAssert & BIT7) != BIT7) {
-      //
-      // We need to assert the MUX HPD
-      //
-      Data8  = MuxData.HpdAssert | BIT7;
-      Status = MB3WriteMux (A_STATUS,  R_MUX_HPD_ASSERT, &Data8);
-
-      //
-      // Display HPD
-      //
-      padConfg0.padCnf0 = GpioPadRead (MUX_HPD_GPIO + BXT_GPIO_PAD_CONF0_OFFSET);
-      padConfg1.padCnf1 = GpioPadRead (MUX_HPD_GPIO + BXT_GPIO_PAD_CONF1_OFFSET);
-      DEBUG ((DEBUG_INFO, "%a(#%4d) - MUX_HPD_GPIO Rx = %d  RxInv = %d\n", __FUNCTION__, __LINE__, padConfg0.r.GPIORxState, padConfg0.r.RXINV));
-    }
-  }
+  gI2cQuietFlag = I2cQuietFlag;
 
   return EFI_SUCCESS;
 }
