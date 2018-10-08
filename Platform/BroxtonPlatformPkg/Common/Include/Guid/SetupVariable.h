@@ -480,7 +480,7 @@ typedef struct {
   UINT8         PanelScaling;
   UINT8         IgdLcdIGmchBlc;
   UINT8         SecEnable;
-  UINT8         TPM;
+  UINT8         TPMReserved;
   UINT8         TPMSupportedBanks;
   UINT8         TpmDetection;
   UINT8         PttSuppressCommandSend;  // For PTT Debug

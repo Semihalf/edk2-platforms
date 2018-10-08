@@ -13,7 +13,7 @@
   4. It save all the mapping info in NV variables which will be consumed
      by platform override protocol driver to publish the platform override protocol.
 
-  Copyright (c) 2007 - 2017, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2007 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -117,11 +117,6 @@ LoadOsDefaultValues (
   Private->FakeNvData.I2s34C1                    = TRUE;
   Private->FakeNvData.UserCameraSel              = TRUE;
   Private->FakeNvData.WorldCameraSel             = 2;
-#if X64_BUILD_ENABLE
-  Private->FakeNvData.TPM                        = 1;
-#else
-  Private->FakeNvData.TPM                        = 0;
-#endif
   Private->FakeNvData.I2C0Speed                  = 1;
   Private->FakeNvData.I2C1Speed                  = 1;
   Private->FakeNvData.I2C2Speed                  = 1;

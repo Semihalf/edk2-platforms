@@ -1603,65 +1603,6 @@ UpdatePLInformation (
   HiiSetString (mHiiHandle, STRING_TOKEN (STR_SHORT_DUR_PWR_LIMIT_VALUE), Buffer, NULL);
 }
 
-
-EFI_STATUS
-SaveTpmDeviceSelection (
-  SYSTEM_CONFIGURATION        *SystemConfigPtr
-  )
-{
-  EFI_STATUS                  Status;
-  BOOLEAN                     PttEnabledState;
-  BOOLEAN                     ResetRequired;
-  EFI_INPUT_KEY               Key;
-  CHAR16                      *StringBuffer1 = L"Perform TPM Device Selection is Changed.";
-  CHAR16                      *StringBuffer2 = L"System will Restart!";
-  CHAR16                      *StringBuffer3 = L"Press Enter Key To Continue";
-
-  ResetRequired = FALSE;
-  //
-  // TPM Device Selector Override
-  //
-  Status = PttHeciGetState (&PttEnabledState);
-  if (EFI_ERROR (Status)) {
-    return Status;
-  }
-
-  if (SystemConfigPtr->TPM == TPM_PTT) {
-    DEBUG ((EFI_D_INFO, "TPM Device Selection is PTT.\n"));
-    if (!PttEnabledState) {
-      ResetRequired = TRUE;
-      PttHeciSetState (TRUE);
-    }
-  } else if ((SystemConfigPtr->TPM == TPM_DTPM_1_2) || (SystemConfigPtr->TPM == TPM_DTPM_2_0)) {
-    DEBUG ((EFI_D_INFO, "TPM Device Selection is dTPM.\n"));
-    if (PttEnabledState) {
-      ResetRequired = TRUE;
-      PttHeciSetState (FALSE);
-    }
-  } else if (SystemConfigPtr->TPM == TPM_DISABLE) {
-    DEBUG ((EFI_D_INFO, "TPM Device Selection is Disable.\n"));
-    if (PttEnabledState) {
-      ResetRequired = TRUE;
-      PttHeciSetState (FALSE);
-    }
-  }
-
-  if (ResetRequired) {
-    DEBUG ((EFI_D_INFO, "Trigger cold reset to take effect.\n"));
-    //
-    // Popup a menu to notice user
-    //
-    do {
-      CreatePopUp (EFI_LIGHTGRAY | EFI_BACKGROUND_BLUE, &Key, StringBuffer1, StringBuffer2, StringBuffer3, NULL);
-    } while (Key.UnicodeChar != CHAR_CARRIAGE_RETURN);
-
-    gRT->ResetSystem (EfiResetCold, EFI_SUCCESS, 0, NULL);
-  }
-
-  return EFI_SUCCESS;
-}
-
-
 VOID
 EFIAPI
 SetupInfo (
@@ -1809,9 +1750,6 @@ CheckSystemConfigSave (
 
 
   CheckTPMActivePcrBanks (SystemConfigPtr->TPMSupportedBanks);
-  //
-  // Save TPM device selection and trigger a cold reset to take effect.
-  //
-  SaveTpmDeviceSelection (SystemConfigPtr);
+
 }
 

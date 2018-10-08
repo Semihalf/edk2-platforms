@@ -2,7 +2,7 @@
   Platform Configuration Update library implementation file.
   This library updates the setup data with platform overrides.
 
-  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
 
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
@@ -29,37 +29,6 @@
 #define SETUP_NFC_Disabled 0
 #define SETUP_NFC_IPT      1
 #define SETUP_NFC          2
-
-EFI_STATUS
-TpmSetupPolicyInit (
-  IN SYSTEM_CONFIGURATION    *SystemConfiguration
-  )
-{
-#if FTPM_SUPPORT
-  EFI_STATUS           Status;
-  BOOLEAN              PttEnabledState = FALSE;
-  EFI_HOB_GUID_TYPE    *FdoEnabledGuidHob = NULL;
-
-  FdoEnabledGuidHob = GetFirstGuidHob (&gFdoModeEnabledHobGuid);
-
-  if (SystemConfiguration->TpmDetection == 0) {
-    Status = PttHeciGetState (&PttEnabledState);
-    if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "Get PTT enabled state failed.\n"));
-    }
-
-    if (PttEnabledState && (FdoEnabledGuidHob == NULL)) {
-      SystemConfiguration->TPM = TPM_PTT;
-    } else {
-      DEBUG ((EFI_D_INFO, "TpmPolicyInit-TPM and TpmDetection is disabled because of FDO \n\r"));
-      SystemConfiguration->TPM = TPM_DISABLE;
-    }
-    SystemConfiguration->TpmDetection = 1;
-  }
-
-#endif
-  return EFI_SUCCESS;
-}
 
 
 EFI_STATUS
@@ -187,9 +156,6 @@ UpdateSetupDataValues (
   }
 
   Status = GetSecureNfcInfo (PreDefaultSetupData);
-  ASSERT_EFI_ERROR (Status);
-
-  Status = TpmSetupPolicyInit (PreDefaultSetupData);
   ASSERT_EFI_ERROR (Status);
 
   return Status;

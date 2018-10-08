@@ -112,25 +112,14 @@ form formid = SECURITY_CONFIGURATION_FORM_ID,
   //
   subtitle text = STRING_TOKEN(STR_TPM_CONFIGURATION_PROMPT);
 
-  grayoutif TRUE;
-  oneof   varid   = Setup.TPM,
-    prompt      = STRING_TOKEN(STR_TPM_PROMPT),
-    help        = STRING_TOKEN(STR_TPM_HELP),
-    option text = STRING_TOKEN(STR_DISABLE), value = 0x00, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
-    option text = STRING_TOKEN(STR_TPM_PTT), value = 0x01, flags = RESET_REQUIRED;
+  oneof varid  = Setup.TPMSupportedBanks,
+    prompt = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_PROMPT),
+    help   = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_HELP),
+    option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_NULL), value = TPM2_SUPPORTED_BANK_NULL, flags = RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_SHA1), value = TPM2_SUPPORTED_BANK_SHA1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_SHA2), value = TPM2_SUPPORTED_BANK_SHA2, flags = RESET_REQUIRED;
+    option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_BOTH), value = TPM2_SUPPORTED_BANK_BOTH, flags = RESET_REQUIRED;
   endoneof;
-  endif;
-
-  suppressif NOT ideqval Setup.TPM == 1;
-    oneof varid  = Setup.TPMSupportedBanks,
-      prompt = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_PROMPT),
-      help   = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_HELP),
-      option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_NULL), value = TPM2_SUPPORTED_BANK_NULL, flags = RESET_REQUIRED;
-      option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_SHA1), value = TPM2_SUPPORTED_BANK_SHA1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
-      option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_SHA2), value = TPM2_SUPPORTED_BANK_SHA2, flags = RESET_REQUIRED;
-      option text = STRING_TOKEN(STR_TPM2_PCR_ALLOCATE_BOTH), value = TPM2_SUPPORTED_BANK_BOTH, flags = RESET_REQUIRED;
-    endoneof;
-  endif;
 
 endform;
 

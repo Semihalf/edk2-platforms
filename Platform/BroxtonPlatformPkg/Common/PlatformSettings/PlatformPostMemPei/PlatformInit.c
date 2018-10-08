@@ -76,19 +76,22 @@ TpmPolicyInit (
   EFI_STATUS                  Status;
   UINTN                       Size;
   BOOLEAN                     IsPttEnabled = TRUE;
-  MBP_ME_FW_CAPS              Mbp_Me_Fw_Caps = { 0 };
+  MBP_ME_FW_CAPS              MbpMeFwCaps = { 0 };
+  UINT8                       TpmControl;
 
   DEBUG ((EFI_D_ERROR, "TpmPolicyInit entry.\n"));
 
+  TpmControl = PcdGet8(PcdTpmControl);
+  
   //
   // Get ME FW Capability from MBP table to determine PTT State
   //
-  Status = HeciGetMeFwCapability (&Mbp_Me_Fw_Caps);
+  Status = HeciGetMeFwCapability (&MbpMeFwCaps);
   if (!EFI_ERROR (Status)) {
-    IsPttEnabled = (BOOLEAN) Mbp_Me_Fw_Caps.CurrentFeatures.Fields.PTT;
+    IsPttEnabled = (BOOLEAN) MbpMeFwCaps.CurrentFeatures.Fields.PTT;
   }
 
-  if ((IsPttEnabled) && (SystemConfiguration->TPM == TPM_PTT)) {
+  if ((IsPttEnabled) && (TpmControl == TPM_PTT)) {
     if (SystemConfiguration->PttSuppressCommandSend == 1) {
       Size = sizeof (gEfiTpmDeviceInstanceNoneGuid);
       PcdSetPtrS (PcdTpmInstanceGuid, &Size, &gEfiTpmDeviceInstanceNoneGuid);
@@ -101,14 +104,14 @@ TpmPolicyInit (
       PcdSetPtrS (PcdTpmInstanceGuid, &Size, &gTpmDeviceInstanceTpm20PttPtpGuid);
       DEBUG ((DEBUG_INFO, "Set PcdTpmInstanceGuid to PTT.\n"));
     }
-  } else if (SystemConfiguration->TPM == TPM_DTPM_1_2) {
+  } else if (TpmControl == TPM_DTPM_1_2) {
     //
     // Set PcdTpmInstanceGuid to dTPM 1.2
     //
     Size = sizeof (gEfiTpmDeviceInstanceTpm12Guid);
     PcdSetPtrS (PcdTpmInstanceGuid, &Size, &gEfiTpmDeviceInstanceTpm12Guid);
     DEBUG ((DEBUG_INFO, "Set PcdTpmInstanceGuid to dTPM 1.2.\n"));
-  } else if (SystemConfiguration->TPM == TPM_DTPM_2_0) {
+  } else if (TpmControl == TPM_DTPM_2_0) {
     //
     // Set PcdTpmInstanceGuid to dTPM 2.0
     //

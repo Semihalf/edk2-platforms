@@ -123,6 +123,7 @@
   gPlatformModuleTokenSpaceGuid.PcdBoardPostMemInitFunc
   gPlatformModuleTokenSpaceGuid.PcdBoardVbtFileGuid
   gPlatformModuleTokenSpaceGuid.PcdOemLogoFileGuid
+  gPlatformModuleTokenSpaceGuid.PcdTpmControl
   gSiPkgTokenSpaceGuid.PcdAfterGpioInitFlag
 
 [Depex]
