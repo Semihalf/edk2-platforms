@@ -15,6 +15,10 @@
   - Install into ```C:\ASL``` to match default tools_def.txt configuration.
 * NASM assembler:  Available from: http://www.nasm.us/
   - Install into ```C:\NASM``` to match default tools_def.txt configuration.
+* Python 2.7.6:  Available from: https://www.python.org/download/releases/2.7.6/
+  - Install into ```C:\Python27``` to match default tools_def.txt configuration.
+  - Add C:\Python27 to your path
+  - Other versions of 2.7 may also work fine.
 
 ### Download the required component
 
@@ -47,7 +51,7 @@ For MinPurley
 1. Open command window, goto the workspace dir, e.g. c:\Purley.
 2. Type "cd edk2-platforms\Platform\Intel\PurleyOpenBoardPkg\BoardMtOlympus".
 3. Type "GitEdk2MinMtOlympus.bat" to setup GIT environment.
-4. Type "bld" to build Purley BIOS image, "bld release" for release build.
+4. Type "bld" to build Purley BIOS image, "bld release" for release build, "bld clean" to remove intermediate files.
 
 The user can run FITC tool to build full image for flash (BIOS + ME + DESC). The user can also burn the BIOS image to highest part of flash region directly.
 
