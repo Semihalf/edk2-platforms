@@ -164,7 +164,7 @@ MISC_SMBIOS_TABLE_FUNCTION(MiscBaseBoardManufacturer)
   }
 
   if (BOARD_ID_MINNOW2_TURBOT == mPlatformInfo->BoardId) {
-    UnicodeSPrint (Buffer, sizeof (Buffer),L"ADI");
+    UnicodeSPrint (Buffer, sizeof (Buffer),L"Silicom");
     HiiSetString(mHiiHandle,STRING_TOKEN(STR_MISC_BASE_BOARD_MANUFACTURER), Buffer, NULL);
   }
   TokenToGet = STRING_TOKEN (STR_MISC_BASE_BOARD_MANUFACTURER);
