@@ -294,11 +294,11 @@ if (Event != NULL) {
       DEBUG ((EFI_D_ERROR, "C0 Stepping Detected\n"));
       break;
    case PchD0:
-      UnicodeSPrint (Buffer, sizeof (Buffer),L"%s%s", PlatformNameBuffer, L"D0 PLATFORM");
+      UnicodeSPrint (Buffer, sizeof (Buffer),L"%s%s", PlatformNameBuffer, L"D0/D1 PLATFORM");
       HiiSetString(mHiiHandle,STRING_TOKEN(STR_MISC_SYSTEM_PRODUCT_NAME), Buffer, NULL);
-      UnicodeSPrint (Buffer, sizeof (Buffer),L"%s",L"D0");
+      UnicodeSPrint (Buffer, sizeof (Buffer),L"%s",L"D0/D1");
       HiiSetString(mHiiHandle,STRING_TOKEN(STR_MISC_SYSTEM_VERSION), Buffer, NULL);
-      DEBUG ((EFI_D_ERROR, "D0 Stepping Detected\n"));
+      DEBUG ((EFI_D_ERROR, "D0/D1 Stepping Detected\n"));
       break;
     default:
     DEBUG ((EFI_D_ERROR, "Unknow Stepping Detected\n"));
