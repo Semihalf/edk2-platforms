@@ -2,9 +2,9 @@ MINNOWBOARD 3 PLATFORM Maintainers
 ==================
 
 Platform
-  David Wei <david.wei@intel.com>
-  Mang Guo <mang.guo@intel.com>
+M: Zailiang Sun <zailiang.sun@intel.com>
+M: Yi Qian <yi.qian@intel.com>
 
 Silicon
-  David Wei <david.wei@intel.com>
-  Mang Guo <mang.guo@intel.com>
+M: Zailiang Sun <zailiang.sun@intel.com>
+M: Yi Qian <yi.qian@intel.com>
