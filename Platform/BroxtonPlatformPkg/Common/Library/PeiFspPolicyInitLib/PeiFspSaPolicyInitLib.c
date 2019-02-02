@@ -155,19 +155,36 @@ PeiFspSaPolicyInitPreMem (
     FspmUpd->FspmConfig.Igd = SystemConfiguration->Igd;
     FspmUpd->FspmConfig.PrimaryVideoAdaptor = SystemConfiguration->PrimaryVideoAdaptor;
 
-    FspmUpd->FspmConfig.FwTraceEn          = 1;
-    FspmUpd->FspmConfig.FwTraceDestination = 4;
-    FspmUpd->FspmConfig.RecoverDump        = 0;
-    FspmUpd->FspmConfig.Msc0Size           = 0;
-    FspmUpd->FspmConfig.Msc0Wrap           = 1;
-    FspmUpd->FspmConfig.Msc1Size           = 0;
-    FspmUpd->FspmConfig.Msc1Wrap           = 1;
-    FspmUpd->FspmConfig.PtiMode            = 1;
-    FspmUpd->FspmConfig.PtiTraining        = 0;
-    FspmUpd->FspmConfig.PtiSpeed           = 2;
-    FspmUpd->FspmConfig.PunitMlvl          = 1;
-    FspmUpd->FspmConfig.PmcMlvl            = 1;
-    FspmUpd->FspmConfig.SwTraceEn          = 0;
+    FspmUpd->FspmConfig.NpkEn            = SystemConfiguration->NpkEn;              ///< 0-disabled, 1-enabled, 2-debugger, 3-auto	
+    FspmUpd->FspmConfig.FwTraceEn          = SystemConfiguration->FwTraceEn;
+    FspmUpd->FspmConfig.FwTraceDestination = SystemConfiguration->FwTraceDestination;
+    FspmUpd->FspmConfig.RecoverDump        = SystemConfiguration->RecoverDump;
+    FspmUpd->FspmConfig.Msc0Size           = SystemConfiguration->Msc0Size;
+    FspmUpd->FspmConfig.Msc0Wrap           = SystemConfiguration->Msc0Wrap;
+    FspmUpd->FspmConfig.Msc1Size           = SystemConfiguration->Msc1Size;
+    FspmUpd->FspmConfig.Msc1Wrap           = SystemConfiguration->Msc1Wrap;
+    FspmUpd->FspmConfig.PtiMode            = SystemConfiguration->PtiMode;
+    FspmUpd->FspmConfig.PtiTraining        = SystemConfiguration->PtiTraining;
+    FspmUpd->FspmConfig.PtiSpeed           = SystemConfiguration->PtiSpeed;
+    FspmUpd->FspmConfig.PunitMlvl          = SystemConfiguration->PunitMlvl;
+    FspmUpd->FspmConfig.PmcMlvl            = SystemConfiguration->PmcMlvl;
+    FspmUpd->FspmConfig.SwTraceEn          = SystemConfiguration->SwTraceEn;
+
+	DEBUG ((DEBUG_INFO, "NpkEn: %x\n", FspmUpd->FspmConfig.NpkEn));
+	DEBUG ((DEBUG_INFO, "FwTraceEn: %x\n", FspmUpd->FspmConfig.FwTraceEn));
+	DEBUG ((DEBUG_INFO, "FwTraceDestination: %x\n", FspmUpd->FspmConfig.FwTraceDestination));
+	DEBUG ((DEBUG_INFO, "RecoverDump: %x\n", FspmUpd->FspmConfig.RecoverDump));
+	DEBUG ((DEBUG_INFO, "Msc0Size: %x\n", FspmUpd->FspmConfig.Msc0Size));
+	DEBUG ((DEBUG_INFO, "Msc0Wrap: %x\n", FspmUpd->FspmConfig.Msc0Wrap));
+	DEBUG ((DEBUG_INFO, "Msc1Size: %x\n", FspmUpd->FspmConfig.Msc1Size));
+	DEBUG ((DEBUG_INFO, "Msc1Wrap: %x\n", FspmUpd->FspmConfig.Msc1Wrap));
+	DEBUG ((DEBUG_INFO, "PtiMode: %x\n", FspmUpd->FspmConfig.PtiMode));
+	DEBUG ((DEBUG_INFO, "PtiTraining: %x\n", FspmUpd->FspmConfig.PtiTraining));
+	DEBUG ((DEBUG_INFO, "PtiSpeed: %x\n", FspmUpd->FspmConfig.PtiSpeed));
+	DEBUG ((DEBUG_INFO, "PunitMlvl: %x\n", FspmUpd->FspmConfig.PunitMlvl));
+	DEBUG ((DEBUG_INFO, "PmcMlvl: %x\n", FspmUpd->FspmConfig.PmcMlvl));
+	DEBUG ((DEBUG_INFO, "SwTraceEn: %x\n", FspmUpd->FspmConfig.SwTraceEn));
+	
   }
 
   DEBUG ((DEBUG_INFO, "Wrapper-PeiFspSaPolicyInitPreMem - End\n"));

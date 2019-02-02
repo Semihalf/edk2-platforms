@@ -159,6 +159,147 @@ form formid = DEBUG_CONFIGURATION_FORM_ID,
     flags  = INTERACTIVE,
     key    = 0x1239; //KEY_DATA_CLEAR_KEYS;
 
+  subtitle text = STRING_TOKEN(STR_NULL_STRING);
+  
+  goto DEBUG_NPK_FORM_ID,
+    prompt = STRING_TOKEN(STR_DEBUG_NPK_TITLE),
+    help   = STRING_TOKEN(STR_DEBUG_NPK_HELP);
 
 endform;
 
+  //
+  // NPK Configuration
+  //
+  form formid     = DEBUG_NPK_FORM_ID,
+    title         = STRING_TOKEN(STR_DEBUG_NPK_TITLE);
+
+    oneof varid   = Setup.NpkEn,
+      prompt      = STRING_TOKEN(STR_NPK_ENABLE_PROMPT),
+      help        = STRING_TOKEN(STR_NPK_ENABLE_HELP),
+      option text = STRING_TOKEN(STR_DISABLE),  value = 0, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_ENABLE),   value = 1, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUGGER), value = 2, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_AUTO),     value = 3, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+    endoneof;
+
+    suppressif ideqval Setup.NpkEn == 2;
+
+     oneof varid   = Setup.FwTraceEn,
+       prompt      = STRING_TOKEN(STR_NPK_FWEN_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_FWEN_HELP),
+       option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_ENABLE),  value = 1, flags = DEFAULT | MANUFACTURING |RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.SwTraceEn,
+       prompt      = STRING_TOKEN(STR_NPK_SWEN_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_SWEN_HELP),
+       option text = STRING_TOKEN(STR_DISABLE), value = 0, flags =  DEFAULT | MANUFACTURING |RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_ENABLE), value = 1, flags =  RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.FwTraceDestination,
+       prompt      = STRING_TOKEN(STR_NPK_FWDESTINATION_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_FWDESTINATION_HELP),
+       option text = STRING_TOKEN(STR_MEMORY0), value = 1, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_PTI),     value = 4, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_USB3),    value = 2, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_BSSB),    value = 3, flags = RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.RecoverDump,
+       prompt      = STRING_TOKEN(STR_NPK_RECOVERY_DUMP_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_RECOVERY_DUMP_HELP),
+       option text = STRING_TOKEN(STR_DISABLE), value = 0, flags = DEFAULT | MANUFACTURING |RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_ENABLE),  value = 1, flags = RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.Msc0Size,
+       prompt      = STRING_TOKEN(STR_NPK_MSC0SIZE_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_MSC0SIZE_HELP),
+       option text = STRING_TOKEN(STR_NONE),  value = 0,    flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_1MB),   value = 1,    flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_8MB),   value = 8,    flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_64MB),  value = 64,   flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_128MB), value = 128,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_256MB), value = 256,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_512MB), value = 512,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_1GB),   value = 1024, flags = RESET_REQUIRED;
+     endoneof;
+     oneof varid   = Setup.Msc0Wrap,
+       prompt      = STRING_TOKEN(STR_NPK_MSC0WRAP_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_MSC0WRAP_HELP),
+       option text = STRING_TOKEN(STR_NOWRAP), value = 0, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_WRAP),   value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+     endoneof;
+     oneof varid   = Setup.Msc1Size,
+       prompt      = STRING_TOKEN(STR_NPK_MSC1SIZE_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_MSC1SIZE_HELP),
+       option text = STRING_TOKEN(STR_NONE),  value = 0,    flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_1MB),   value = 1,    flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_8MB),   value = 8,    flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_64MB),  value = 64,   flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_128MB), value = 128,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_256MB), value = 256,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_512MB), value = 512,  flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_1GB),   value = 1024, flags = RESET_REQUIRED;
+     endoneof;
+     oneof varid   = Setup.Msc1Wrap,
+       prompt      = STRING_TOKEN(STR_NPK_MSC1WRAP_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_MSC1WRAP_HELP),
+       option text = STRING_TOKEN(STR_NOWRAP), value = 0, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_WRAP),   value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.PtiMode,
+       prompt      = STRING_TOKEN(STR_NPK_PTIMODE_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_PTIMODE_HELP),
+       option text = STRING_TOKEN(STR_OFF), value = 4, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_X4),  value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_X8),  value = 2, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_X16), value = 8, flags = RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.PtiTraining,
+       prompt      = STRING_TOKEN(STR_NPK_PTITRAINING_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_PTITRAINING_HELP),
+       option text = STRING_TOKEN(STR_OFF), value = 0, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_1),   value = 1, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_2),   value = 2, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_3),   value = 3, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_4),   value = 4, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_5),   value = 5, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_6),   value = 6, flags = RESET_REQUIRED;
+     endoneof;
+
+     oneof varid   = Setup.PtiSpeed,
+       prompt      = STRING_TOKEN(STR_NPK_PTISPEED_PROMPT),
+       help        = STRING_TOKEN(STR_NPK_PTISPEED_HELP),
+       option text = STRING_TOKEN(STR_FULL),    value = 0, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_HALF),    value = 1, flags = RESET_REQUIRED;
+       option text = STRING_TOKEN(STR_QUARTER), value = 2, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+     endoneof;
+
+    oneof varid   = Setup.PunitMlvl,
+      prompt    = STRING_TOKEN(STR_PUINT_MESSAGE_LEVEL_PROMPT),
+      help      = STRING_TOKEN(STR_PUINT_MESSAGE_LEVEL_HELP),
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_0), value = 0, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_1), value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_2), value = 2, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_3), value = 3, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_4), value = 4, flags = RESET_REQUIRED;
+    endoneof;
+
+    oneof varid   = Setup.PmcMlvl,
+      prompt    = STRING_TOKEN(STR_PMC_MESSAGE_LEVEL_PROMPT),
+      help      = STRING_TOKEN(STR_PMC_MESSAGE_LEVEL_HELP),
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_0), value = 0, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_1), value = 1, flags = DEFAULT | MANUFACTURING | RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_2), value = 2, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_3), value = 3, flags = RESET_REQUIRED;
+      option text = STRING_TOKEN(STR_DEBUG_MESSAGE_LEVEL_4), value = 4, flags = RESET_REQUIRED;
+    endoneof;
+
+    endif;
+
+  endform; //End of DEBUG_NPK_FORM_ID

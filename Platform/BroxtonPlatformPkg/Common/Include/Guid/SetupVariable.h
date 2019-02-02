@@ -908,6 +908,25 @@ typedef struct {
   UINT8         PkgCStateDemotion;
   UINT8         PkgCStateUnDemotion;
 
+  //
+  // NPK debug Options
+  //
+  UINT8         NpkEn;
+  UINT8         FwTraceEn;
+  UINT8         FwTraceDestination;
+  UINT8         RecoverDump;
+  UINT32        Msc0Size;
+  UINT8         Msc0Wrap;
+  UINT32        Msc1Size;
+  UINT8         Msc1Wrap;
+  UINT8         PtiMode;
+  UINT8         PtiTraining;
+  UINT8         PtiSpeed;
+  UINT8         NpkDCIEn;
+  UINT8         PunitMlvl;
+  UINT8         PmcMlvl;
+  UINT8         SwTraceEn;
+
   UINT8         ProcTraceMemSize;
   UINT8         ProcTraceEnable;
   UINT8         ProcTraceOutputScheme;

@@ -523,7 +523,7 @@ if not exist "%STITCH_PATH%\FlashMap.h" (
     call :FindVariableInFile _PCD_VALUE_PcdFlashNvStorageSize 3        NvStorageSize "%STITCH_PATH%\FlashMap.h"
     :: Find image offset as opposed to memory offset
     del /f /q temp.pcd >NUL 2>&1
-    PowerShell ([uint32]$env:NvStorageBase - [uint32]$env:BaseAddress) > temp.pcd
+    PowerShell ([uint64]$env:NvStorageBase - [uint64]$env:BaseAddress) > temp.pcd
     set /p VpdOffset=<temp.pcd
     del /f /q temp.pcd >NUL 2>&1
     :: Force the variables we care about into DEC string format
@@ -566,7 +566,7 @@ if not exist "%WORKSPACE%\%PLATFORM_PATH%\PlatformDsc\Defines.dsc" (
     echo - BLD_IBBM_SIZE     = %BldIbbmSize%
     :: Find magic number
     del /f /q temp.pcd >NUL 2>&1
-    PowerShell ([uint32]$env:CarBaseAddress + [uint32]$env:BldRamDataSize + [uint32]$env:FspRamDataSize + [uint32]$env:FspEmpDataSize + [uint32]$env:BldIbbmSize) > temp.pcd
+    PowerShell ([uint64]$env:CarBaseAddress + [uint64]$env:BldRamDataSize + [uint64]$env:FspRamDataSize + [uint64]$env:FspEmpDataSize + [uint64]$env:BldIbbmSize) > temp.pcd
     set /p FspBaseAddress=<temp.pcd
     del /f /q temp.pcd >NUL 2>&1
     call :ForceToHex FspBaseAddress
