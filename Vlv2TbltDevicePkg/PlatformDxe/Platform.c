@@ -542,6 +542,37 @@ SpiBiosProtectionFunction(
   DEBUG((EFI_D_INFO, "MmioRead32 (0x%x, 0x%x) = 0x%x \n", (UINTN) SpiBase, (UINT8) R_PCH_SPI_PR1, (UINT32) Data32));
 
   //
+  // Check and set individual lock
+  //
+  MmioOr16 ((UINTN) (SpiBase + R_PCH_SPI_IND_LOCK),
+    B_PCH_SPI_IND_LOCK_BMWAG |
+    B_PCH_SPI_IND_LOCK_BMRAG |
+    B_PCH_SPI_IND_LOCK_PR0 |
+    B_PCH_SPI_IND_LOCK_PR1 |
+    B_PCH_SPI_IND_LOCK_PR2 |
+    B_PCH_SPI_IND_LOCK_PR3 |
+    B_PCH_SPI_IND_LOCK_SCF |
+    B_PCH_SPI_IND_LOCK_PREOP |
+    B_PCH_SPI_IND_LOCK_OPTYPE |
+    B_PCH_SPI_IND_LOCK_OPMENU);
+  Data16 = MmioRead16 (SpiBase + R_PCH_SPI_IND_LOCK); 
+  S3BootScriptSaveMemWrite (
+    S3BootScriptWidthUint16,
+    (UINTN)(SpiBase + R_PCH_SPI_IND_LOCK),
+    1,
+    &Data16
+  );
+  DEBUG((EFI_D_INFO, "R_PCH_SPI_IND_LOCK \n"));
+  DEBUG((EFI_D_INFO, "MmioRead16 (0x%x, 0x%x) = 0x%x \n", (UINTN) SpiBase, (UINT8) R_PCH_SPI_IND_LOCK, (UINT16) Data16));
+
+  //
+  // Verify if it's really locked.
+  //
+  if ((MmioRead16 (SpiBase + R_PCH_SPI_IND_LOCK) & B_PCH_SPI_IND_LOCK_PR0) == 0) {
+    DEBUG((EFI_D_ERROR, "Failed to lock down individual lock.\n"));
+  }
+  
+  //
   //Lock down PRx
   //
   MmioOr16 ((UINTN) (SpiBase + R_PCH_SPI_HSFS), (UINT16) (B_PCH_SPI_HSFS_FLOCKDN));
