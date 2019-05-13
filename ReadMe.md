@@ -1,3 +1,9 @@
+# THIS BRANCH IS DEPRECATED!
+
+**All Minimum Platform development has moved to edk2-platforms/master.** No more commits should be made to this branch.
+
+Send all patches to the corresponding area on edk2-platforms/master.
+
 # **EDK II Minimum Platform Firmware for Intel(R) Platforms**
 
 The Minimum Platform is a software architecture that guides uniform delivery of Intel platforms enabling firmware
