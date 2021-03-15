@@ -214,6 +214,7 @@
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   HiiLib|MdeModulePkg/Library/UefiHiiLib/UefiHiiLib.inf
   ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
+  ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
   FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
 
 [LibraryClasses.common.UEFI_DRIVER]
@@ -352,6 +353,13 @@
   gEfiSecurityPkgTokenSpaceGuid.PcdOptionRomImageVerificationPolicy|0x04
   gEfiSecurityPkgTokenSpaceGuid.PcdFixedMediaImageVerificationPolicy|0x04
   gEfiSecurityPkgTokenSpaceGuid.PcdRemovableMediaImageVerificationPolicy|0x04
+
+  # set content PKDefault, KEKDefault, dbDefault, dbxDefault and dbtDefault
+  !include /home/gjb/work/arm_uefi/key_gen/secureboot/key-material/PK.inc
+  !include /home/gjb/work/arm_uefi/key_gen/secureboot/key-material/KEK.inc
+  !include /home/gjb/work/arm_uefi/key_gen/secureboot/key-material/db.inc
+  !include /home/gjb/work/arm_uefi/key_gen/secureboot/key-material/dbx.inc
+  !include /home/gjb/work/arm_uefi/key_gen/secureboot/key-material/dbt.inc
 !endif
 
   gEfiNetworkPkgTokenSpaceGuid.PcdAllowHttpConnections|TRUE
@@ -600,6 +608,7 @@
       NULL|SecurityPkg/Library/DxeImageVerificationLib/DxeImageVerificationLib.inf
   }
   SecurityPkg/VariableAuthenticated/SecureBootConfigDxe/SecureBootConfigDxe.inf
+  SecurityPkg/SecEnrollDefaultKeys/SecEnrollDefaultKeys.inf
 !else
   MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 !endif
