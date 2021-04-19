@@ -19,6 +19,8 @@
 #include <Library/UefiBootManagerLib.h>
 #include <Library/UefiLib.h>
 #include <Library/PrintLib.h>
+#include <Library/BootDiscoveryPolicyUiLib.h>
+#include <Protocol/BootManagerPolicy.h>
 #include <Protocol/DevicePath.h>
 #include <Protocol/EsrtManagement.h>
 #include <Protocol/GraphicsOutput.h>
@@ -597,6 +599,67 @@ PlatformBootManagerBeforeConsole (
   FilterAndProcess (&gEfiUsb2HcProtocolGuid, NULL, Connect);
 }
 
+STATIC
+EFI_STATUS
+ConnectDeviceClass (
+  VOID
+  )
+{
+  EFI_STATUS                       Status;
+  UINT32                           Data;
+  UINTN                            Size;
+  EFI_BOOT_MANAGER_POLICY_PROTOCOL *BMPolicy;
+  EFI_GUID                         *Class;
+
+  Size = sizeof(Data);
+  Status = gRT->GetVariable(L"BootDiscoveryPolicy",
+                  &gBootDiscoveryPolicyMgrFormsetGuid,
+                  NULL, &Size, &Data);
+  if (Status == EFI_NOT_FOUND) {
+    return EFI_SUCCESS;
+  } else if (EFI_ERROR(Status)) {
+    return Status;
+  }
+
+  if (Data == 0) {
+    return EFI_SUCCESS;
+  }
+
+  Class = NULL;
+  switch (Data) {
+    case BDP_CONNECT_NET:
+      Class = &gEfiBootManagerPolicyNetworkGuid;
+      break;
+    case BDP_CONNECT_ALL:
+      Class = &gEfiBootManagerPolicyConnectAllGuid;
+      break;
+    default:
+      break;
+  }
+
+  if (Class == NULL) {
+    return EFI_SUCCESS;
+  }
+
+  Status = gBS->LocateProtocol (
+                &gEfiBootManagerPolicyProtocolGuid,
+                NULL,
+                (VOID **)&BMPolicy
+                );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((EFI_D_INFO, "No Protocol\n"));
+    return Status;
+  }
+
+  Status = BMPolicy->ConnectDeviceClass(BMPolicy, Class);
+  if (EFI_ERROR(Status)){
+    DEBUG((DEBUG_ERROR, "Protocol not found\n"));
+    return Status;
+  }
+
+  return EFI_SUCCESS;
+}
+
 /**
   Do the platform specific action after the console is ready
   Possible things that can be done in PlatformBootManagerAfterConsole:
@@ -631,6 +694,11 @@ PlatformBootManagerAfterConsole (
     SerialConPrint (BOOT_PROMPT);
   } else {
     Print (BOOT_PROMPT);
+  }
+
+  Status = ConnectDeviceClass();
+  if (EFI_ERROR(Status)) {
+    DEBUG ((DEBUG_INFO, "Error applying Boot Connect Policy:%r\n", Status));
   }
 
   Status = gBS->LocateProtocol (&gEsrtManagementProtocolGuid, NULL, (VOID**)&EsrtManagement);

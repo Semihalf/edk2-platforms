@@ -368,6 +368,7 @@
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
   BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
   PlatformBootManagerLib|Platform/RaspberryPi/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
+  
   CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
   FileExplorerLib|MdeModulePkg/Library/FileExplorerLib/FileExplorerLib.inf
   AcpiLib|EmbeddedPkg/Library/AcpiLib/AcpiLib.inf
@@ -544,6 +545,8 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow|L"Rows"|gRaspberryPiTokenSpaceGuid|0x0|25
   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|L"Rows"|gRaspberryPiTokenSpaceGuid|0x0|25
 
+  gEfiMdeModulePkgTokenSpaceGuid.PcdBootDiscoveryPolicy|L"BootDiscoveryPolicy"|gBootDiscoveryPolicyMgrFormsetGuid|0
+
 [PcdsDynamicDefault.common]
   #
   # Set video resolution for boot options and for text setup.
@@ -666,6 +669,7 @@
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
+  MdeModulePkg/Universal/BootManagerPolicyDxe/BootManagerPolicyDxe.inf
   MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
   Platform/RaspberryPi/Drivers/LogoDxe/LogoDxe.inf
   MdeModulePkg/Application/UiApp/UiApp.inf {
@@ -674,6 +678,7 @@
       NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
       NULL|Platform/RaspberryPi/Library/PlatformUiAppLib/PlatformUiAppLib.inf
       NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
+      NULL|MdeModulePkg/Library/BootDiscoveryPolicyUiLib/BootDiscoveryPolicyUiLib.inf
   }
 
   #

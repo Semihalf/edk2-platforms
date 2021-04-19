@@ -72,6 +72,9 @@
   gEfiTtyTermGuid
   gUefiShellFileGuid
   gEfiEventExitBootServicesGuid
+  gBootDiscoveryPolicyMgrFormsetGuid
+  gEfiBootManagerPolicyNetworkGuid
+  gEfiBootManagerPolicyConnectAllGuid
 
 [Protocols]
   gEfiDevicePathProtocolGuid
@@ -81,3 +84,4 @@
   gEfiSimpleFileSystemProtocolGuid
   gEsrtManagementProtocolGuid
   gEfiUsb2HcProtocolGuid
+  gEfiBootManagerPolicyProtocolGuid
