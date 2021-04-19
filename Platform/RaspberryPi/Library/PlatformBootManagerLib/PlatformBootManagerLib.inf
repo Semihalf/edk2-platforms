@@ -66,6 +66,7 @@
   gRaspberryPiTokenSpaceGuid.PcdBootPolicy
 
 [Guids]
+  gBootDiscoveryPolicyMgrFormsetGuid
   gEfiFileInfoGuid
   gEfiFileSystemInfoGuid
   gEfiFileSystemVolumeLabelInfoIdGuid
@@ -73,8 +74,11 @@
   gEfiTtyTermGuid
   gUefiShellFileGuid
   gEfiEventExitBootServicesGuid
+  gEfiBootManagerPolicyNetworkGuid
+  gEfiBootManagerPolicyConnectAllGuid
 
 [Protocols]
+  gEfiBootManagerPolicyProtocolGuid
   gEfiDevicePathProtocolGuid
   gEfiGraphicsOutputProtocolGuid
   gEfiLoadedImageProtocolGuid
