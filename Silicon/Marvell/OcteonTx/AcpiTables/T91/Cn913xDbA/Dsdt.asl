@@ -20,21 +20,37 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
         {
             Name (_HID, "ACPI0007" /* Processor Device */)  // _HID: Hardware ID
             Name (_UID, 0x000)  // _UID: Unique ID
+            Method (_STA)       // _STA: Device status
+            {
+                Return (0xF)
+            }
         }
         Device (CPU1)
         {
             Name (_HID, "ACPI0007" /* Processor Device */)  // _HID: Hardware ID
             Name (_UID, 0x001)  // _UID: Unique ID
+            Method (_STA)       // _STA: Device status
+            {
+                Return (0xF)
+            }
         }
         Device (CPU2)
         {
             Name (_HID, "ACPI0007" /* Processor Device */)  // _HID: Hardware ID
             Name (_UID, 0x100)  // _UID: Unique ID
+            Method (_STA)       // _STA: Device status
+            {
+                Return (0xF)
+            }
         }
         Device (CPU3)
         {
             Name (_HID, "ACPI0007" /* Processor Device */)  // _HID: Hardware ID
             Name (_UID, 0x101)  // _UID: Unique ID
+            Method (_STA)       // _STA: Device status
+            {
+                Return (0xF)
+            }
         }
 
         Device (AHC0)
@@ -42,6 +58,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "LNRO001E")     // _HID: Hardware ID
             Name (_UID, 0x00)           // _UID: Unique ID
             Name (_CCA, 0x01)           // _CCA: Cache Coherency Attribute
+            Method (_STA)               // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_CLS, Package (0x03)  // _CLS: Class Code
             {
                 0x01,
@@ -67,6 +87,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "MRVL0003")     // _HID: Hardware ID
             Name (_UID, 0x00)           // _UID: Unique ID
             Name (_CCA, 0x01)           // _CCA: Cache Coherency Attribute
+            Method (_STA)               // _STA: Device status
+            {
+                Return (0xF)
+            }
 
             Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
@@ -98,6 +122,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "MRVL0004")     // _HID: Hardware ID
             Name (_UID, 0x01)           // _UID: Unique ID
             Name (_CCA, 0x01)           // _CCA: Cache Coherency Attribute
+            Method (_STA)               // _STA: Device status
+            {
+                Return (0xF)
+            }
 
             Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
@@ -126,6 +154,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "PNP0D10")      // _HID: Hardware ID
             Name (_UID, 0x00)           // _UID: Unique ID
             Name (_CCA, 0x01)           // _CCA: Cache Coherency Attribute
+            Method (_STA)               // _STA: Device status
+            {
+                Return (0xF)
+            }
 
             Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
@@ -145,6 +177,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "PNP0D10")      // _HID: Hardware ID
             Name (_UID, 0x01)           // _UID: Unique ID
             Name (_CCA, 0x01)           // _CCA: Cache Coherency Attribute
+            Method (_STA)               // _STA: Device status
+            {
+                Return (0xF)
+            }
 
             Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
             {
@@ -163,6 +199,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
         {
             Name (_HID, "MRVL0001")                             // _HID: Hardware ID
             Name (_CID, "HISI0031")                             // _CID: Compatible ID
+            Method (_STA)                                       // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_ADR, FixedPcdGet64(PcdSerialRegisterBase))   // _ADR: Address
             Name (_CRS, ResourceTemplate ()                     // _CRS: Current Resource Settings
             {
@@ -189,6 +229,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
         {
             Name (_HID, "MRVL0100")                             // _HID: Hardware ID
             Name (_UID, 0x00)                                   // _UID: Unique ID
+            Method (_STA)                                       // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_CRS, ResourceTemplate ()
             {
                 Memory32Fixed (ReadWrite,
@@ -211,6 +255,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_HID, "MRVL0110")                             // _HID: Hardware ID
             Name (_CCA, 0x01)                                   // Cache-coherent controller
             Name (_UID, 0x00)                                   // _UID: Unique ID
+            Method (_STA)                                       // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_CRS, ResourceTemplate ()
             {
                 Memory32Fixed (ReadWrite, 0xf2000000 , 0x100000)
@@ -289,6 +337,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
         {
             Name (_HID, "PRP0001")                                 // _HID: Hardware ID
             Name (_UID, 0x00)                                      // _UID: Unique ID
+            Method (_STA)                                          // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_CRS, ResourceTemplate ()
             {
                 Memory32Fixed (ReadWrite, 0xF2760000, 0x7D)
@@ -315,6 +367,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "MVEBU ", "CN9130", 3)
             Name (_SEG, 0x00)  // _SEG: PCI Segment
             Name (_BBN, 0x00)  // _BBN: BIOS Bus Number
             Name (_CCA, 0x01)  // _CCA: Cache Coherency Attribute
+            Method (_STA)      // _STA: Device status
+            {
+                Return (0xF)
+            }
             Name (_PRT, Package ()  // _PRT: PCI Routing Table
             {
                 Package () { 0xFFFF, 0x0, 0x0, 0x40 },
