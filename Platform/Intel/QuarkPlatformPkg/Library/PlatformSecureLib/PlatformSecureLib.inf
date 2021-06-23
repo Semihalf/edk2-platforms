@@ -13,7 +13,7 @@
   FILE_GUID                      = 38BB5221-F685-469f-846E-F1C508FC5F4A
   MODULE_TYPE                    = DXE_DRIVER
   VERSION_STRING                 = 1.0
-  LIBRARY_CLASS                  = PlatformSecureLib|DXE_RUNTIME_DRIVER DXE_SMM_DRIVER DXE_DRIVER
+  LIBRARY_CLASS                  = PlatformSecureLib|DXE_RUNTIME_DRIVER DXE_SMM_DRIVER DXE_DRIVER UEFI_APPLICATION
   CONSTRUCTOR                    = PlatformSecureLibInitialize
 
 #
