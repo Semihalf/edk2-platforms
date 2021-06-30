@@ -40,6 +40,7 @@
   gMarvellTokenSpaceGuid.PcdProductPlatformName
   gMarvellTokenSpaceGuid.PcdProductSerial
   gMarvellTokenSpaceGuid.PcdProductVersion
+  gMarvellTokenSpaceGuid.PcdFirmwareVersion
 
 [Protocols]
   gEfiSmbiosProtocolGuid                      # PROTOCOL ALWAYS_CONSUMED
