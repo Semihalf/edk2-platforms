@@ -14,9 +14,14 @@
 
   # ACPI support
 !if $(ARCH) == AARCH64
+!ifdef STATIC_ACPI_TABLES
 !ifndef $(CN9132)
   INF RuleOverride = ACPITABLE Silicon/Marvell/OcteonTx/AcpiTables/T91/$(PLATFORM_NAME).inf
 !else
   INF RuleOverride = ACPITABLE Silicon/Marvell/OcteonTx/AcpiTables/T91/Cn9131DbA.inf
+!endif
+!else
+  INF Platform/Marvell/Cn913xDb/ConfigurationManagerDxe/ConfigurationManagerDxe.inf
+  !include DynamicTablesPkg/DynamicTables.fdf.inc
 !endif
 !endif
