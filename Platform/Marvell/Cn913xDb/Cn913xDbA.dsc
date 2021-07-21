@@ -76,3 +76,5 @@
   gMarvellTokenSpaceGuid.PcdProductPlatformName|"CN9132 DB-A"
   !endif
   gMarvellTokenSpaceGuid.PcdProductVersion|"Rev. 1.1"
+  gEdkiiDynamicTablesPkgTokenSpaceGuid.PcdNonBsaCompliant16550SerialHid|"MRVL0001"
+  gEdkiiDynamicTablesPkgTokenSpaceGuid.PcdNonBsaCompliant16550SerialCid|"HISI0031"
